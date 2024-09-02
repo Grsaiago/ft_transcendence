@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "ft_transcendence"
+version = "0.1.0"
+description = "Projeto final das minas (e do Saiago)"
+authors = ["Grsaiago <grsaiago@gmail.com>"]
+readme = "README.md"
+# isso desabilita os erros no 'poetry install' (https://python-poetry.org/docs/basic-usage/#operating-modes)
+package-mode = false 
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^5.0.8"
+channels = "^4.1.0"
+channels-redis = "^4.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+package_mode = false
