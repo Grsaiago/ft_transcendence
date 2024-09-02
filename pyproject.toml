@@ -12,6 +12,8 @@ python = "^3.12"
 django = "^5.0.8"
 channels = "^4.1.0"
 channels-redis = "^4.2.0"
+psycopg2 = "^2.9.9"
+python-dotenv = "^1.0.1"
 
 
 [build-system]
