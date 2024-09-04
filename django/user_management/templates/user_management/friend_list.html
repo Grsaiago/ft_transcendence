@@ -1,0 +1,27 @@
+{% extends 'user_management/base.html' %}
+
+{% block content %}
+
+<form method="post">
+{% csrf_token %}
+<h2>Add a friend!</h2>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                {{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% for field in form %}
+	{{ field.label_tag }}
+	{{ field }}
+	{% if field.errors %}
+		<small>{{field.errors|striptags }}</small>
+	{% endif %}
+{% endfor %}
+<input type="submit" value="register">
+</form>
+
+{% endblock %}
