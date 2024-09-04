@@ -1,12 +1,13 @@
 from django.contrib.auth.forms import UserCreationForm, get_user_model
-from .models import TrUser
+from django.forms import ModelForm
+from .models import FriendshipRequest, TrUser
 
 
 class TranscendenceUserCreationForm(UserCreationForm):
     usable_password = None
 
     class Meta:
-        model = get_user_model() 
+        model = TrUser 
         # colocar os custom fields dentro desse parentesis
         fields = UserCreationForm.Meta.fields + ('first_name',)
 
@@ -27,3 +28,9 @@ class TranscendenceUserCreationForm(UserCreationForm):
     #      required=False,
     #      label="user's profile picture",
     #  )
+
+class FriendRequestForm(ModelForm):
+    class Meta:
+        model = FriendshipRequest
+        fields = [ "receiver" ]
+
