@@ -1,7 +1,11 @@
+from django.http import QueryDict
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib import messages
 from django.contrib.auth import mixins as auth_mixins, views as auth_views, forms as auth_forms
+
+from .models import FriendshipRequest
 from .forms import FriendRequestForm, TranscendenceUserCreationForm
 
 
@@ -36,23 +40,18 @@ class UserChangePasswordView(auth_mixins.LoginRequiredMixin, auth_views.Password
     form_class = auth_forms.PasswordChangeForm
     success_url = "https://google.com"  # TODO: Redirect to homepage
 
-class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.CreateView):
+class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
     template_name = "user_management/friend_list.html"
-    form_class = FriendRequestForm 
-    success_url = reverse_lazy("user_management:friend_list")
 
-    # Adiciona o campo 'sender' ao form como sendo o próprio usuário
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.instance.sender = self.request.user
-        return form
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Friend request sent successfully!')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        for _, errors in form.errors.items():
-            for error in errors:
-                messages.error(self.request, f"error: {error}")
-        return super().form_invalid(form)
+    def get(self, request, *args, **kwargs):
+        # O form pra mandar um invite pra um usuário
+        friend_request_form = FriendRequestForm()
+        # WARNING: Change 'sender' to 'receiver' no filter
+        pending_friend_requests = FriendshipRequest.objects.filter(receiver=request.user)
+        # TODO: accept_friendship_form = AcceptFriendshipRequestForm()
+        context = {
+            'friend_request_form': friend_request_form,
+            'pending_friend_requests': pending_friend_requests
+            # 'accept_friendship_form': accept_friendship_form
+        }
+        return render(request, self.template_name, context)
