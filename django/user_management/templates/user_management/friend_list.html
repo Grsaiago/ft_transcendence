@@ -40,6 +40,11 @@
         {% for pending_sent_request in sent_friend_requests %}
             <li>
                 {{ pending_sent_request.receiver }}
+                <form action="{% url 'db-user_management:cancel_friend_request' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="receiver" value="{{ pending_sent_request.receiver.id }}">
+                    <button type="submit">Cancel request</button>
+                </form>
             </li>
         {% empty %}
             <li>You have no pending sent request!</li>

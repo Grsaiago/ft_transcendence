@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
-from .forms import FriendRequestForm, AcceptFriendRequestForm, RefuseFriendRequestForm
+from .forms import CancelFriendRequestForm, FriendRequestForm, AcceptFriendRequestForm, RefuseFriendRequestForm
 
 @require_POST
 @login_required
@@ -18,6 +18,23 @@ def send_friend_request(request: HttpRequest):
         for _, errors in form.errors.items():
             for error in errors:
                 messages.error(request, f"Error: {error}")
+    return redirect('user_management:friend_list')
+
+@require_POST
+@login_required
+def cancel_friend_request(request: HttpRequest):
+    # A ação é aceitar um pedido de amizade 
+    post_data = request.POST.copy()
+    post_data['sender'] = request.user
+    cancel_form = CancelFriendRequestForm(post_data)
+    if cancel_form.is_valid():
+        # Lógica de recusar o pedido de amizade tá dentro do form
+        cancel_form.save()
+        messages.success(request, 'Friend request canceled successfully!')
+    else:
+        for _, errors in cancel_form.errors.items():
+            for error in errors:
+                messages.error(request, f"error: {error}")
     return redirect('user_management:friend_list')
 
 @require_POST

@@ -34,6 +34,45 @@ class FriendRequestForm(forms.ModelForm):
         model = FriendRequest
         fields = [ "sender", "receiver" ]
 
+class CancelFriendRequestForm(forms.Form):
+    sender_field = FriendRequest._meta.get_field('sender')
+    receiver_field = FriendRequest._meta.get_field('receiver')
+
+    sender = forms.ModelChoiceField(
+        queryset = TrUser.objects.all(),
+        required = not sender_field.blank,
+        help_text = sender_field.help_text,
+    )
+    # o receiver do pedido de amizade é sempre o próprio usuário logado
+    receiver = forms.ModelChoiceField(
+        queryset = TrUser.objects.all(),
+        required = not sender_field.blank,
+        help_text = sender_field.help_text,
+    )
+
+    def clean(self):
+        data = super().clean()
+        friend_request = FriendRequest.objects.filter(
+            sender=self.cleaned_data.get("sender"),
+            receiver=self.cleaned_data.get("receiver")
+        )
+        if not friend_request.exists():
+            raise ValidationError("Friend request doesn't exist")
+        return data
+
+    # Igual ao do refuse
+    def save(self, commit=True):
+        friendship = None
+        friend_request = FriendRequest.objects.filter(
+            sender=self.cleaned_data.get("sender"),
+            receiver=self.cleaned_data.get("receiver")
+        )
+        if not friend_request.exists():
+            raise ValidationError("The request was already accepted")
+        if commit:
+            friend_request.delete()
+        return friendship 
+
 
 class AcceptFriendRequestForm(forms.Form):
     # Essa api do _meta está pra ser estabilizada
@@ -58,22 +97,25 @@ class AcceptFriendRequestForm(forms.Form):
             sender=self.cleaned_data.get("sender"),
             receiver=self.cleaned_data.get("receiver")
         )
-        if friend_request is None:
+        if not friend_request.exists():
             raise ValidationError("Friend request doesn't exist")
         return data
 
     def save(self, commit=True):
         friendship = None
-        friend_request = FriendRequest.objects.get(
+        friend_request = FriendRequest.objects.filter(
             sender=self.cleaned_data.get("sender"),
             receiver=self.cleaned_data.get("receiver")
         )
+        if not friend_request.exists():
+            raise ValidationError("The friend request is no longer valid")
         if commit:
             friendship = Friendship(first_user=self.cleaned_data.get("sender"),
                                     second_user=self.cleaned_data.get("receiver"))
             friendship.save()
             friend_request.delete()
         return friendship 
+
 
 class RefuseFriendRequestForm(forms.Form):
     sender_field = FriendRequest._meta.get_field('sender')
@@ -97,16 +139,18 @@ class RefuseFriendRequestForm(forms.Form):
             sender=self.cleaned_data.get("sender"),
             receiver=self.cleaned_data.get("receiver")
         )
-        if friend_request is None:
+        if not friend_request.exists():
             raise ValidationError("Friend request doesn't exist")
         return data
 
     def save(self, commit=True):
         friendship = None
-        friend_request = FriendRequest.objects.get(
+        friend_request = FriendRequest.objects.filter(
             sender=self.cleaned_data.get("sender"),
             receiver=self.cleaned_data.get("receiver")
         )
+        if not friend_request.exists():
+            raise ValidationError("The friend request is no longer valid")
         if commit:
             friend_request.delete()
         return friendship 
