@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
-from .forms import FriendRequestForm, AcceptFriendRequestForm
+from .forms import FriendRequestForm, AcceptFriendRequestForm, RefuseFriendRequestForm
 
 @require_POST
 @login_required
@@ -28,12 +28,28 @@ def accept_friend_request(request: HttpRequest):
     post_data['receiver'] = request.user
     accept_form = AcceptFriendRequestForm(post_data)
     if accept_form.is_valid():
-        print("accept_friend_request enrtou no is.valid")
         # Lógica de aceitar o pedido de amizade tá dentro do form
         accept_form.save()
         messages.success(request, 'Friend request accepted successfully!')
     else:
         for _, errors in accept_form.errors.items():
+            for error in errors:
+                messages.error(request, f"error: {error}")
+    return redirect('user_management:friend_list')
+
+@require_POST
+@login_required
+def refuse_friend_request(request: HttpRequest):
+    # A ação é aceitar um pedido de amizade 
+    post_data = request.POST.copy()
+    post_data['receiver'] = request.user
+    refuse_form = RefuseFriendRequestForm(post_data)
+    if refuse_form.is_valid():
+        # Lógica de recusar o pedido de amizade tá dentro do form
+        refuse_form.save()
+        messages.success(request, 'Friend request refused successfully!')
+    else:
+        for _, errors in refuse_form.errors.items():
             for error in errors:
                 messages.error(request, f"error: {error}")
     return redirect('user_management:friend_list')

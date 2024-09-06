@@ -45,7 +45,6 @@ class AcceptFriendRequestForm(forms.Form):
         required = not sender_field.blank,
         help_text = sender_field.help_text,
     )
-
     # o receiver do pedido de amizade é sempre o próprio usuário logado
     receiver = forms.ModelChoiceField(
         queryset = TrUser.objects.all(),
@@ -64,7 +63,6 @@ class AcceptFriendRequestForm(forms.Form):
         return data
 
     def save(self, commit=True):
-        print("Entrou no save do AcceptFriendRequestForm")
         friendship = None
         friend_request = FriendRequest.objects.get(
             sender=self.cleaned_data.get("sender"),
@@ -76,3 +74,40 @@ class AcceptFriendRequestForm(forms.Form):
             friendship.save()
             friend_request.delete()
         return friendship 
+
+class RefuseFriendRequestForm(forms.Form):
+    sender_field = FriendRequest._meta.get_field('sender')
+    receiver_field = FriendRequest._meta.get_field('receiver')
+
+    sender = forms.ModelChoiceField(
+        queryset = TrUser.objects.all(),
+        required = not sender_field.blank,
+        help_text = sender_field.help_text,
+    )
+    # o receiver do pedido de amizade é sempre o próprio usuário logado
+    receiver = forms.ModelChoiceField(
+        queryset = TrUser.objects.all(),
+        required = not sender_field.blank,
+        help_text = sender_field.help_text,
+    )
+
+    def clean(self):
+        data = super().clean()
+        friend_request = FriendRequest.objects.filter(
+            sender=self.cleaned_data.get("sender"),
+            receiver=self.cleaned_data.get("receiver")
+        )
+        if friend_request is None:
+            raise ValidationError("Friend request doesn't exist")
+        return data
+
+    def save(self, commit=True):
+        friendship = None
+        friend_request = FriendRequest.objects.get(
+            sender=self.cleaned_data.get("sender"),
+            receiver=self.cleaned_data.get("receiver")
+        )
+        if commit:
+            friend_request.delete()
+        return friendship 
+

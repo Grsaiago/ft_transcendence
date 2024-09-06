@@ -115,7 +115,7 @@ AUTH_USER_MODEL = 'user_management.TrUser'
 
 LOGIN_URL = '/login'
 
-LOGIN_REDIRECT_URL = '/change_password'  # TODO: Colocar aqui o url da home
+LOGIN_REDIRECT_URL = '/friend_list'  # TODO: Colocar aqui o url da home
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/

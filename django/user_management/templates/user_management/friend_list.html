@@ -57,6 +57,11 @@
                     <input type="hidden" name="sender" value="{{ request.sender.id }}">
                     <button type="submit">Accept</button>
                 </form>
+                <form action="{% url 'db-user_management:refuse_friend_request' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="sender" value="{{ request.sender.id }}">
+                    <button type="submit">Refuse</button>
+                </form>
             </li>
         {% empty %}
             <li>No pending friend requests.</li>

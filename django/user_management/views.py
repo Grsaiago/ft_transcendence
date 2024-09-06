@@ -13,7 +13,7 @@ class UserRegisterView(generic_views.FormView):
     template_name = "user_management/register.html"
     form_class = TranscendenceUserCreationForm
     # TODO: Change to homepage instead of password change page
-    success_url = reverse_lazy("user_management:change_password")
+    success_url = reverse_lazy("user_management:friend_list")
 
     def form_valid(self, form):
         form.save()
@@ -24,7 +24,7 @@ class UserLoginView(auth_views.LoginView):
     template_name = "user_management/login.html"
     redirect_authenticated_user = True
     # TODO: Change to homepage instead of password change page
-    success_url = reverse_lazy("user_management:change_password")
+    success_url = reverse_lazy("user_management:friend_list")
 
     def form_invalid(self, form):
         messages.error(self.request, 'invalid username or password')
