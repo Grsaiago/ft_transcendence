@@ -28,6 +28,11 @@
         {% for friend in current_friends %}
             <li>
                 {{ friend.username }}
+                <form action="{% url 'db-user_management:remove_friendship' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="first_user" value="{{ friend.id }}">
+                    <button type="submit">Remove friend</button>
+                </form>
             </li>
         {% empty %}
             <li>You have no friends!</li>

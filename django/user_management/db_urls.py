@@ -8,4 +8,5 @@ urlpatterns = [
     path('cancel-friend-request/', cancel_friend_request, name="cancel_friend_request" ),
     path('accept-friend-request/', accept_friend_request, name="accept_friend_request"),
     path('refuse-friend-request/', refuse_friend_request, name="refuse_friend_request"),
+    path('remove-friendship/', remove_friendship, name="remove_friendship" ),
 ]

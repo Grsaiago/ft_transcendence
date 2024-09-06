@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import UserCreationForm, ValidationError
+from django.db.models import Q
 import django.forms as forms 
 from .models import FriendRequest, Friendship, TrUser
 
@@ -62,16 +63,15 @@ class CancelFriendRequestForm(forms.Form):
 
     # Igual ao do refuse
     def save(self, commit=True):
-        friendship = None
         friend_request = FriendRequest.objects.filter(
             sender=self.cleaned_data.get("sender"),
             receiver=self.cleaned_data.get("receiver")
         )
         if not friend_request.exists():
-            raise ValidationError("The request was already accepted")
+            raise ValidationError("Could not save the cancel of the request")
         if commit:
             friend_request.delete()
-        return friendship 
+        return friend_request 
 
 
 class AcceptFriendRequestForm(forms.Form):
@@ -108,7 +108,7 @@ class AcceptFriendRequestForm(forms.Form):
             receiver=self.cleaned_data.get("receiver")
         )
         if not friend_request.exists():
-            raise ValidationError("The friend request is no longer valid")
+            raise ValidationError("Could not save the accept of the friend request")
         if commit:
             friendship = Friendship(first_user=self.cleaned_data.get("sender"),
                                     second_user=self.cleaned_data.get("receiver"))
@@ -144,14 +144,48 @@ class RefuseFriendRequestForm(forms.Form):
         return data
 
     def save(self, commit=True):
-        friendship = None
         friend_request = FriendRequest.objects.filter(
             sender=self.cleaned_data.get("sender"),
             receiver=self.cleaned_data.get("receiver")
         )
         if not friend_request.exists():
-            raise ValidationError("The friend request is no longer valid")
+            raise ValidationError("Could not save the refuse of the friend request")
         if commit:
             friend_request.delete()
-        return friendship 
+        return friend_request
 
+class RemoveFriendshipForm(forms.Form):
+    user_field = Friendship._meta.get_field('first_user')
+
+    first_user = forms.ModelChoiceField(
+        queryset = TrUser.objects.all(),
+        required = not user_field.blank,
+        help_text = user_field.help_text,
+    )
+    # o receiver do pedido de amizade é sempre o próprio usuário logado
+    second_user = forms.ModelChoiceField(
+        queryset = TrUser.objects.all(),
+        required = not user_field.blank,
+        help_text = user_field.help_text,
+    )
+
+    def clean(self):
+        data = super().clean()
+        friendship = Friendship.objects.filter(
+            Q(first_user=self.cleaned_data.get('first_user'), second_user=self.cleaned_data.get('second_user'))
+            | Q(first_user=self.cleaned_data.get('second_user'), second_user=self.cleaned_data.get('first_user'))
+        )
+        if not friendship.exists():
+            raise ValidationError("Friendship doesn't exist")
+        return data
+
+    def save(self, commit=True):
+        friendship = Friendship.objects.filter(
+            Q(first_user=self.cleaned_data.get('first_user'), second_user=self.cleaned_data.get('second_user'))
+            | Q(first_user=self.cleaned_data.get('second_user'), second_user=self.cleaned_data.get('first_user'))
+        )
+        if not friendship.exists():
+            raise ValidationError("Could not save the removal of the friendship")
+        if commit:
+            friendship.delete()
+        return friendship 
