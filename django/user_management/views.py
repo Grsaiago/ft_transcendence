@@ -1,10 +1,11 @@
+from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib import messages
 from django.contrib.auth import mixins as auth_mixins, views as auth_views, forms as auth_forms
 
-from .models import FriendRequest
+from .models import FriendRequest, Friendship
 from .forms import FriendRequestForm, TranscendenceUserCreationForm
 
 
@@ -45,10 +46,20 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
     def get(self, request, *args, **kwargs):
         # O form pra mandar um invite pra um usuário
         friend_request_form = FriendRequestForm()
-        # WARNING: Change 'sender' to 'receiver' no filter
         pending_friend_requests = FriendRequest.objects.filter(receiver=request.user)
+        sent_friend_requests = FriendRequest.objects.filter(sender=request.user)
+        # essas duas variáveis abaixo são pra filtrar o resultado da query
+        # de entradas na tabela de amizade
+        friends = Friendship.objects.filter(
+            Q(first_user=request.user.id)
+            | Q(second_user=request.user.id)
+        )
+        current_friends = [ entry.first_user if entry.first_user != request.user else entry.second_user for entry in friends ]
+
         context = {
             'friend_request_form': friend_request_form,
-            'pending_friend_requests': pending_friend_requests
+            'pending_friend_requests': pending_friend_requests,
+            'sent_friend_requests': sent_friend_requests,
+            'current_friends': current_friends,
         }
         return render(request, self.template_name, context)

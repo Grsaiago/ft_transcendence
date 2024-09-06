@@ -12,17 +12,41 @@
         <button type="submit">Logout</button>
     </form>
 
-        <h1>Hello {{ user.username }} </h1>
+    <h1>Hello {{ user.username }} </h1>
     <h1>Manage Friends</h1>
     <!-- Form to send a friend request -->
     <h2>Send Friend Request</h2>
         <form action="{% url 'db-user_management:send_friend_request' %}" method="post">
         {% csrf_token %}
-        {{ friend_request_form.as_p }}
+        {{ friend_request_form.receiver }}
         <button type="submit">Send Request</button>
     </form>
 
-    <!-- List of pending friend requests -->
+    <!-- Lista de amigos -->
+    <h2>Your friends</h2>
+    <ul>
+        {% for friend in current_friends %}
+            <li>
+                {{ friend.username }}
+            </li>
+        {% empty %}
+            <li>You have no friends!</li>
+        {% endfor %}
+    </ul>
+
+    <!-- pedidos de amizade enviados ainda pendentes -->
+    <h2>Pending Friend Requests Sent</h2>
+    <ul>
+        {% for pending_sent_request in sent_friend_requests %}
+            <li>
+                {{ pending_sent_request.receiver }}
+            </li>
+        {% empty %}
+            <li>You have no pending sent request!</li>
+        {% endfor %}
+    </ul>
+
+    <!-- pedidos de amizade pendentes -->
     <h2>Pending Friend Requests</h2>
     <ul>
         {% for request in pending_friend_requests %}

@@ -32,7 +32,7 @@ class TranscendenceUserCreationForm(UserCreationForm):
 class FriendRequestForm(forms.ModelForm):
     class Meta:
         model = FriendRequest
-        fields = [ "receiver" ]
+        fields = [ "sender", "receiver" ]
 
 
 class AcceptFriendRequestForm(forms.Form):

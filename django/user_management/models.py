@@ -31,8 +31,17 @@ class FriendRequest(models.Model):
             sender=self.sender, receiver=self.receiver
         ).exists(): 
             raise ValidationError("Invite already sent")
+        # TODO: Substituir por lógica de adicionar quando duas pessoas se mandam
+        # invite
+        if FriendRequest.objects.filter(
+            sender=self.receiver, receiver=self.sender
+        ).exists(): 
+            raise ValidationError("There's already a pending request for this user")
         # Já tem amizade com essa pessoa
-        if Friendship.objects.filter(models.Q(first_user=self.sender, second_user=self.receiver) | models.Q(first_user=self.receiver, second_user=self.sender)).exists():
+        if Friendship.objects.filter(
+            models.Q(first_user=self.sender, second_user=self.receiver)
+            | models.Q(first_user=self.receiver, second_user=self.sender)
+        ).exists():
             raise ValidationError("You're already friends with this person")
         # O usuário sendo adicionado existe?
         if not TrUser.objects.get(username=self.receiver):
