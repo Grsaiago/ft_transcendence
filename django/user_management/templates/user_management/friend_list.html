@@ -7,6 +7,12 @@
     {% endfor %}
 {% endif %}
 
+    <form action="{% url 'user_management:logout' %}"  method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+
+        <h1>Hello {{ user.username }} </h1>
     <h1>Manage Friends</h1>
     <!-- Form to send a friend request -->
     <h2>Send Friend Request</h2>
@@ -19,12 +25,12 @@
     <!-- List of pending friend requests -->
     <h2>Pending Friend Requests</h2>
     <ul>
-        {% for request in pending_requests %}
+        {% for request in pending_friend_requests %}
             <li>
                 {{ request.sender.username }} wants to be your friend.
-                <form method="post" style="display:inline;">
+                <form action="{% url 'db-user_management:accept_friend_request' %}" method="post" style="display:inline;">
                     {% csrf_token %}
-                    <input type="hidden" name="request_id" value="{{ request.id }}">
+                    <input type="hidden" name="sender" value="{{ request.sender.id }}">
                     <button type="submit">Accept</button>
                 </form>
             </li>

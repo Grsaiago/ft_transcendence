@@ -17,30 +17,31 @@ class TrUser(AbstractUser):
         default=None,
     )
 
-class FriendshipRequest(models.Model):
+class FriendRequest(models.Model):
     sender = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="sender")
     receiver = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="receiver")
 
     # Custom validations
     def clean(self):
-        # a pessoa tentou se adicionar como amigo
+        # A pessoa tentou se adicionar (haja autoestima em)
         if self.sender == self.receiver:
             raise ValidationError("Cannot send an invite to yourself")
-        # checa se já há um pedido pendente
-        if FriendshipRequest.objects.filter(
+        # Já há um pedido pendente
+        if FriendRequest.objects.filter(
             sender=self.sender, receiver=self.receiver
         ).exists(): 
             raise ValidationError("Invite already sent")
-        # checar se usuário sendo adicionado existe
+        # Já tem amizade com essa pessoa
+        if Friendship.objects.filter(models.Q(first_user=self.sender, second_user=self.receiver) | models.Q(first_user=self.receiver, second_user=self.sender)).exists():
+            raise ValidationError("You're already friends with this person")
+        # O usuário sendo adicionado existe?
         if not TrUser.objects.get(username=self.receiver):
             raise ValidationError("The user you tried to add doesn't exist")
         return
 
 class Friendship(models.Model):
     first_user = models.ForeignKey(get_user_model(),on_delete=models.CASCADE, related_name="first_user")
-
     second_user = models.ForeignKey(get_user_model(),on_delete=models.CASCADE, related_name="second_user")
-
     chat_room_id = models.UUIDField(
         null=True,
         blank=False,

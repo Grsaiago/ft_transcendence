@@ -1,11 +1,10 @@
-from django.http import QueryDict
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib import messages
 from django.contrib.auth import mixins as auth_mixins, views as auth_views, forms as auth_forms
 
-from .models import FriendshipRequest
+from .models import FriendRequest
 from .forms import FriendRequestForm, TranscendenceUserCreationForm
 
 
@@ -47,11 +46,9 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
         # O form pra mandar um invite pra um usuário
         friend_request_form = FriendRequestForm()
         # WARNING: Change 'sender' to 'receiver' no filter
-        pending_friend_requests = FriendshipRequest.objects.filter(receiver=request.user)
-        # TODO: accept_friendship_form = AcceptFriendshipRequestForm()
+        pending_friend_requests = FriendRequest.objects.filter(receiver=request.user)
         context = {
             'friend_request_form': friend_request_form,
             'pending_friend_requests': pending_friend_requests
-            # 'accept_friendship_form': accept_friendship_form
         }
         return render(request, self.template_name, context)
