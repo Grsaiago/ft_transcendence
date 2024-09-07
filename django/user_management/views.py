@@ -4,9 +4,8 @@ from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib import messages
 from django.contrib.auth import mixins as auth_mixins, views as auth_views, forms as auth_forms
-
 from .models import FriendRequest, Friendship
-from .forms import FriendRequestForm, TranscendenceUserCreationForm
+from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm
 
 
 class UserRegisterView(generic_views.FormView):
@@ -38,7 +37,7 @@ class UserLogoutView(auth_views.LogoutView):
 class UserChangePasswordView(auth_mixins.LoginRequiredMixin, auth_views.PasswordChangeView):
     template_name = "user_management/change_password.html"
     form_class = auth_forms.PasswordChangeForm
-    success_url = "https://google.com"  # TODO: Redirect to homepage
+    success_url = reverse_lazy("user_management:friend_list")
 
 class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
     template_name = "user_management/friend_list.html"
@@ -46,6 +45,7 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
     def get(self, request, *args, **kwargs):
         # O form pra mandar um invite pra um usuário
         friend_request_form = FriendRequestForm()
+        block_user_form = BlockUserForm()
         pending_friend_requests = FriendRequest.objects.filter(receiver=request.user)
         sent_friend_requests = FriendRequest.objects.filter(sender=request.user)
         # essas duas variáveis abaixo são pra filtrar o resultado da query
@@ -57,6 +57,7 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
         current_friends = [ entry.first_user if entry.first_user != request.user else entry.second_user for entry in friends ]
 
         context = {
+            'block_user_form': block_user_form,
             'friend_request_form': friend_request_form,
             'pending_friend_requests': pending_friend_requests,
             'sent_friend_requests': sent_friend_requests,

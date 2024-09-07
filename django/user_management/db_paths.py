@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from django.views.decorators.http import require_POST
 from django.shortcuts import redirect
-from .forms import CancelFriendRequestForm, FriendRequestForm, AcceptFriendRequestForm, RefuseFriendRequestForm, RemoveFriendshipForm
+from .forms import BlockUserForm, CancelFriendRequestForm, FriendRequestForm, AcceptFriendRequestForm, RefuseFriendRequestForm, RemoveFriendshipForm
 
 @require_POST
 @login_required
@@ -84,6 +84,23 @@ def remove_friendship(request: HttpRequest):
         messages.success(request, 'Friendship removed successfully!')
     else:
         for _, errors in remove_friendship_form.errors.items():
+            for error in errors:
+                messages.error(request, f"error: {error}")
+    return redirect('user_management:friend_list')
+
+@require_POST
+@login_required
+def block_user(request: HttpRequest):
+    # A ação é bloquear um usuário
+    post_data = request.POST.copy()
+    post_data['blocker'] = request.user
+    block_user_form = BlockUserForm(post_data)
+    if block_user_form.is_valid():
+        # Lógica de bloquear o usuário tá na model e o form chama
+        block_user_form.save()
+        messages.success(request, 'User blocked successfully!')
+    else:
+        for _, errors in block_user_form.errors.items():
             for error in errors:
                 messages.error(request, f"error: {error}")
     return redirect('user_management:friend_list')

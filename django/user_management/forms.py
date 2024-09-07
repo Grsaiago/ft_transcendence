@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, ValidationError
 from django.db.models import Q
 import django.forms as forms 
-from .models import FriendRequest, Friendship, TrUser
+from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
 
 class TranscendenceUserCreationForm(UserCreationForm):
@@ -189,3 +189,26 @@ class RemoveFriendshipForm(forms.Form):
         if commit:
             friendship.delete()
         return friendship 
+
+class BlockUserForm(forms.ModelForm):
+    class Meta:
+        model = BlockedUsers 
+        fields = [ "blocker", "blocked" ]
+
+    def save(self, commit=True):
+        # TODO: Apagar as entradas das tabelas de Friendship e FriendRequest caso existam
+
+        # Deletar as amizades entre esses usuários, caso existam
+        Friendship.objects.filter(
+            Q(first_user=self.cleaned_data.get("blocker"),
+              second_user=self.cleaned_data.get("blocked"))
+            | Q(first_user=self.cleaned_data.get("blocked"),
+                second_user=self.cleaned_data.get("blocker"))
+        ).delete()
+        FriendRequest.objects.filter(
+            Q(sender=self.cleaned_data.get("blocker"),
+              receiver=self.cleaned_data.get("blocked"))
+            | Q(sender=self.cleaned_data.get("blocked"),
+                receiver=self.cleaned_data.get("blocker"))
+        ).delete()
+        return super().save(commit)

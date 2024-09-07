@@ -14,12 +14,19 @@
 
     <h1>Hello {{ user.username }} </h1>
     <h1>Manage Friends</h1>
+
     <!-- Form to send a friend request -->
     <h2>Send Friend Request</h2>
         <form action="{% url 'db-user_management:send_friend_request' %}" method="post">
         {% csrf_token %}
         {{ friend_request_form.receiver }}
         <button type="submit">Send Request</button>
+    </form>
+    <h2>Block a User</h2>
+        <form action="{% url 'db-user_management:block_user' %}" method="post">
+        {% csrf_token %}
+        {{ block_user_form.blocked}}
+        <button type="submit">Block User</button>
     </form>
 
     <!-- Lista de amigos -->
