@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class TrUser(AbstractUser):
@@ -11,5 +11,6 @@ class TrUser(AbstractUser):
         unique=False,
         default=None,
     )
+
 
 # Create your models here.

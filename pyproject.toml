@@ -4,8 +4,11 @@ version = "0.1.0"
 description = "Projeto final das minas (e do Saiago)"
 authors = ["Grsaiago <grsaiago@gmail.com>"]
 readme = "README.md"
-# isso desabilita os erros no 'poetry install' (https://python-poetry.org/docs/basic-usage/#operating-modes)
-package-mode = false 
+# isso desabilita os erros no 'poetry install', (https://python-poetry.org/docs/basic-usage/#operating-modes)
+# mas o erro era causado porque ele estava tentando fazer a build de um pacote mas não encontrava o mesmo pois o diretório
+# do que seria o pacote (variável name acima) estava como django, então ele não encontrava o arquivo pyproject.toml para fazer a build
+# mas como a gente não vai mesmo criar um pacote é bom setar a variável para false, mas é bom manter o nome do dir do projeto igual ao name
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -13,8 +16,15 @@ django = "^5.0.8"
 channels = "^4.1.0"
 channels-redis = "^4.2.0"
 
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.1.1"
+black = "^24.8.0"
+flake8-black = "^0.3.6"
+isort = "^5.13.2"
+
+[tool.isort]
+profile = "black"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-package_mode = false
