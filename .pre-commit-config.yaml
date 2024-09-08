@@ -22,3 +22,13 @@ repos:
         entry: poetry run flake8
         language: system
         types: [python]
+    -   id: djlint-reformat-django
+        name: djlint-reformat-django
+        entry: poetry run djlint --reformat
+        language: system
+        types: [html]
+    -   id: djlint-check-django
+        name: djlint-check-django
+        entry: poetry run djlint --check
+        language: system
+        types: [html]

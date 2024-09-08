@@ -21,9 +21,14 @@ flake8 = "^7.1.1"
 black = "^24.8.0"
 flake8-black = "^0.3.6"
 isort = "^5.13.2"
+djlint = "^1.35.2"
 
 [tool.isort]
 profile = "black"
+
+[tool.djlint]
+profile = "django"
+ignore = "H031"
 
 [build-system]
 requires = ["poetry-core"]
