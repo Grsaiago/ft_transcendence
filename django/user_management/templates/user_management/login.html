@@ -6,6 +6,12 @@
 {% csrf_token %}
 <h2>Log in to your account</h2>
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
 {% for field in form %}
 	{{ field.label_tag }}
 	{{ field }}
