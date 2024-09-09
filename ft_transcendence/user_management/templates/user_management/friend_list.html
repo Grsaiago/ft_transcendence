@@ -1,41 +1,40 @@
 {% extends 'user_management/base.html' %}
 {% block content %}
-
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">{{ message }}</div>
-    {% endfor %}
-{% endif %}
-
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}"
+                 role="alert">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
     <form action="{% url 'user_management:logout' %}"  method="post">
         {% csrf_token %}
         <button type="submit">Logout</button>
     </form>
-
-    <h1>Hello {{ user.username }} </h1>
+    <h1>Hello {{ user.username }}</h1>
     <h1>Manage Friends</h1>
-
     <!-- Form to send a friend request -->
     <h2>Send Friend Request</h2>
-        <form action="{% url 'db-user_management:send_friend_request' %}" method="post">
+    <form action="{% url 'db-user_management:send_friend_request' %}"
+          method="post">
         {% csrf_token %}
         {{ friend_request_form.receiver }}
         <button type="submit">Send Request</button>
     </form>
     <h2>Block a User</h2>
-        <form action="{% url 'db-user_management:block_user' %}" method="post">
+    <form action="{% url 'db-user_management:block_user' %}" method="post">
         {% csrf_token %}
-        {{ block_user_form.blocked}}
+        {{ block_user_form.blocked }}
         <button type="submit">Block User</button>
     </form>
-
     <!-- Lista de amigos -->
     <h2>Your friends</h2>
     <ul>
         {% for friend in current_friends %}
             <li>
                 {{ friend.username }}
-                <form action="{% url 'db-user_management:remove_friendship' %}" method="post" style="display:inline;">
+                <form action="{% url 'db-user_management:remove_friendship' %}"
+                      method="post"
+                      style="display:inline">
                     {% csrf_token %}
                     <input type="hidden" name="first_user" value="{{ friend.id }}">
                     <button type="submit">Remove friend</button>
@@ -45,16 +44,19 @@
             <li>You have no friends!</li>
         {% endfor %}
     </ul>
-
     <!-- pedidos de amizade enviados ainda pendentes -->
     <h2>Pending Friend Requests Sent</h2>
     <ul>
         {% for pending_sent_request in sent_friend_requests %}
             <li>
                 {{ pending_sent_request.receiver }}
-                <form action="{% url 'db-user_management:cancel_friend_request' %}" method="post" style="display:inline;">
+                <form action="{% url 'db-user_management:cancel_friend_request' %}"
+                      method="post"
+                      style="display:inline">
                     {% csrf_token %}
-                    <input type="hidden" name="receiver" value="{{ pending_sent_request.receiver.id }}">
+                    <input type="hidden"
+                           name="receiver"
+                           value="{{ pending_sent_request.receiver.id }}">
                     <button type="submit">Cancel request</button>
                 </form>
             </li>
@@ -62,19 +64,22 @@
             <li>You have no pending sent request!</li>
         {% endfor %}
     </ul>
-
     <!-- pedidos de amizade pendentes -->
     <h2>Pending Friend Requests</h2>
     <ul>
         {% for request in pending_friend_requests %}
             <li>
                 {{ request.sender.username }} wants to be your friend.
-                <form action="{% url 'db-user_management:accept_friend_request' %}" method="post" style="display:inline;">
+                <form action="{% url 'db-user_management:accept_friend_request' %}"
+                      method="post"
+                      style="display:inline">
                     {% csrf_token %}
                     <input type="hidden" name="sender" value="{{ request.sender.id }}">
                     <button type="submit">Accept</button>
                 </form>
-                <form action="{% url 'db-user_management:refuse_friend_request' %}" method="post" style="display:inline;">
+                <form action="{% url 'db-user_management:refuse_friend_request' %}"
+                      method="post"
+                      style="display:inline">
                     {% csrf_token %}
                     <input type="hidden" name="sender" value="{{ request.sender.id }}">
                     <button type="submit">Refuse</button>
