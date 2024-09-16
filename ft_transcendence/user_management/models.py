@@ -32,6 +32,9 @@ class FriendRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Pra facilitar a vida dos LSPs
+    objects = models.Manager()
+
     # Custom validations
     def clean(self):
         super().clean()
@@ -81,6 +84,9 @@ class Friendship(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Pra facilitar a vida dos LSPs
+    objects = models.Manager()
+
 
 class BlockedUsers(models.Model):
     blocker = models.ForeignKey(
@@ -91,6 +97,9 @@ class BlockedUsers(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # Pra facilitar a vida dos LSPs
+    objects = models.Manager()
 
     def clean(self):
         super().clean()

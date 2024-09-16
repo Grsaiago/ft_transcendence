@@ -37,7 +37,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "user_management.apps.UserManagementConfig",
+    "chat.apps.ChatConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -76,6 +78,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "ft_transcendence.wsgi.application"
 
+# Configuração pra usar o websocket
+ASGI_APPLICATION = "ft_transcendence.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            # Mudar isso depois pro host do container com redis
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
