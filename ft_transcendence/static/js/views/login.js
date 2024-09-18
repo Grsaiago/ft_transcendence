@@ -7,11 +7,19 @@ export default class Login extends AbstractView {
     }
 
     async getHtml() {
-
-        const retorno = await fetch("http://www.google.com" );
-
-        console.log(retorno);
-
-        return retorno;
+        try {
+            const response = await fetch('/login/', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const html = await response.text();
+            console.log(html);
+            return html;
+        }
+        catch(error) {
+            console.error('Failed to fetch page: ', error);
+            return "<p>Error loading login page</p>";
+        }
     }
 }

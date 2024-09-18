@@ -6,10 +6,13 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
+from django.views.generic import TemplateView
 
 from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm
 from .models import FriendRequest, Friendship
 
+class BaseTemplateView(TemplateView):
+    template_name = "user_management/base.html"
 
 class UserRegisterView(generic_views.FormView):
     template_name = "user_management/register.html"
@@ -20,6 +23,12 @@ class UserRegisterView(generic_views.FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+    
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            context = self.get_context_data()
+            return render(request, "user_management/register_block.html", context)
+        return super().get(request, *args, **kwargs)
 
 
 class UserLoginView(auth_views.LoginView):
@@ -31,6 +40,13 @@ class UserLoginView(auth_views.LoginView):
     def form_invalid(self, form):
         messages.error(self.request, "invalid username or password")
         return self.render_to_response(self.get_context_data(form=form))
+    
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # Retorna apenas o bloco de conteúdo
+            return render(request, "user_management/login_block.html", self.get_context_data())
+        # Renderiza o layout completo se não for AJAX
+        return super().get(request, *args, **kwargs)
 
 
 class UserLogoutView(auth_views.LogoutView):
@@ -43,6 +59,13 @@ class UserChangePasswordView(
     template_name = "user_management/change_password.html"
     form_class = auth_forms.PasswordChangeForm
     success_url = reverse_lazy("user_management:friend_list")
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # Retorna apenas o bloco de conteúdo
+            return render(request, "user_management/change_password_block.html", self.get_context_data())
+        # Renderiza o layout completo se não for AJAX
+        return super().get(request, *args, **kwargs)
 
 
 class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
@@ -71,4 +94,9 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
             "sent_friend_requests": sent_friend_requests,
             "current_friends": current_friends,
         }
+
+        # Verifica se é uma requisição AJAX
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "user_management/friend_list_block.html", context)
+        
         return render(request, self.template_name, context)

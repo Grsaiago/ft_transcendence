@@ -7,8 +7,19 @@ export default class Register extends AbstractView {
     }
 
     async getHtml() {
-        return `
-            <p>View of register.js</p>
-        `;
+        try {
+            const response = await fetch('/register/', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const html = await response.text();
+            console.log(html);
+            return html;
+        }
+        catch(error) {
+            console.error('Failed to fetch page: ', error);
+            return "<p>Error loading register page</p>";
+        }
     }
 }

@@ -2,6 +2,7 @@ import Login from "./views/login.js";
 import Register from "./views/register.js";
 import ChangePassword from "./views/change_password.js";
 import FriendList from "./views/friend_list.js";
+import Homepage from "./views/homepage.js";
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -10,10 +11,11 @@ const navigateTo = url => {
 
 const router = async () => {
     const routes = [
-        {path: "/login", view: Login },
-        {path: "/register", view: Register },
-        {path: "/friend_list", view: FriendList },
-        {path: "/change_password", view: ChangePassword },
+        {path: "/", view: Homepage },
+        {path: "/register/", view: Register },
+        {path: "/login/", view: Login },
+        {path: "/friend_list/", view: FriendList },
+        {path: "/change_password/", view: ChangePassword },
     ];
 
     //Test each route for potential match
@@ -42,6 +44,7 @@ const router = async () => {
 window.addEventListener("popstate", router);
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("Página carregada, chamando router()");
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();

@@ -7,10 +7,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description"
-              content="Transcendence - Last project from 42 cursus. A platform for playing pong">
-        <meta name="csrf-token" content="{{ csrf_token }}">
-        
+              content="Transcendence - Last project from 42 cursus. A platform for playing pong">        
         <title>Transcendence</title>
+        <meta name="csrf-token" content="{{ csrf_token }}">
     </head>
     <header>
         <h1>Herda de base.html</h1>
@@ -18,13 +17,15 @@
     <body>
         <section class="header">
             <nav class="nav">
-                <a href="/login" class="nav-link" data-link>Login</a>
-                <a href="/register" class="nav-link" data-link>Register</a>
-                <a href="/change_password" class="nav-link" data-link>Change Password</a>
-                <a href="/friend_list" class="nav-link" data-link>Profile</a>
+                <a href="/" class="nav-link" data-link>Homepage</a>
+                <a href="/login/" class="nav-link" data-link>Login</a>
+                <a href="/register/" class="nav-link" data-link>Register</a>
+                <a href="/change_password/" class="nav-link" data-link>Change Password</a>
+                <a href="/friend_list/" class="nav-link" data-link>Profile</a>
             </nav>
         </section>
-        <div id="app"></div>
+        <div id="app"></div>        
+        <p>teste</p>
         <script type="module" src="{% static 'js/index.js' %}"></script>
     </body>
 </html>

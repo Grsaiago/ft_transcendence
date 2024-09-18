@@ -7,8 +7,18 @@ export default class ChangePassword extends AbstractView {
     }
 
     async getHtml() {
-        return `
-            <p>View of change_password.js</p>
-        `;
+        try {
+            const response = await fetch('/change_password/', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const html = await response.text();
+            return html;
+        }
+        catch(error) {
+            console.error('Failed to fetch page: ', error);
+            return "<p>Error loading change_password page</p>";
+        }
     }
 }
