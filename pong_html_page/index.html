@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,38 +8,26 @@
               content="Transcendence - Last project from 42 cursus. A platform for playing pong">        
         <title>Pong 42</title>
         <meta name="csrf-token" content="{{ csrf_token }}">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="./static/css/style.css">
     </head>
     <body>
         <header class="menu">
             <a class="menu-logo">PONG <br>42</a>
             <section class="menu-section">
                 <nav class="menu-nav"></nav>
-                    <a class="menu-nav-link" href="/">Entrar</a>
-                    <a class="menu-nav-link" href="/chat">Cadastre-se</a>
+                    <a class="menu-nav-link" href="/play">Jogar</a>
+                    <a class="menu-nav-link" href="/chat">Chat</a>
+                    <a class="menu-nav-link" href="/friends">Amigos</a>
                 </nav>
             </section>
+            <div class="menu-profile">
+                <img class="menu-profile-imagem" src="" alt="imagem do perfil">
+                <a class="menu-profile-username" href="/profile">maragao</a>
+                <button class="menu-profile-logout">x</button>
+            </div>
         </header>
 
-        <div id="app">
-                <form method="post" id="loginForm">
-                    {% csrf_token %}
-                    <h2>Log in to your account</h2>
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}"
-                                 role="alert">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                    {% for field in form %}
-                        {{ field.label_tag }}
-                        {{ field }}
-                        {% if field.errors %}<small>{{ field.errors|striptags }}</small>{% endif %}
-                    {% endfor %}
-                    <input type="submit" value="login">
-                </form>
-            </section>
-        </div>        
+        <div id="app"></div>        
 
         <footer class="rodape">
             <nav class="rodape-nav">
@@ -50,6 +37,6 @@
                 <a class="rodape-nav-link" href="https://github.com/izacabral">izsoares</a>
             </nav>
         </footer>
-        <script type="module" src="./static/js/index.js"></script>
+        <script type="module" src="{% static 'js/index.js' %}"></script>
     </body>
 </html>
