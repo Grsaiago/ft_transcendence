@@ -12,7 +12,7 @@ from .models import FriendRequest, Friendship
 
 
 class UserRegisterView(generic_views.FormView):
-    template_name = "user_management/register.html"
+    template_name = "user_management/base_sign.html"
     form_class = TranscendenceUserCreationForm
     # TODO: Change to homepage instead of password change page
     success_url = reverse_lazy("user_management:friend_list")
@@ -20,10 +20,17 @@ class UserRegisterView(generic_views.FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+    
+    # def get(self, request, *args, **kwargs):
+    #     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+    #         context = self.get_context_data()
+    #         return render(request, "user_management/sign_up.html", context)
+    #     return super().get(request, *args, **kwargs)
+
 
 
 class UserLoginView(auth_views.LoginView):
-    template_name = "user_management/login.html"
+    template_name = "user_management/base_sign.html"
     redirect_authenticated_user = True
     # TODO: Change to homepage instead of password change page
     success_url = reverse_lazy("user_management:friend_list")
