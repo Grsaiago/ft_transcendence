@@ -8,8 +8,8 @@ const navigateTo = url => {
 
 const router = async () => {
     const routes = [
-        {path: "/register/", view: Sign_up },
         {path: "/login/", view: Sign_in },
+        {path: "/register/", view: Sign_up },
     ];
 
     //Test each route for potential match

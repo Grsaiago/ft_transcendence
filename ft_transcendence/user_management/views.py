@@ -21,11 +21,11 @@ class UserRegisterView(generic_views.FormView):
         form.save()
         return super().form_valid(form)
     
-    # def get(self, request, *args, **kwargs):
-    #     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-    #         context = self.get_context_data()
-    #         return render(request, "user_management/sign_up.html", context)
-    #     return super().get(request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            context = self.get_context_data()
+            return render(request, "user_management/sign_up.html", context)
+        return super().get(request, *args, **kwargs)
 
 
 
@@ -39,6 +39,12 @@ class UserLoginView(auth_views.LoginView):
         messages.error(self.request, "invalid username or password")
         return self.render_to_response(self.get_context_data(form=form))
 
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            context = self.get_context_data()
+            return render(request, "user_management/sign_in.html", context)
+        return super().get(request, *args, **kwargs)
+    
 
 class UserLogoutView(auth_views.LogoutView):
     next_page = reverse_lazy("user_management:login")
