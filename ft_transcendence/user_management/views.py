@@ -6,16 +6,23 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm
 from .models import FriendRequest, Friendship
+
+class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
+    template_name = "user_management/base_app.html"
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 class UserRegisterView(generic_views.FormView):
     template_name = "user_management/base_sign.html"
     form_class = TranscendenceUserCreationForm
     # TODO: Change to homepage instead of password change page
-    success_url = reverse_lazy("user_management:friend_list")
+    success_url = reverse_lazy("user_management:login")
 
     def form_valid(self, form):
         form.save()
@@ -33,8 +40,11 @@ class UserLoginView(auth_views.LoginView):
     template_name = "user_management/base_sign.html"
     redirect_authenticated_user = True
     # TODO: Change to homepage instead of password change page
-    success_url = reverse_lazy("user_management:friend_list")
+    success_url = reverse_lazy("user_management:homepage")
 
+    def get_success_url(self):
+        return self.success_url
+    
     def form_invalid(self, form):
         messages.error(self.request, "invalid username or password")
         return self.render_to_response(self.get_context_data(form=form))

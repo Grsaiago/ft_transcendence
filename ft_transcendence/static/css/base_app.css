@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Silkscreen:wght@400;700&display=swap');
+
+:root {
+
+
+    --cor-1: #ffffff;
+    --cor-2: #b3aca4;
+    --cor-3: #157a8c;
+    --cor-4: #003f69;
+    --cor-5: #260d33;
+
+    --regular: 400;
+    --bold: 700;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+    background-color: var(--cor-2);
+    font-family: "Silkscreen", sans-serif;
+    font-weight: 400;
+    font-size: 30px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10%;
+    padding: 10px 22px;
+    color: var(--cor-1);
+    background-color: var(--cor-4);
+}
+
+.menu-logo {
+    font-size:30px;
+    line-height: 1.25;
+    text-decoration: none;
+    color: var(--cor-1);
+    flex-shrink: 0;
+    position: absolute;
+    left: 22px;
+}
+
+.menu-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    gap: 40px;
+}
+
+.menu-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.menu-nav-link {
+    font-size: 65%;
+    text-decoration: none;
+    color: var(--cor-1);
+}
+
+.menu-nav-link:hover {
+    color: var(--cor-3);
+}
+
+
+.menu-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1%;
+    position: relative;
+}
+
+.menu-profile-imagem {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--cor-5);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.menu-profile-username {
+    position: relative;
+    top: 12px;
+    text-decoration: none;
+    font-size: 65%;
+    color: var(--cor-1);
+}
+
+.menu-profile-logout {
+    position: relative;
+    bottom: 10px; /* Mover o botão 'x' para cima */
+    background: none;
+    border: none;
+    color: var(--cor-1);
+    background-color: var(--cor-5);
+    border: 0.1px solid var(--cor-5);
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.rodape {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: 8%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1% 2%;
+    color: var(--cor-1);
+    background-color: var(--cor-3);
+    padding: 0;
+}
+
+.rodape-nav {
+    display: flex;
+    justify-content: center;
+    gap:20%;
+}
+
+.rodape-nav-link {
+    text-decoration: none;
+    font-size: 65%;
+    color: var(--cor-1);
+}
+
+.rodape-nav-link:hover {
+    color: var(--cor-4);
+}
+
+.app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--cor-2);
+    width: 100%;
+    min-height: calc(100vh - 18%);
+}
