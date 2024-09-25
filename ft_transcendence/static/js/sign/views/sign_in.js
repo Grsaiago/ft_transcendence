@@ -8,7 +8,7 @@ export default class Sign_in extends AbstractView {
 
     async getHtml() {
         try {
-            const response = await fetch('/login/', {
+            const response = await fetch('/sign_in/', {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }

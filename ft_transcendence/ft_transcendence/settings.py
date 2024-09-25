@@ -114,9 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "user_management.TrUser"
 
-LOGIN_URL = "/login"
+LOGIN_URL = "/sign_in"
 
-LOGIN_REDIRECT_URL = "/homepage"  # TODO: Colocar aqui o url da home
+LOGIN_REDIRECT_URL = ""  # TODO: Colocar aqui o url da home
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
