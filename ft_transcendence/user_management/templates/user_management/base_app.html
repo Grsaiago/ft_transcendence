@@ -16,14 +16,14 @@
             <a class="menu-logo">PONG <br>42</a>
             <section class="menu-section">
                 <nav class="menu-nav"></nav>
-                    <a class="menu-nav-link" href="/play">Jogar</a>
-                    <a class="menu-nav-link" href="/chat">Chat</a>
-                    <a class="menu-nav-link" href="/friends">Amigos</a>
+                    <a class="menu-nav-link" href="/play/">Jogar</a>
+                    <a class="menu-nav-link" href="/chat/">Chat</a>
+                    <a class="menu-nav-link" href="/friends/">Amigos</a>
                 </nav>
             </section>
             <div class="menu-profile">
                 <img class="menu-profile-imagem" src="" alt="imagem do perfil">
-                <a class="menu-profile-username" href="/profile">{{ user.username }}</a>
+                <a class="menu-profile-username" href="/profile/">{{ user.username }}</a>
                 <form action="{% url 'user_management:logout' %}"  method="post">
                     {% csrf_token %}
                     <button class="menu-profile-logout" type="submit">x</button>

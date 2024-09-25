@@ -120,7 +120,7 @@ body {
     background-color: var(--cor-2); /* Gray background for the form */
     border-radius: 15px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 400px;
+    width: 500px;
     text-align: center;
     margin: 0;
 }
@@ -174,7 +174,7 @@ body {
     background-color: var(--cor-2); /* Gray background for the form */
     border-radius: 15px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 400px;
+    width: 500px;
     text-align: center;
     margin: 0;
 }
@@ -204,7 +204,7 @@ body {
     border-radius: 10px;
     background-color: var(--cor-6); /* Light gray for input fields */
     margin: 0 20px 10px 20px;
-    font-size: 1rem;
+    font-size: 65%;
 }
 
 .form-sign-up input[type="submit"] {
@@ -222,4 +222,10 @@ body {
 
 .form-sign-up input[type="submit"]:hover {
     background-color: var(--cor-3); /* Slightly darker gray on hover */
+}
+
+.alert{
+    color: rgb(123, 0, 0);
+    font-size: 50%;
+    margin-bottom: 15px;
 }

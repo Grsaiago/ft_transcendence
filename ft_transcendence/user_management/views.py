@@ -13,10 +13,18 @@ from .models import FriendRequest, Friendship
 
 class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/base_app.html"
-
+    success_url = reverse_lazy("user_management:profile")
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
+class UserProfileView(generic_views.TemplateView):
+    template_name = "user_management/base_app.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            context = self.get_context_data()
+            return render(request, "user_management/profile.html", context)
+        return super().get(request, *args, **kwargs)
 
 class UserRegisterView(generic_views.FormView):
     template_name = "user_management/base_sign.html"
@@ -33,8 +41,6 @@ class UserRegisterView(generic_views.FormView):
             context = self.get_context_data()
             return render(request, "user_management/sign_up.html", context)
         return super().get(request, *args, **kwargs)
-
-
 
 class UserLoginView(auth_views.LoginView):
     template_name = "user_management/base_sign.html"
