@@ -48,3 +48,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     router();
 });
+
+console.log('Chat.js loaded');
+
+const chatSocket = new WebSocket(
+    'ws://'
+    + window.location.host
+    + '/ws/chat/'
+);
+
+chatSocket.onclose = function(e) {
+    console.error('Chat socket closed unexpectedly');
+};
+
+document.querySelector("#send-msg") = () => {
+    (console.log("Enviando mensagem"));
+    const messageInputDom = document.getElementById('chat-message-input');
+    const message = messageInputDom.value;
+    chatSocket.send(JSON.stringify({
+        'message': message
+    }));
+    messageInputDom.value = '';
+}
+
+// const handleMessage = (event) => {
+//     var data = event.data.JSON.parse();
+//     console.log(data);
+//     document.getElementById('chat-messages').appendChild()
+// } 
+
+// chatSocket.onmessage = handleMessage();
