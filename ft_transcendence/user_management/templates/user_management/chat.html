@@ -50,13 +50,21 @@
 <!-- Chat Window Section -->
 <div class="chat-window">
     <h2>Chat</h2>
-    <div class="messages">
-        <!-- Chat messages will appear here -->
-        <p>blablabla</p>
-        <p>blablabla</p>
-    </div>
-    <div class="message-input">
-        <input type="text" placeholder="Type a message">
-        <img class="message-button" src="{% static 'assets/icons/Polygon.png' %}" >
+    <div>
+        <div class="messages">
+            <!-- Chat messages will appear here -->
+            <div>
+                <p class="chat-msg-user-time">Fernanda, 15:04</p>
+                <p class="chat-msg-content">Fala ai fdp</p>
+            </div>
+            <div>
+                <p class="chat-msg-user-time">Fernanda, 15:07</p>
+                <p class="chat-msg-content">Turo bom ?</p>
+            </div>
+        </div>
+        <div class="message-input">
+            <input type="text" placeholder="Type a message">
+            <img class="message-button" src="{% static 'assets/icons/Polygon.png' %}" >
+        </div>
     </div>
 </div>

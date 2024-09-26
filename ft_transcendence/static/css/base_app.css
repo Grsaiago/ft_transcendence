@@ -1,5 +1,6 @@
 @import url('https://fonts.cdnfonts.com/css/arcade');
 
+
 :root {
     --cor-1: #ffffff;
     --cor-2: #c0c0c0;
@@ -374,7 +375,18 @@ body {
 .chat-window .messages {
     background-color: var(--cor-2); /* Light gray background for messages */
     font-size: 50%;
-    padding: 20px;
+    padding: 2% 5%;
+    text-align: right;
+}
+
+.chat-msg-user-time {
+    font-size: 70%;
+    color: var(--cor-1);
+}
+
+.chat-msg-content {
+    font-size: 80%;
+    color: var(--cor-5);
 }
 
 .chat-window .message-input {
