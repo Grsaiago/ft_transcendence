@@ -1,6 +1,7 @@
 from typing import List, TypedDict, Union
 import json
 from django.db.models import Q
+from django.core.cache import cache
 import user_management.models as social_models
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import InMemoryChannelLayer
@@ -23,6 +24,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def connect(self):
+        user_id = self.scope['user'].id
         groups_to_add = social_models.Friendship.objects.filter(
             Q(first_user=self.scope['user'])
             | Q(second_user=self.scope['user'])
@@ -30,12 +32,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         for group in groups_to_add:
             await self.add_to_group(group)
+        # criar o mapeamento user_id->channel
+        cache.set(f"user_channels:{user_id}", self.channel_name)
+
         await self.accept()
 
 
     async def disconnect(self, code):
+        user_id = self.scope['user'].id
+
         for group in self.dynamic_groups:
             await self.remove_from_group(group)
+        # deletar o mapeamento user_id->channel
+        cache.delete(f"user_channels:{user_id}")
 
 
     # aqui é quando o servidor recebe uma mensagem qualquer de um websocket
