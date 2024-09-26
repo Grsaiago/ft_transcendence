@@ -1,5 +1,7 @@
 from typing import List, TypedDict, Union
 import json
+from asgiref.sync import sync_to_async
+from channels.consumer import database_sync_to_async
 from django.db.models import Q
 from django.core.cache import cache
 import user_management.models as social_models
@@ -25,10 +27,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         user_id = self.scope['user'].id
-        groups_to_add = social_models.Friendship.objects.filter(
+        groups_to_add = await sync_to_async(list)(social_models.Friendship.objects.filter(
             Q(first_user=self.scope['user'])
             | Q(second_user=self.scope['user'])
-        ).values_list('chat_room_id', flat=True)
+        ).values_list('chat_room_id', flat=True))
 
         for group in groups_to_add:
             await self.add_to_group(group)
