@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description"
+              content="Transcendence - Last project from 42 cursus. A platform for playing pong">        
+        <title>Pong 42</title>
+        <meta name="csrf-token" content="{{ csrf_token }}">
+        <link rel="stylesheet" href="{% static 'css/base_sign.css' %}">
+    </head>
+    <body>
+        <header class="menu">
+            <a class="menu-logo">PONG<br>42</a>
+            <section class="menu-section">
+                <nav class="menu-nav"></nav>
+                    <a class="menu-nav-link" href="/sign_in/" data-link>Entrar</a>
+                    <a class="menu-nav-link" href="/sign_up/" data-link>Cadastre-se</a>
+                </nav>
+            </section>
+        </header>
+        <div id="app"></div>
+        <footer class="rodape">
+            <nav class="rodape-nav">
+                <a class="rodape-nav-link" href="https://github.com/FernandaMatt">fcaetano</a>
+                <a class="rodape-nav-link" href="https://github.com/Grsaiago">gsaiago</a>
+                <a class="rodape-nav-link" href="https://github.com/mari-aragao">maragao</a>
+                <a class="rodape-nav-link" href="https://github.com/izacabral">izsoares</a>
+            </nav>
+        </footer>
+        <script type="module" src="{% static 'js/sign/index.js' %}"></script>
+    </body>
+</html>
