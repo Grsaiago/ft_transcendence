@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-10 20:59+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: user_management/templates/user_management/friend_list.html:15
+msgid "ManageFriendsHeader"
+msgstr "Gerencie seus amigos"
+
+#: user_management/templates/user_management/friend_list.html:17
+msgid "SendFriendRequestHeader"
+msgstr "Adicione um amigo!"
+
+#: user_management/templates/user_management/friend_list.html:24
+msgid "BlockUserHeader"
+msgstr "Bloqueie um usuário"
+
+#: user_management/templates/user_management/friend_list.html:31
+msgid "FriendManageHeader"
+msgstr "Gerencie seus amigos"
+
+#: user_management/templates/user_management/friend_list.html:45
+msgid "NoFriendsMessage"
+msgstr "não há amigos"
+
+#: user_management/templates/user_management/friend_list.html:49
+msgid "PendingFriendRequestsSentHeader"
+msgstr "Pedidos enviados"
+
+#: user_management/templates/user_management/friend_list.html:65
+msgid "NoFriendRequestsSentMessage"
+msgstr "Não há pedidos enviados"
+
+#: user_management/templates/user_management/friend_list.html:69
+msgid "PendingFriendRequestsHeader"
+msgstr "Pedidos recebidos"
+
+#: user_management/templates/user_management/friend_list.html:90
+msgid "NoFriendRequestsMessage"
+msgstr "Não há pedidos pendentes"
+
+#: user_management/templates/user_management/login.html:6
+msgid "LoginHeader"
+msgstr "Faça Login!"
+
+#: user_management/templates/user_management/register.html:6
+msgid "RegisterHeader"
+msgstr "Crie sua conta!"
