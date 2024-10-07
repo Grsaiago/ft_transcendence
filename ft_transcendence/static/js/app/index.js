@@ -39,10 +39,32 @@ window.addEventListener("popstate", router);
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Página carregada, chamando router()");
+
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
             navigateTo(e.target.href);
+        }
+        if (e.target.matches("[data-send-msg]")) {
+            console.log('Send message clicked!');
+            
+            const messageInputDom = document.getElementById('chat-message-input');
+            if (!messageInputDom) {
+                console.error('Message input field not found.');
+                return;
+            }
+        
+            const message = messageInputDom.value;
+        
+            if (chatSocket.readyState === WebSocket.OPEN) {
+                chatSocket.send(JSON.stringify({
+                    'message': message,
+                    'chat_id': 'test'
+                }));
+                messageInputDom.value = '';
+            } else {
+                console.log('WebSocket is not open.');
+            }
         }
     });
 
@@ -61,20 +83,25 @@ chatSocket.onclose = function(e) {
     console.error('Chat socket closed unexpectedly');
 };
 
-document.querySelector("#send-msg") = () => {
-    (console.log("Enviando mensagem"));
-    const messageInputDom = document.getElementById('chat-message-input');
-    const message = messageInputDom.value;
-    chatSocket.send(JSON.stringify({
-        'message': message
-    }));
-    messageInputDom.value = '';
-}
+// chatSocket.onmessage = handleMessage;  // Correct way to assign the message handler
 
-// const handleMessage = (event) => {
-//     var data = event.data.JSON.parse();
-//     console.log(data);
-//     document.getElementById('chat-messages').appendChild()
-// } 
+chatSocket.addEventListener("message", (event) => {
+    console.log("message received: " + event.data +"\ncalling handleMessage ...");
+    handleMessage(event);
+});
 
-// chatSocket.onmessage = handleMessage();
+const handleMessage = (event) => {
+    console.log("handleMessage() called");
+    
+    try {
+        var data = JSON.parse(event.data);  // Fix typo: JSON.parse() should be called on event.data
+        console.log(data);
+        // Add the message to the chat window (for example purposes, append to a list)
+        const messagesContainer = document.getElementById('chat-messages');
+        const newMessage = document.createElement('p');
+        newMessage.textContent = data.message;  // Assuming data has a 'message' field
+        messagesContainer.appendChild(newMessage);
+    } catch (err) {
+        console.error("Error parsing WebSocket message: ", err);
+    }
+};

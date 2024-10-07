@@ -67,6 +67,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "sender": sender,
             "message": message
         }
+        print("mensagem recebida, iniciando broadcast.\ncontent:" + content['message'])
         await self.channel_layer.group_send(chat_id, content)
 
 

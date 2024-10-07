@@ -6,7 +6,7 @@
         </h2>
 
     <div class="search">
-        <input type="text" placeholder="search user", id='chat-message-input'>
+        <input type="text" placeholder="search user">
         <img class="search-icon" src="{% static 'assets/icons/Search.png' %}"> <!-- Search icon -->
     </div>
 
@@ -63,9 +63,8 @@
             </div>
         </div>
         <div class="message-input">
-            <input type="text" placeholder="Type a message">
-            <input type="button" id="send-msg" value="Send">
-            <img class="message-button" src="{% static 'assets/icons/Polygon.png' %}">
+            <input type="text" id="chat-message-input" placeholder="Type a message">
+            <button class="message-button" data-send-msg> send </button>
         </div>
     </div>
 </div>
