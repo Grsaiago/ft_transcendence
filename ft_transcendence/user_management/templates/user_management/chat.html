@@ -1,0 +1,70 @@
+{% load static %}
+
+<div class="friends-list">
+        <h2>Amigos
+            <img class="img-refresh" src="{% static 'assets/icons/refresh-page-option.png' %}"> <!-- Refresh icon -->
+        </h2>
+
+    <div class="search">
+        <input type="text" placeholder="search user">
+        <img class="search-icon" src="{% static 'assets/icons/Search.png' %}"> <!-- Search icon -->
+    </div>
+
+    <div class="status-group">
+        <span>Online</span>
+        {% for friend in current_friends %}
+            <div class="friend online">
+                <div class="status-icon"></div>
+                <p>
+                    {{ friend.username }}
+                </p>
+                <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
+            </div>
+        {% empty %}
+            <p>You have no friends!</p>
+        {% endfor %}
+
+        <!-- 
+        <div class="friend online">
+            <div class="status-icon"></div>
+            <p>fcaetano</p>
+            <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
+        </div>
+        <div class="friend online">
+            <div class="status-icon"></div>
+            <p>izsoares</p>
+            <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
+        </div> -->
+    </div>
+
+    <div class="status-group">
+        <span>Offline</span>
+        <div class="friend offline">
+            <div class="status-icon"></div>
+            <p>gsaiago</p>
+            <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
+        </div>
+    </div>
+</div>
+
+<!-- Chat Window Section -->
+<div class="chat-window">
+    <h2>Chat</h2>
+    <div>
+        <div class="messages">
+            <!-- Chat messages will appear here -->
+            <div>
+                <p class="chat-msg-user-time">Fernanda, 15:04</p>
+                <p class="chat-msg-content">Fala ai fdp</p>
+            </div>
+            <div>
+                <p class="chat-msg-user-time">Fernanda, 15:07</p>
+                <p class="chat-msg-content">Turo bom ?</p>
+            </div>
+        </div>
+        <div class="message-input">
+            <input type="text" placeholder="Type a message">
+            <img class="message-button" src="{% static 'assets/icons/Polygon.png' %}" >
+        </div>
+    </div>
+</div>

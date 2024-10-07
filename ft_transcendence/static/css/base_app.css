@@ -1,0 +1,412 @@
+@import url('https://fonts.cdnfonts.com/css/arcade');
+
+
+:root {
+    --cor-1: #ffffff;
+    --cor-2: #c0c0c0;
+    --cor-3: #157a8c;
+    --cor-4: #003f69;
+    --cor-5: #260d33;
+    --cor-6: #E0E0E0;
+    --border-radius: 25px;
+    --h2-size: 65%;
+
+    --regular: 400;
+    --bold: 700;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--cor-2);
+    font-family: 'Arcade Rounded', sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10%;
+    padding: 10px 22px;
+    color: var(--cor-1);
+    background-color: var(--cor-4);
+}
+
+.menu-logo {
+    font-size:30px;
+    line-height: 1.25;
+    text-decoration: none;
+    color: var(--cor-1);
+    flex-shrink: 0;
+    position: absolute;
+    left: 22px;
+}
+
+.menu-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    gap: 40px;
+}
+
+.menu-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.menu-nav-link {
+    font-size: 65%;
+    text-decoration: none;
+    color: var(--cor-1);
+}
+
+.menu-nav-link:hover {
+    color: var(--cor-3);
+}
+
+
+.menu-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1%;
+    position: relative;
+}
+
+.menu-profile-imagem {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--cor-5);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.menu-profile-username {
+    position: relative;
+    top: 12px;
+    text-decoration: none;
+    font-size: 65%;
+    color: var(--cor-1);
+}
+
+.menu-profile-logout {
+    position: relative;
+    bottom: 10px; /* Mover o botão 'x' para cima */
+    background: none;
+    border: none;
+    color: var(--cor-1);
+    background-color: var(--cor-5);
+    border: 0.1px solid var(--cor-5);
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.rodape {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: 8%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1% 2%;
+    color: var(--cor-1);
+    background-color: var(--cor-3);
+    padding: 0;
+}
+
+.rodape-nav {
+    display: flex;
+    justify-content: center;
+    gap:20%;
+}
+
+.rodape-nav-link {
+    text-decoration: none;
+    font-size: 65%;
+    color: var(--cor-1);
+}
+
+.rodape-nav-link:hover {
+    color: var(--cor-4);
+}
+/*app*/
+#app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 5%;
+    background-color: var(--cor-6);
+    gap: 50px;
+}
+/*profile*/
+.profile {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.profile-div, .history {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: var(--cor-2);
+    border-radius: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 0;
+}
+ 
+.profile-image {
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    margin: 0 auto;
+    background-color: var(--cor-5);
+    height: 30vh;
+    width: 30vh;
+}
+
+.profile-div {
+    height: 50%;
+    text-align: start;
+}
+
+.profile-title {
+    width: 100%;
+    font-size: 85%;
+    text-align: center;
+    color: var(--cor-1);
+    padding: 10px 0 10px 0;
+    background-color: var(--cor-4);
+    border-radius: 15px 15px 0 0;
+    margin: 0;
+
+}
+
+.profile-p {
+    text-align: start;
+    padding: 0 15px;
+}
+
+.profile p{
+    font-size: 50%;
+    margin: 10px 0 10px 0;
+}
+
+.history {
+    width: 40%;
+    height: 100%;
+    text-align: center;
+}
+
+.history-title {
+    font-size: 85%;
+    color: var(--cor-1);
+    width: 100%;
+    background-color: var(--cor-4);
+    border-radius: 15px 15px 0 0;
+    padding: 10px 0 10px 0;
+    margin: 0;
+}
+
+.history p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50%;
+    padding: 0 15px;
+    margin: 10px 0;
+
+}
+
+/*chat*/
+
+/* Friends List section */
+.friends-list {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--cor-2); /* Light gray background */
+    border-radius: var(--border-radius);
+    width: 20%;
+    height: 100%;
+}
+
+.friends-list h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--cor-4); /* Dark gray for the header */
+    padding: 10px 25px;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    color: var(--cor-1);
+    font-size: var(--h2-size);
+    margin: 0;
+}
+
+.img-refresh {
+    width: 15px;
+    height: 15px;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    background-color: var(--cor-6); /* Slightly darker gray for the search bar */
+    border-radius: var(--border-radius);
+    margin: 10px;
+}
+
+.search-icon {
+    height: 50%;
+    margin: 0 10px;
+}
+
+.friends-list .search input {
+    width: 100%;
+    border: none;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    background-color: var(--cor-6)
+}
+
+.friends-list .search .search-icon {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.friends-list .status-group {
+    font-size: 40%;
+    color: var(--cor-6);
+}
+
+.status-group span {
+    margin: 0 10px;
+}
+
+.friends-list .friend {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #E0E0E0; /* Light gray for friend list */
+    padding: 0px 10px;
+    border-radius: var(--border-radius);
+    margin: 10px;
+    font-size: 1.1rem;
+    color: #000;
+    gap: 10px;
+}
+
+.friends-list .friend .status-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #FFF; /* Default white for status */
+    margin-right: 10px;
+    position: fixed;
+
+}
+
+.friends-list .friend.online .status-icon {
+    background-color: #33a733; /* Green for online */
+}
+
+.friends-list .friend.offline .status-icon {
+    background-color: #aa0909; /* Red for offline */
+}
+
+.friends-list .friend .status-icon {
+    width: 5px;
+    height: 5px;
+}
+
+.friends-list .info-icon {
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+}
+
+.friend p {
+    font-size: 50%;
+    margin: 5px 10px;
+}
+
+
+/* Chat Window section */
+.chat-window {
+    background-color: var(--cor-2); /* Light gray background */
+    padding: 0;
+    border-radius: var(--border-radius);
+    height: 100%;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.chat-window h2 {
+    background-color: var(--cor-4); /* Dark gray for chat header */
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    color: var(--cor-1);
+    text-align: center;
+    padding: 10px 0 10px 0;
+    font-size: var(--h2-size);
+    margin: 0;
+}
+
+.chat-window .messages {
+    background-color: var(--cor-2); /* Light gray background for messages */
+    font-size: 50%;
+    padding: 2% 5%;
+    text-align: right;
+}
+
+.chat-msg-user-time {
+    font-size: 70%;
+    color: var(--cor-1);
+}
+
+.chat-msg-content {
+    font-size: 80%;
+    color: var(--cor-5);
+}
+
+.chat-window .message-input {
+    display: flex;
+    align-items: center;
+    background-color: var(--cor-6); /* Slightly darker gray for input area */
+    border-radius: 20px;
+    gap: 5px;
+    margin: 10px 5px 7px 5px;
+}
+
+.chat-window .message-input input {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    background-color: var(--cor-6); 
+}
+
+.message-button {
+    cursor: pointer;
+    padding: 5px;
+}

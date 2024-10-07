@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -114,9 +115,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "user_management.TrUser"
 
-LOGIN_URL = "/login"
+LOGIN_URL = "/sign_in"
 
-LOGIN_REDIRECT_URL = "/friend_list"  # TODO: Colocar aqui o url da home
+LOGIN_REDIRECT_URL = ""  # TODO: Colocar aqui o url da home
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -134,6 +135,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
