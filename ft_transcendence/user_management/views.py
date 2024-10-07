@@ -85,6 +85,13 @@ class UserSignInView(auth_views.LoginView):
         return super().get(request, *args, **kwargs)
     
 
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            context = self.get_context_data()
+            return render(request, "user_management/sign_in.html", context)
+        return super().get(request, *args, **kwargs)
+    
+
 class UserLogoutView(auth_views.LogoutView):
     next_page = reverse_lazy("user_management:sign_in")
 

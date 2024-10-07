@@ -1,4 +1,5 @@
 {% extends 'user_management/base.html' %}
+{% load i18n %}
 {% block content %}
     {% if messages %}
         {% for message in messages %}
@@ -11,23 +12,23 @@
         <button type="submit">Logout</button>
     </form>
     <h1>Hello {{ user.username }}</h1>
-    <h1>Manage Friends</h1>
+    <h1> {% trans "ManageFriendsHeader" %} </h1>
     <!-- Form to send a friend request -->
-    <h2>Send Friend Request</h2>
+    <h2> {% trans "SendFriendRequestHeader" %} </h2>
     <form action="{% url 'db-user_management:send_friend_request' %}"
           method="post">
         {% csrf_token %}
         {{ friend_request_form.receiver }}
         <button type="submit">Send Request</button>
     </form>
-    <h2>Block a User</h2>
+    <h2> {% trans "BlockUserHeader" %} </h2>
     <form action="{% url 'db-user_management:block_user' %}" method="post">
         {% csrf_token %}
         {{ block_user_form.blocked }}
         <button type="submit">Block User</button>
     </form>
     <!-- Lista de amigos -->
-    <h2>Your friends</h2>
+    <h2> {% trans "FriendManageHeader" %} </h2>
     <ul>
         {% for friend in current_friends %}
             <li>
@@ -41,11 +42,11 @@
                 </form>
             </li>
         {% empty %}
-            <li>You have no friends!</li>
+            <li> {% trans "NoFriendsMessage" %} </li>
         {% endfor %}
     </ul>
     <!-- pedidos de amizade enviados ainda pendentes -->
-    <h2>Pending Friend Requests Sent</h2>
+    <h2> {% trans "PendingFriendRequestsSentHeader" %} </h2>
     <ul>
         {% for pending_sent_request in sent_friend_requests %}
             <li>
@@ -61,11 +62,11 @@
                 </form>
             </li>
         {% empty %}
-            <li>You have no pending sent request!</li>
+            <li> {% trans "NoFriendRequestsSentMessage" %} </li>
         {% endfor %}
     </ul>
     <!-- pedidos de amizade pendentes -->
-    <h2>Pending Friend Requests</h2>
+    <h2> {% trans "PendingFriendRequestsHeader" %} </h2>
     <ul>
         {% for request in pending_friend_requests %}
             <li>
@@ -86,7 +87,7 @@
                 </form>
             </li>
         {% empty %}
-            <li>No pending friend requests.</li>
+            <li> {% trans "NoFriendRequestsMessage" %} </li>
         {% endfor %}
     </ul>
 {% endblock %}
