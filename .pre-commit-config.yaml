@@ -1,0 +1,34 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: local
+    hooks:
+    -   id: black
+        name: black
+        entry: poetry run black
+        language: system
+        types: [python]
+    -   id: isort
+        name: isort
+        entry: poetry run isort
+        language: system
+        types: [python]
+    -   id: flake8
+        name: flake8
+        entry: poetry run flake8
+        language: system
+        types: [python]
+    -   id: djlint-reformat-django
+        name: djlint-reformat-django
+        entry: poetry run djlint --reformat
+        language: system
+        types: [html]
+    -   id: djlint-check-django
+        name: djlint-check-django
+        entry: poetry run djlint --check
+        language: system
+        types: [html]
