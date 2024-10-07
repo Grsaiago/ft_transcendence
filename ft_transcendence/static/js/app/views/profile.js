@@ -1,14 +1,14 @@
 import AbstractView from "./abstractView.js";
 
-export default class Sign_in extends AbstractView {
+export default class Profile extends AbstractView {
     constructor() {
         super();
-        this.setTitle("Sign_in");
+        this.setTitle("Profile");
     }
 
     async getHtml() {
         try {
-            const response = await fetch('/sign_in/', {
+            const response = await fetch('/profile/', {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }

@@ -1,5 +1,5 @@
-import Sign_in from "./views/sign_in.js";
-import Sign_up from "./views/sign_up.js";
+import Profile from "./views/profile.js";
+import Chat from "./views/chat.js";
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -8,8 +8,8 @@ const navigateTo = url => {
 
 const router = async () => {
     const routes = [
-        {path: "/sign_in/", view: Sign_in },
-        {path: "/sign_up/", view: Sign_up },
+        {path: "/profile/", view: Profile },
+        {path: "/chat/", view: Chat },
     ];
 
     //Test each route for potential match
