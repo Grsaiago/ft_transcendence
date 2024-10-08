@@ -12,11 +12,11 @@
 
     <div class="status-group">
         <span>Online</span>
-        {% for friend in current_friends %}
-            <div class="friend online">
+        {% for friend, chat_room_id in current_friends.items %}
+            <div class="friend online" chat_id={{ chat_room_id }} data-chat>
                 <div class="status-icon"></div>
                 <p>
-                    {{ friend.username }}
+                    {{ friend }}
                 </p>
                 <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
             </div>

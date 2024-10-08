@@ -6,6 +6,8 @@ const navigateTo = url => {
     router();
 };
 
+let currentChatId = "";
+
 const router = async () => {
     const routes = [
         {path: "/profile/", view: Profile },
@@ -45,7 +47,8 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             navigateTo(e.target.href);
         }
-        if (e.target.matches("[data-send-msg]")) {
+
+        else if (e.target.matches("[data-send-msg]")) {
             console.log('Send message clicked!');
             
             const messageInputDom = document.getElementById('chat-message-input');
@@ -59,12 +62,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if (chatSocket.readyState === WebSocket.OPEN) {
                 chatSocket.send(JSON.stringify({
                     'message': message,
-                    'chat_id': 'test'
+                    'chat_id': currentChatId
                 }));
                 messageInputDom.value = '';
             } else {
                 console.log('WebSocket is not open.');
             }
+        }
+
+        else if (e.target.matches("[data-chat]")) {
+            currentChatId = e.target.getAttribute('chat_id');
+            console.log('Chat changed. CurrentChatId: ' + currentChatId);
         }
     });
 

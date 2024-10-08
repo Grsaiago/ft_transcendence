@@ -35,10 +35,11 @@ class UserChatView(generic_views.TemplateView):
         friends = Friendship.objects.filter(
             Q(first_user=request.user.id) | Q(second_user=request.user.id)
         )
-        current_friends = [
-            entry.first_user if entry.first_user != request.user else entry.second_user
+
+        current_friends = {
+            (entry.first_user if entry.first_user != request.user else entry.second_user).username: entry.chat_room_id
             for entry in friends
-        ]
+        }
 
         context = {
             "current_friends": current_friends,
