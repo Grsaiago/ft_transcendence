@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "daphne",
     "user_management.apps.UserManagementConfig",
     "chat.apps.ChatConfig",
+    "pong.apps.PongConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -108,12 +109,12 @@ DATABASES = {
 # Setup do cache pra usar o redis
 # https://docs.djangoproject.com/en/5.1/topics/cache/#redis
 CACHES = {
-    'default': { 
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
     }
 }
 
