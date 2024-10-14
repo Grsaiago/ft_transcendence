@@ -1,0 +1,17 @@
+{% extends "pong/base.html" %}
+{% block title %}PongGame{% endblock %}
+{% block content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'pong/css/pong.css' %}">
+    <section class="section_enter">
+        <div>
+            <h2>{{ user.username }}</h2>
+            {% comment %} <form action="{% url 'pong:pong' %}" method="post">
+                {% csrf_token %}
+                <label for="room_name">Room name:</label>
+                <input type="text" id="room_name" name="room_name" required>
+                <button type="submit">Enter</button>
+            </form> {% endcomment %}
+        </div>
+    </section>
+{% endblock content %}

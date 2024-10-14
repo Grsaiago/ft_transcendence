@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView
 
 
-class PongView(TemplateView):
-    template_name = "pong/pong.html"
+class PongEnter(TemplateView):
+    template_name = "pong/enter.html"
