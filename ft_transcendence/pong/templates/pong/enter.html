@@ -6,12 +6,34 @@
     <section class="section_enter">
         <div>
             <h2>{{ user.username }}</h2>
-            {% comment %} <form action="{% url 'pong:pong' %}" method="post">
+            <form method="post">
                 {% csrf_token %}
-                <label for="room_name">Room name:</label>
-                <input type="text" id="room_name" name="room_name" required>
-                <button type="submit">Enter</button>
-            </form> {% endcomment %}
+                {% for field in form %}
+                    <div>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.errors %}
+                            <!-- Exibe mensagens de erro, se houver -->
+                            <div class="text-danger">{{ field.errors.as_text }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <input type="submit" value="Jogar">
+            </form>
+            <div>
+                <h3>Salas Existentes</h3>
+                {% if rooms %}
+                    <ul>
+                        {% for room in rooms %}
+                            <li>
+                                <a href="{% url 'pong:pongroom' room.id %}">{{ room.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Nenhuma sala foi criada!</p>
+                {% endif %}
+            </div>
         </div>
     </section>
 {% endblock content %}

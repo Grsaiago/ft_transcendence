@@ -1,0 +1,10 @@
+{% extends "pong/base.html" %}
+{% block title %}PongGame{% endblock %}
+{% block content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'pong/css/pong.css' %}">
+    <section class="section_enter">
+        <h2>{{ room.id }}</h2>
+        <h2>{{ room.name }}</h2>
+    </section>
+{% endblock content %}
