@@ -7,4 +7,8 @@
         <h2>{{ room.id }}</h2>
         <h2>{{ room.name }}</h2>
     </section>
+    <section class="section_pong" id="game-data" data-room-id="{{ room.id }}">
+        <canvas id="pongCanvas" width="800" height="400"></canvas>
+    </section>
+    <script src="{% static 'pong/js/pong.js' %}"></script>
 {% endblock content %}

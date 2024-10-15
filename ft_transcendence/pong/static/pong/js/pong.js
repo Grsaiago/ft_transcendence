@@ -1,5 +1,9 @@
 const canvas = document.getElementById('pongCanvas');
 const context = canvas.getContext('2d');
+const gameData = document.getElementById('game-data');
+const room_id = gameData.dataset.roomId
+
+console.log('room_id:', room_id);
 
 //draw hello world in the middle of the canvas
 context.font = '30px Courier New';
@@ -10,7 +14,9 @@ const socket = new WebSocket('ws://' + window.location.host + '/ws/pong/');
 
 socket.onopen = function (e) {
     console.log('WebSocket connection established');
-    socket.send(JSON.stringify({ message: 'pong' }));
+    const message = JSON.stringify({ type: "join_room", room_id: room_id });
+    console.log('Sending message:', message);  // Adicione esta linha
+    socket.send(message);
 }
 
 socket.onmessage = function (e) {
