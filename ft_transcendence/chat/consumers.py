@@ -1,5 +1,6 @@
 from typing import List, TypedDict, Union
 import json
+from uuid import UUID
 from django.db.models import Q
 from django.core.cache import cache
 import user_management.models as social_models
@@ -16,24 +17,27 @@ class ChatMessage(TypedDict):
     message: str
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    def __init__(self):
+        # essa variável vai ser usada para manter registro de quais
+        # chats esse usuário tá inscrito, pra facilitar o cleanup no disconect
+        self.dynamic_groups: List[str] = []
+        # add some types to make development more sane
+        self.channel_layer: Union[InMemoryChannelLayer, RedisChannelLayer]
+        self.scope: dict
+
+
     groups: List[str] = ['general_chat']
-    # essa variável vai ser usada para manter registro de quais
-    # chats esse usuário tá inscrito, pra facilitar o cleanup no disconect
-    dynamic_groups: List[str] = []
-    # add some types to make development more sane
-    channel_layer: Union[InMemoryChannelLayer, RedisChannelLayer]
-    scope: dict
 
 
     async def connect(self):
         user_id = self.scope['user'].id
-        groups_to_add = await sync_to_async(list)(social_models.Friendship.objects.filter(
+        groups_to_add: List[UUID] = await sync_to_async(list)(social_models.Friendship.objects.filter(
             Q(first_user=self.scope['user'])
             | Q(second_user=self.scope['user'])
         ).values_list('chat_room_id', flat=True))
 
         for group in groups_to_add:
-            await self.add_to_group(group)
+            await self.add_to_group(str(group))
         # criar o mapeamento user_id->channel
         cache.set(f"user_channels:{user_id}", self.channel_name)
 
