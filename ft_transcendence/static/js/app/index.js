@@ -1,12 +1,14 @@
 import Profile from "./views/profile.js";
 import Chat from "./views/chat.js";
 
+let currentChatId = null;
+
+const chatHistory = new Map();
+
 const navigateTo = url => {
     history.pushState(null, null, url);
     router();
 };
-
-let currentChatId = "";
 
 const router = async () => {
     const routes = [
@@ -38,6 +40,8 @@ const router = async () => {
 };
 
 window.addEventListener("popstate", router);
+
+document.getElementById
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Página carregada, chamando router()");
@@ -71,8 +75,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         else if (e.target.matches("[data-chat]")) {
+            console.log(e.target);
             currentChatId = e.target.getAttribute('chat_id');
             console.log('Chat changed. CurrentChatId: ' + currentChatId);
+            // check if chatHistory has the chatId
+            atualizaChat(currentChatId);
         }
     });
 
@@ -104,12 +111,60 @@ const handleMessage = (event) => {
     try {
         var data = JSON.parse(event.data);  // Fix typo: JSON.parse() should be called on event.data
         console.log(data);
-        // Add the message to the chat window (for example purposes, append to a list)
-        const messagesContainer = document.getElementById('chat-messages');
-        const newMessage = document.createElement('p');
-        newMessage.textContent = data.message;  // Assuming data has a 'message' field
-        messagesContainer.appendChild(newMessage);
+        let messageInfo = {
+            'sender': data.sender,
+            'message': data.message,
+            'time': Date.now()
+        }
+        displayMessage(messageInfo);
+        atualizaHistorico(messageInfo);
     } catch (err) {
         console.error("Error parsing WebSocket message: ", err);
     }
 };
+
+const displayMessage = (messageInfo, time) => {
+    const messagesContainer = document.getElementById('chat-messages');
+    const sender = document.createElement('p');
+    const newMessage = document.createElement('p');
+    const msgTime = new Date(messageInfo.time);
+    sender.textContent = messageInfo.sender + ', ' + msgTime.getHours() + ':' + msgTime.getMinutes();  // Assuming messageInfo has a 'message' field
+    newMessage.textContent = messageInfo.message;  // Assuming data has a 'message' field
+    sender.classList.add('chat-msg-user-time');
+    newMessage.classList.add('chat-msg-content');
+    messagesContainer.appendChild(sender);
+    messagesContainer.appendChild(newMessage);
+}
+
+const atualizaHistorico = (messageInfo) => {
+    let chatMessages = chatHistory.get(currentChatId);
+    if (!chatMessages) {
+        chatMessages = [];
+        chatHistory.set(currentChatId, chatMessages);
+    }
+    chatMessages.push(messageInfo);
+}
+
+const atualizaChat = (currentChatId) => {
+    limpaChat();
+    if (chatHistory.has(currentChatId)) {
+        loadChatHistory(chatHistory.get(currentChatId));
+    }
+    else {
+        console.log('Histórico não encontrado. Criando novo histórico...');
+        chatHistory.set(currentChatId, new Array());
+    }
+}
+
+const loadChatHistory = (chatHistory) => {
+    console.log('Loading chat history...');
+    chatHistory.forEach(message => {
+        displayMessage(message);
+    });
+}
+
+const limpaChat = () => {
+    console.log('Limpando chat...');
+    const messagesContainer = document.getElementById('chat-messages');
+    messagesContainer.innerHTML = '';
+}
