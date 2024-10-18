@@ -4,6 +4,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 
 class PongConsumer(AsyncWebsocketConsumer):
+    # para connectar por enquanto, precisa estar logado, a adição ao grupo esta sendo feita no receive com a mensagem onopen
+    # dessa forma o usuário só entra no grupo quando ele envia a mensagem de join_room e não pela url
     async def connect(self):
         if self.scope["user"].is_anonymous:
             await self.close()
@@ -37,9 +39,12 @@ class PongConsumer(AsyncWebsocketConsumer):
         type = text_data_json["type"]
 
         if type == "join_room":
-            self.room_id = text_data_json["room_id"]
-            self.room_group_name = f"pong_{self.room_id}"
-            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-            await self.send(
-                text_data=json.dumps({"message": f"Joined room: {self.room_id}"})
-            )
+            await self.add_to_group(text_data_json["room_id"])
+
+    async def add_to_group(self, room_id):
+        self.room_id = room_id
+        self.room_group_name = f"pong_{self.room_id}"
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.send(
+            text_data=json.dumps({"message": f"Joined room: {self.room_id}"})
+        )
