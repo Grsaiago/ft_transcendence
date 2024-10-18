@@ -13,5 +13,6 @@ from django.db import models
 
 
 class PongRoom(models.Model):
+    # limitando o nome da sala para 50 caracteres pois channel_name é limitado a 100 caracteres
     name = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
