@@ -1,3 +1,5 @@
+from typing import Any, Dict, Optional
+
 X = "x"
 Y = "y"
 RIGHT = "right"
@@ -9,17 +11,17 @@ SPEED = 5
 
 
 class Ball:
-    def __init__(self, width, height) -> None:
-        self.size = WIDTH
-        self.base_speed = SPEED
-        self.x_start = width // 2 - self.size // 2
-        self.y_start = height // 2 - self.size // 2
-        self.x = self.x_start
-        self.y = self.y_start
-        self.x_speed = self.base_speed
-        self.y_speed = self.base_speed
+    def __init__(self, width: int, height: int) -> None:
+        self.size: int = WIDTH
+        self.base_speed: int = SPEED
+        self.x_start: int = width // 2 - self.size // 2
+        self.y_start: int = height // 2 - self.size // 2
+        self.x: int = self.x_start
+        self.y: int = self.y_start
+        self.x_speed: int = self.base_speed
+        self.y_speed: int = self.base_speed
 
-    def move(self):
+    def move(self) -> None:
         self.x += self.x_speed
         self.y += self.y_speed
 
@@ -31,17 +33,17 @@ class Ball:
 
 
 class Paddle:
-    def __init__(self, width, height, side) -> None:
-        self.width = WIDTH
-        self.height = WIDTH * 8
-        self.y = height // 2 - self.height // 2
+    def __init__(self, width: int, height: int, side: str) -> None:
+        self.width: int = WIDTH
+        self.height: int = WIDTH * 8
+        self.y: int = height // 2 - self.height // 2
         if side == LEFT:
-            self.x = WIDTH * 2
+            self.x: int = WIDTH * 2
         else:
-            self.x = width - self.width - (WIDTH * 2)
-        self.speed = 1
+            self.x: int = width - self.width - (WIDTH * 2)
+        self.speed: int = 1
 
-    def move(self, direction):
+    def move(self, direction: str) -> None:
         if direction == UP:
             self.y -= self.speed
         elif direction == DOWN:
@@ -49,49 +51,49 @@ class Paddle:
 
 
 class PongGame:
-    def __init__(self, width, height) -> None:
-        self.width = width
-        self.height = height
-        self.ball = Ball(width, height)
-        self.paddle_left = Paddle(width, height, LEFT)
-        self.paddle_right = Paddle(width, height, RIGHT)
-        self.players = {}
-        self.score = {}
-        self.winner = None
-        self.started = False
-        self.finished = False
+    def __init__(self, width: int, height: int) -> None:
+        self.width: int = width
+        self.height: int = height
+        self.ball: Ball = Ball(width, height)
+        self.paddle_left: Paddle = Paddle(width, height, LEFT)
+        self.paddle_right: Paddle = Paddle(width, height, RIGHT)
+        self.players: Dict[int, str] = {}
+        self.score: Dict[int, int] = {}
+        self.winner: Optional[int] = None
+        self.started: bool = False
+        self.finished: bool = False
 
-    def add_player(self, user_id, user_name):
+    def add_player(self, user_id: int, user_name: str) -> None:
         self.players[user_id] = user_name
         self.score[user_id] = 0
 
-    def remove_player(self, user_id):
+    def remove_player(self, user_id: int) -> None:
         if user_id in self.players:
             del self.players[user_id]
             del self.score[user_id]
 
-    def update_score(self, user_id):
+    def update_score(self, user_id: int) -> None:
         self.score[user_id] += 1
         if self.score[user_id] == 10:
             self.winner = user_id
             self.finished = True
 
-    def start_game(self):
+    def start_game(self) -> None:
         self.started = True
 
-    def stop_game(self):
+    def stop_game(self) -> None:
         self.started = False
 
-    def game_loop(self):
+    def game_loop(self) -> None:
         self.ball.move()
         # self.paddle_left.move()
         # self.paddle_right.move()
 
-    def reset_game(self):
+    def reset_game(self) -> None:
         self.ball.reset()
         self.started = False
 
-    def get_game_state(self):
+    def get_game_state(self) -> Dict[str, Any]:
         return {
             "width": self.width,
             "height": self.height,
@@ -112,9 +114,11 @@ class PongGame:
                 "width": self.paddle_right.width,
                 "height": self.paddle_right.height,
             },
-            "players": self.players,
-            "score": self.score,
-            "winner": self.winner,
+            "players": {
+                str(player_id): name for player_id, name in self.players.items()
+            },
+            "score": {str(player_id): score for player_id, score in self.score.items()},
+            "winner": str(self.winner) if self.winner is not None else None,
             "started": self.started,
             "finished": self.finished,
         }
