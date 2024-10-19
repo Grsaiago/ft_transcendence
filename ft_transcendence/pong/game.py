@@ -5,12 +5,13 @@ LEFT = "left"
 UP = "up"
 DOWN = "down"
 WIDTH = 15
+SPEED = 5
 
 
 class Ball:
     def __init__(self, width, height) -> None:
         self.size = WIDTH
-        self.base_speed = 1
+        self.base_speed = SPEED
         self.x_start = width // 2 - self.size // 2
         self.y_start = height // 2 - self.size // 2
         self.x = self.x_start
@@ -19,14 +20,14 @@ class Ball:
         self.y_speed = self.base_speed
 
     def move(self):
-        self.x += self.vx
-        self.y += self.vy
+        self.x += self.x_speed
+        self.y += self.y_speed
 
     def reset(self):
         self.x = self.x_start
         self.y = self.y_start
-        self.vx = self.base_speed
-        self.vy = self.base_speed
+        self.x_speed = self.base_speed
+        self.y_speed = self.base_speed
 
 
 class Paddle:
@@ -74,6 +75,21 @@ class PongGame:
         if self.score[user_id] == 10:
             self.winner = user_id
             self.finished = True
+
+    def start_game(self):
+        self.started = True
+
+    def stop_game(self):
+        self.started = False
+
+    def game_loop(self):
+        self.ball.move()
+        # self.paddle_left.move()
+        # self.paddle_right.move()
+
+    def reset_game(self):
+        self.ball.reset()
+        self.started = False
 
     def get_game_state(self):
         return {
