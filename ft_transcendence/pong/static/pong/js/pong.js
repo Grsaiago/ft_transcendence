@@ -50,6 +50,12 @@ socket.onmessage = function (e) {
 
         context.fillRect(ball.x, ball.y, ball.size, ball.size);
 
+        const paddle_left = data.game_state.paddle_left;
+        context.fillRect(paddle_left.x, paddle_left.y, paddle_left.width, paddle_left.height);
+
+        const paddle_right = data.game_state.paddle_right;
+        context.fillRect(paddle_right.x, paddle_right.y, paddle_right.width, paddle_right.height);
+
     }
 
 
