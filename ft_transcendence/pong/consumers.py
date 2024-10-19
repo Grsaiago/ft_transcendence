@@ -1,9 +1,12 @@
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.core.cache import cache
+
+from .game import PongGame
 
 
-class PongConsumer(AsyncWebsocketConsumer):
+class PongPlayerConsumer(AsyncWebsocketConsumer):
     # para connectar por enquanto, precisa estar logado, a adição ao grupo esta sendo feita no receive com a mensagem onopen
     # dessa forma o usuário só entra no grupo quando ele envia a mensagem de join_room e não pela url
     async def connect(self):
@@ -40,11 +43,27 @@ class PongConsumer(AsyncWebsocketConsumer):
 
         if type == "join_room":
             await self.add_to_group(text_data_json["room_id"])
+            await self.initialize_game_state(
+                text_data_json["width"], text_data_json["height"]
+            )
+            await self.assign_player()
+            await self.send_game_init()
 
     async def add_to_group(self, room_id):
         self.room_id = room_id
         self.room_group_name = f"pong_{self.room_id}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.send(
-            text_data=json.dumps({"message": f"Joined room: {self.room_id}"})
-        )
+
+    async def initialize_game_state(self, width, height):
+        if not cache.get(f"{self.room_group_name}_game_state"):
+            cache.set(f"{self.room_group_name}_game_state", PongGame(width, height))
+
+    async def assign_player(self):
+        game = cache.get(f"{self.room_group_name}_game_state")
+        game.add_player(self.scope["user"].id, self.scope["user"].username)
+
+    async def send_game_init(self):
+        game = cache.get(f"{self.room_group_name}_game_state")
+        message = {"type": "game_init", "game_state": game.get_game_state()}
+        print(f"message: {message}")
+        await self.send(text_data=json.dumps(message))
