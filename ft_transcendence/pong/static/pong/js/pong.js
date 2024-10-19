@@ -32,9 +32,22 @@ socket.onmessage = function (e) {
         context.fillStyle = 'black';
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        context.fillStyle = 'white';
+        context.fillStyle = 'gray';
+
 
         const ball = data.game_state.ball;
+        context.fillRect(0, 0, canvas.width, ball.size);
+        context.fillRect(0, canvasHeight-ball.size, canvas.width, ball.size);
+
+        context.beginPath();
+        context.setLineDash([ball.size, ball.size]);
+        context.moveTo(canvasWidth/2, 0);
+        context.lineTo(canvasWidth/2, canvasHeight);
+        context.lineWidth = ball.size;
+        context.strokeStyle = context.fillStyle;
+        context.stroke();
+        context.setLineDash([]);
+
         context.fillRect(ball.x, ball.y, ball.size, ball.size);
 
     }
