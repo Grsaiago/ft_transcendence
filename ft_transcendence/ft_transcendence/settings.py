@@ -38,6 +38,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "daphne",
+    "channels",
     "user_management.apps.UserManagementConfig",
     "chat.apps.ChatConfig",
     "pong.apps.PongConfig",
