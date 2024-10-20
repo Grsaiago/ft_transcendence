@@ -14,7 +14,6 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             await self.close()
         else:
             self.room_id = None
-            self.loop_task = None
 
         # self.room_id = self.scope.get("room_id")
         # self.room_group_name = f"pong_{self.room_id}"
@@ -66,6 +65,7 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             await self.send_game_init(game)
 
             if not game.started:
+                print("Starting worker")
                 await self.start_worker(game)
 
     async def add_to_group(self, room_id):

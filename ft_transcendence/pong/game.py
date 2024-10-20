@@ -57,24 +57,26 @@ class PongGame:
         self.ball: Ball = Ball(width, height)
         self.paddle_left: Paddle = Paddle(width, height, LEFT)
         self.paddle_right: Paddle = Paddle(width, height, RIGHT)
-        self.players: Dict[int, str] = {}
-        self.score: Dict[int, int] = {}
+        self.players: Dict[str, str] = {}
+        self.score: Dict[str, int] = {}
         self.winner: Optional[int] = None
         self.started: bool = False
         self.finished: bool = False
 
     def add_player(self, user_id: int, user_name: str) -> None:
-        self.players[user_id] = user_name
-        self.score[user_id] = 0
+        self.players[str(user_id)] = user_name
+        self.score[str(user_id)] = 0
 
     def remove_player(self, user_id: int) -> None:
-        if user_id in self.players:
-            del self.players[user_id]
-            del self.score[user_id]
+        user_id_str = str(user_id)
+        if user_id_str in self.players:
+            del self.players[user_id_str]
+            del self.score[user_id_str]
 
     def update_score(self, user_id: int) -> None:
-        self.score[user_id] += 1
-        if self.score[user_id] == 10:
+        user_id_str = str(user_id)
+        self.score[user_id_str] += 1
+        if self.score[user_id_str] == 10:
             self.winner = user_id
             self.finished = True
 
@@ -114,11 +116,9 @@ class PongGame:
                 "width": self.paddle_right.width,
                 "height": self.paddle_right.height,
             },
-            "players": {
-                str(player_id): name for player_id, name in self.players.items()
-            },
-            "score": {str(player_id): score for player_id, score in self.score.items()},
-            "winner": str(self.winner) if self.winner is not None else None,
+            "players": self.players,
+            "score": self.score,
+            "winner": self.winner,
             "started": self.started,
             "finished": self.finished,
         }
