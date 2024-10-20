@@ -1,4 +1,4 @@
-import asyncio
+# import asyncio
 
 from channels.consumer import AsyncConsumer
 from django.core.cache import cache
@@ -24,7 +24,7 @@ class PongGameWorker(AsyncConsumer):
             )
 
             # pequena pausa para simular a velocidade do jogo (60fps)
-            await asyncio.sleep(0.01666)
+            # await asyncio.sleep(0.01666)
 
             # reenvia a tarefa para si mesmo para continuar processando o estado do jogo
             await self.channel_layer.send(

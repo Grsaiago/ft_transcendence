@@ -7,7 +7,7 @@ LEFT = "left"
 UP = "up"
 DOWN = "down"
 WIDTH = 15
-SPEED = 5
+SPEED = 3
 
 
 class Ball:
