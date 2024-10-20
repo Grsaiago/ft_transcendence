@@ -1,29 +1,44 @@
 from typing import Any, Dict, Optional
 
+WIDTH = 15
+SPEED = 1
 X = "x"
 Y = "y"
 RIGHT = "right"
 LEFT = "left"
 UP = "up"
 DOWN = "down"
-WIDTH = 15
-SPEED = 3
 
 
 class Ball:
     def __init__(self, width: int, height: int) -> None:
         self.size: int = WIDTH
+        self.center: float = float(self.size // 2)
         self.base_speed: int = SPEED
-        self.x_start: int = width // 2 - self.size // 2
-        self.y_start: int = height // 2 - self.size // 2
-        self.x: int = self.x_start
-        self.y: int = self.y_start
-        self.x_speed: int = self.base_speed
-        self.y_speed: int = self.base_speed
+        self.x_start: float = float(width // 2 - self.center)
+        self.y_start: float = float(height // 2 - self.center)
+        self.x: float = self.x_start
+        self.y: float = self.y_start
+        self.x_speed: float = float(self.base_speed)
+        self.y_speed: float = float(self.base_speed)
 
     def move(self) -> None:
+        print(f"Ball position move: {self.x}, {self.y}")
         self.x += self.x_speed
         self.y += self.y_speed
+
+    def bounce(self, direction: str) -> None:
+        if direction == X:
+            self.x_speed *= -1
+        elif direction == Y:
+            self.y_speed *= -1
+
+    def check_collisions(self, width: int, height: int) -> None:
+        print(f"Ball position collisions: {self.x}, {self.y}")
+        if self.y <= (0 + WIDTH) or self.y + self.size >= (height - WIDTH):
+            self.bounce(Y)
+        if self.x <= 0 or self.x + self.size >= width:
+            self.bounce(X)
 
     def reset(self):
         self.x = self.x_start
@@ -87,6 +102,8 @@ class PongGame:
         self.started = False
 
     def game_loop(self) -> None:
+        print("Game loop")
+        self.ball.check_collisions(self.width, self.height)
         self.ball.move()
         # self.paddle_left.move()
         # self.paddle_right.move()
@@ -103,6 +120,9 @@ class PongGame:
                 "x": self.ball.x,
                 "y": self.ball.y,
                 "size": self.ball.size,
+                "center": self.ball.center,
+                "x_speed": self.ball.x_speed,
+                "y_speed": self.ball.y_speed,
             },
             "paddle_left": {
                 "x": self.paddle_left.x,

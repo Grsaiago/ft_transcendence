@@ -8,7 +8,7 @@ class PongGameWorker(AsyncConsumer):
     async def update_game_state(self, message):
         room_group_name = message["room_group_name"]
         game = cache.get(f"{room_group_name}_game_state")
-
+        # print("Updating game state")
         if game and game.started:
             # atualiza o estado do jogo
             game.game_loop()
