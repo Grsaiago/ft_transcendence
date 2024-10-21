@@ -13,10 +13,10 @@ DOWN = "down"
 class Ball:
     def __init__(self, width: int, height: int) -> None:
         self.size: int = THICKNESS
-        self.center: float = float(self.size // 2)
+        self.center: float = float(self.size / 2)
         self.base_speed: int = SPEED
-        self.x_start: float = float(width // 2 - self.center)
-        self.y_start: float = float(height // 2 - self.center)
+        self.x_start: float = float(width / 2 - self.center)
+        self.y_start: float = float(height / 2 - self.center)
         self.x: float = self.x_start
         self.y: float = self.y_start
         self.x_speed: float = float(self.base_speed)
@@ -51,7 +51,7 @@ class Paddle:
     def __init__(self, width: int, height: int, side: str) -> None:
         self.width: int = THICKNESS
         self.height: int = THICKNESS * 8
-        self.y: int = height // 2 - self.height // 2
+        self.y: int = height / 2 - self.height / 2
         if side == LEFT:
             self.x: int = THICKNESS * 2
         else:
