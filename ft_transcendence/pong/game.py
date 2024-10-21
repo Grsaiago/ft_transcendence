@@ -12,11 +12,15 @@ DOWN = "down"
 
 class Ball:
     def __init__(self, width: int, height: int) -> None:
+        """
+        Ball class constructor
+        x and y coordinates are defined relative to the top-left corner
+        """
         self.size: int = THICKNESS
         self.center: float = float(self.size / 2)
         self.base_speed: int = SPEED
-        self.x_start: float = float(width / 2 - self.center)
-        self.y_start: float = float(height / 2 - self.center)
+        self.x_start: float = float(width / 2) - self.center
+        self.y_start: float = float(height / 2) - self.center
         self.x: float = self.x_start
         self.y: float = self.y_start
         self.x_speed: float = float(self.base_speed)
