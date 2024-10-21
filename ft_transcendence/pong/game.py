@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-WIDTH = 15
+THICKNESS = 15
 SPEED = 1
 X = "x"
 Y = "y"
@@ -12,7 +12,7 @@ DOWN = "down"
 
 class Ball:
     def __init__(self, width: int, height: int) -> None:
-        self.size: int = WIDTH
+        self.size: int = THICKNESS
         self.center: float = float(self.size // 2)
         self.base_speed: int = SPEED
         self.x_start: float = float(width // 2 - self.center)
@@ -35,7 +35,7 @@ class Ball:
 
     def check_collisions(self, width: int, height: int) -> None:
         print(f"Ball position collisions: {self.x}, {self.y}")
-        if self.y <= (0 + WIDTH) or self.y + self.size >= (height - WIDTH):
+        if self.y <= (0 + THICKNESS) or self.y + self.size >= (height - THICKNESS):
             self.bounce(Y)
         if self.x <= 0 or self.x + self.size >= width:
             self.bounce(X)
@@ -49,13 +49,13 @@ class Ball:
 
 class Paddle:
     def __init__(self, width: int, height: int, side: str) -> None:
-        self.width: int = WIDTH
-        self.height: int = WIDTH * 8
+        self.width: int = THICKNESS
+        self.height: int = THICKNESS * 8
         self.y: int = height // 2 - self.height // 2
         if side == LEFT:
-            self.x: int = WIDTH * 2
+            self.x: int = THICKNESS * 2
         else:
-            self.x: int = width - self.width - (WIDTH * 2)
+            self.x: int = width - self.width - (THICKNESS * 2)
         self.speed: int = 1
 
     def move(self, direction: str) -> None:
