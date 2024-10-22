@@ -30,7 +30,6 @@ class Ball:
         self.y_speed: float = float(self.base_speed)
 
     def move(self) -> None:
-        print(f"Ball position move: {self.x}, {self.y}")
         self.x += self.x_speed
         self.y += self.y_speed
 
@@ -40,14 +39,29 @@ class Ball:
         elif direction == Y:
             self.y_speed *= -1
 
-    def check_collisions(self, width: int, height: int) -> None:
-        print(f"Ball position collisions: {self.x}, {self.y}")
+    def check_boundaries(self, width: int, height: int) -> None:
         if self.y <= (0 + THICKNESS) or self.y + self.size >= (height - THICKNESS):
             self.bounce(Y)
         if self.x <= 0 or self.x + self.size >= width:
             self.reset()
             if random.randint(0, 1) == 0:
                 self.bounce(X)
+
+    def check_paddles_collisions(
+        self, paddle_left: "Paddle", paddle_right: "Paddle"
+    ) -> None:
+        if (
+            self.x <= paddle_left.x + paddle_left.width
+            and self.y >= paddle_left.y
+            and self.y <= paddle_left.y + paddle_left.height
+        ):
+            self.bounce(X)
+        elif (
+            self.x + self.size >= paddle_right.x
+            and self.y >= paddle_right.y
+            and self.y <= paddle_right.y + paddle_right.height
+        ):
+            self.bounce(X)
 
     def reset(self):
         self.x = self.x_start
@@ -67,7 +81,7 @@ class Paddle:
             self.x: float = float(THICKNESS * 2)
         else:
             self.x: float = float(width - self.width - (THICKNESS * 2))
-        self.speed: int = 5
+        self.speed: int = BALL_SPEED * 2
 
     def move(self, direction: str) -> None:
         if direction == UP:
@@ -117,7 +131,6 @@ class PongGame:
         self.started = False
 
     def key_handler(self, key: str) -> None:
-        print(f"Key: {key}")
         if key == "arrowup":
             self.paddle_right.move(UP)
         elif key == "arrowdown":
@@ -128,8 +141,8 @@ class PongGame:
             self.paddle_left.move(DOWN)
 
     def game_loop(self) -> None:
-        print("Game loop")
-        self.ball.check_collisions(self.width, self.height)
+        self.ball.check_boundaries(self.width, self.height)
+        self.ball.check_paddles_collisions(self.paddle_left, self.paddle_right)
         self.ball.move()
 
     def reset_game(self) -> None:

@@ -23,7 +23,7 @@ socket.onopen = function (e) {
         width: canvas.width,
         height: canvas.height
     });
-    console.log('Sending message:', message);
+    //console.log('Sending message:', message);
     socket.send(message);
     console.log('WebSocket connection established');
 }
@@ -54,7 +54,7 @@ document.addEventListener('keydown', function (event) {
             type: "keydown",
             key: event.key.toLocaleLowerCase(),
         });
-        console.log('Sending message:', message);
+        //console.log('Sending message:', message);
         socket.send(message);
     }
 });

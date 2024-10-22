@@ -39,15 +39,12 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
         game = cache.get(f"{self.room_group_name}_game_state")
 
         if game:
-            print(f"Disconnecting ... Game state: {game}")
             game.stop_game()
             game.reset_game()
-            print(f"After reset: Ball position: {game.ball.x}, {game.ball.y}")
-            print(f"after stop: game.started: {game.started}")
             cache.set(f"{self.room_group_name}_game_state", game)
 
         # por enquanto está deletando quando o usuário desconecta, o que pode deixar o outro jogador sem saber que o outro saiu
-        print("deleting from cache")
+        # print("deleting from cache")
         cache.delete(f"{self.room_group_name}_game_state")
 
     async def receive(self, text_data):
