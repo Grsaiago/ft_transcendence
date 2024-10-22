@@ -1,7 +1,8 @@
+import random
 from typing import Any, Dict, Optional
 
 THICKNESS = 15
-SPEED = 1
+BALL_SPEED = 5
 X = "x"
 Y = "y"
 RIGHT = "right"
@@ -13,14 +14,16 @@ DOWN = "down"
 class Ball:
     def __init__(self, width: int, height: int) -> None:
         """
-        Ball class constructor
-        x and y coordinates are defined relative to the top-left corner
+        Ball class constructor.
+        x and y coordinates are defined relative to the top-left corner.
         """
         self.size: int = THICKNESS
         self.center: float = float(self.size / 2)
-        self.base_speed: int = SPEED
+        self.base_speed: int = BALL_SPEED
         self.x_start: float = float(width / 2) - self.center
         self.y_start: float = float(height / 2) - self.center
+        self.y_min_start: int = 0 + (6 * THICKNESS)
+        self.y_max_start: int = height - (6 * THICKNESS)
         self.x: float = self.x_start
         self.y: float = self.y_start
         self.x_speed: float = float(self.base_speed)
@@ -42,11 +45,13 @@ class Ball:
         if self.y <= (0 + THICKNESS) or self.y + self.size >= (height - THICKNESS):
             self.bounce(Y)
         if self.x <= 0 or self.x + self.size >= width:
-            self.bounce(X)
+            self.reset()
+            if random.randint(0, 1) == 0:
+                self.bounce(X)
 
     def reset(self):
         self.x = self.x_start
-        self.y = self.y_start
+        self.y = float(random.randint(self.y_min_start, self.y_max_start))
         self.x_speed = self.base_speed
         self.y_speed = self.base_speed
 
@@ -54,12 +59,12 @@ class Ball:
 class Paddle:
     def __init__(self, width: int, height: int, side: str) -> None:
         self.width: int = THICKNESS
-        self.height: int = THICKNESS * 8
-        self.y: int = height / 2 - self.height / 2
+        self.height: int = 120
+        self.y: float = float(height / 2 - self.height / 2)
         if side == LEFT:
-            self.x: int = THICKNESS * 2
+            self.x: float = float(THICKNESS * 2)
         else:
-            self.x: int = width - self.width - (THICKNESS * 2)
+            self.x: float = float(width - self.width - (THICKNESS * 2))
         self.speed: int = 1
 
     def move(self, direction: str) -> None:
