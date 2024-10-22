@@ -30,8 +30,8 @@ socket.onopen = function (e) {
 
 socket.onmessage = function (e) {
     const data = JSON.parse(e.data);
-    console.log("Message from server: ", data);
-    console.log("data type: ", data.type);
+    //console.log("Message from server: ", data);
+    //console.log("data type: ", data.type);
 
     if (data.type === "game_init") {
         pongGame.drawGameState(data.game_state);
@@ -41,9 +41,20 @@ socket.onmessage = function (e) {
         pongGame.drawGameState(data.game_state);
     }
 
-
 }
 
 socket.onclose = function (e) {
     console.log('WebSocket connection closed');
 }
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "w" || event.key === "s" || event.key === "W" || event.key === "S") {
+        event.preventDefault();
+        const message = JSON.stringify({
+            type: "keydown",
+            key: event.key.toLocaleLowerCase(),
+        });
+        console.log('Sending message:', message);
+        socket.send(message);
+    }
+});

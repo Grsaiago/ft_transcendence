@@ -68,6 +68,12 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
                 print("Starting worker")
                 await self.start_worker(game)
 
+        if message_type == "keydown":
+            game = cache.get(f"{self.room_group_name}_game_state")
+            if game:
+                game.key_handler(text_data_json["key"])
+                cache.set(f"{self.room_group_name}_game_state", game)
+
     async def add_to_group(self, room_id):
         self.room_id = room_id
         self.room_group_name = f"pong_{self.room_id}"

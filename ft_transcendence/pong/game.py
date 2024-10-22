@@ -65,7 +65,7 @@ class Paddle:
             self.x: float = float(THICKNESS * 2)
         else:
             self.x: float = float(width - self.width - (THICKNESS * 2))
-        self.speed: int = 1
+        self.speed: int = 5
 
     def move(self, direction: str) -> None:
         if direction == UP:
@@ -110,10 +110,22 @@ class PongGame:
     def stop_game(self) -> None:
         self.started = False
 
+    def key_handler(self, key: str) -> None:
+        print(f"Key: {key}")
+        if key == "arrowup":
+            self.paddle_right.move(UP)
+        elif key == "arrowdown":
+            self.paddle_right.move(DOWN)
+        elif key == "w":
+            self.paddle_left.move(UP)
+        elif key == "s":
+            self.paddle_left.move(DOWN)
+
     def game_loop(self) -> None:
         print("Game loop")
         self.ball.check_collisions(self.width, self.height)
         self.ball.move()
+
         # self.paddle_left.move()
         # self.paddle_right.move()
 
