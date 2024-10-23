@@ -2,7 +2,7 @@ import random
 from typing import Any, Dict, Optional
 
 THICKNESS = 15
-BALL_SPEED = 5
+BALL_SPEED = 1
 X = "x"
 Y = "y"
 RIGHT = "right"

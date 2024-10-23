@@ -14,6 +14,8 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             await self.close()
         else:
             self.room_id = None
+            self.room_group_name = None
+            self.game = None
 
         # self.room_id = self.scope.get("room_id")
         # self.room_group_name = f"pong_{self.room_id}"
@@ -55,21 +57,19 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
 
         if message_type == "join_room":
             await self.add_to_group(text_data_json["room_id"])
-            game = await self.initialize_game_state(
+            await self.initialize_game_state(
                 text_data_json["width"], text_data_json["height"]
             )
-            await self.assign_player(game)
-            await self.send_game_init(game)
+            await self.assign_player()
+            await self.send_game_init()
+            cache.set(f"{self.room_group_name}_game", self.game)
 
-            if not game.started:
+            if not self.game.started:
                 print("Starting worker")
-                await self.start_worker(game)
+                await self.start_worker()
 
         if message_type == "keydown":
-            game = cache.get(f"{self.room_group_name}_game")
-            if game:
-                game.key_handler(text_data_json["key"])
-                cache.set(f"{self.room_group_name}_game", game)
+            await self.update_paddles_position(text_data_json["key"])
 
     async def add_to_group(self, room_id):
         self.room_id = room_id
@@ -78,19 +78,18 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
 
     async def initialize_game_state(self, width, height):
         # verifica se já existe um jogo em andamento se não cria um novo
-        game = cache.get(f"{self.room_group_name}_game")
-        if not game:
-            game = PongGame(width, height)
-            cache.set(f"{self.room_group_name}_game", game)
-        return game
+        self.game = cache.get(f"{self.room_group_name}_game")
+        if not self.game:
+            self.game = PongGame(width, height)
+            cache.set(f"{self.room_group_name}_game", self.game)
 
-    async def assign_player(self, game):
+    async def assign_player(self):
         # adiciona o jogador ao jogo
-        game.add_player(self.scope["user"].id, self.scope["user"].username)
+        self.game.add_player(self.scope["user"].id, self.scope["user"].username)
 
-    async def send_game_init(self, game):
+    async def send_game_init(self):
         # envia o estado inicial do jogo para o cliente
-        message = {"type": "game_init", "game_state": game.get_game_state()}
+        message = {"type": "game_init", "game_state": self.game.get_game_state()}
         print(f"message: {message}")
         await self.send(text_data=json.dumps(message))
 
@@ -100,10 +99,10 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
         message = {"type": "update_game_state", "game_state": game_state}
         await self.send(text_data=json.dumps(message))
 
-    async def start_worker(self, game):
+    async def start_worker(self):
         # inicia o jogo e envia uma tarefa para o worker processar o estado do jogo
-        game.start_game()
-        cache.set(f"{self.room_group_name}_game", game)
+        self.game.start_game()
+        cache.set(f"{self.room_group_name}_game", self.game)
 
         # envia a tarefa para o worker
         await self.channel_layer.send(
@@ -111,5 +110,16 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             {
                 "type": "update_game_state",
                 "room_group_name": self.room_group_name,
+            },
+        )
+
+    async def update_paddles_position(self, key):
+        # envia mensagem para o worker
+        await self.channel_layer.send(
+            "pong_update_channel",
+            {
+                "type": "update_paddles_position",
+                "room_group_name": self.room_group_name,
+                "key": key,
             },
         )
