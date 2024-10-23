@@ -7,12 +7,12 @@ from django.core.cache import cache
 class PongGameWorker(AsyncConsumer):
     async def update_game_state(self, message):
         room_group_name = message["room_group_name"]
-        game = cache.get(f"{room_group_name}_game_state")
+        game = cache.get(f"{room_group_name}_game")
         # print("Updating game state")
         if game and game.started:
             # atualiza o estado do jogo
             game.game_loop()
-            cache.set(f"{room_group_name}_game_state", game)
+            cache.set(f"{room_group_name}_game", game)
 
             # envia o estado atualizado para o grupo de websockets
             await self.channel_layer.group_send(

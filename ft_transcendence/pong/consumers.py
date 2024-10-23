@@ -36,16 +36,16 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
-        game = cache.get(f"{self.room_group_name}_game_state")
+        game = cache.get(f"{self.room_group_name}_game")
 
         if game:
             game.stop_game()
             game.reset_game()
-            cache.set(f"{self.room_group_name}_game_state", game)
+            cache.set(f"{self.room_group_name}_game", game)
 
         # por enquanto está deletando quando o usuário desconecta, o que pode deixar o outro jogador sem saber que o outro saiu
         # print("deleting from cache")
-        cache.delete(f"{self.room_group_name}_game_state")
+        cache.delete(f"{self.room_group_name}_game")
 
     async def receive(self, text_data):
         # processa mensagem recebida do cliente
@@ -66,10 +66,10 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
                 await self.start_worker(game)
 
         if message_type == "keydown":
-            game = cache.get(f"{self.room_group_name}_game_state")
+            game = cache.get(f"{self.room_group_name}_game")
             if game:
                 game.key_handler(text_data_json["key"])
-                cache.set(f"{self.room_group_name}_game_state", game)
+                cache.set(f"{self.room_group_name}_game", game)
 
     async def add_to_group(self, room_id):
         self.room_id = room_id
@@ -78,10 +78,10 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
 
     async def initialize_game_state(self, width, height):
         # verifica se já existe um jogo em andamento se não cria um novo
-        game = cache.get(f"{self.room_group_name}_game_state")
+        game = cache.get(f"{self.room_group_name}_game")
         if not game:
             game = PongGame(width, height)
-            cache.set(f"{self.room_group_name}_game_state", game)
+            cache.set(f"{self.room_group_name}_game", game)
         return game
 
     async def assign_player(self, game):
@@ -103,7 +103,7 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
     async def start_worker(self, game):
         # inicia o jogo e envia uma tarefa para o worker processar o estado do jogo
         game.start_game()
-        cache.set(f"{self.room_group_name}_game_state", game)
+        cache.set(f"{self.room_group_name}_game", game)
 
         # envia a tarefa para o worker
         await self.channel_layer.send(
