@@ -3,12 +3,14 @@ from typing import Any, Dict, Optional
 
 THICKNESS = 15
 BALL_SPEED = 1
+PADDLE_SPEED = BALL_SPEED * 2
 X = "x"
 Y = "y"
 RIGHT = "right"
 LEFT = "left"
 UP = "up"
 DOWN = "down"
+STOP = "stop"
 
 
 class Ball:
@@ -22,7 +24,7 @@ class Ball:
         self.base_speed: int = BALL_SPEED
         self.x_start: float = float(width / 2) - self.center
         self.y_start: float = float(height / 2) - self.center
-        self.y_min_start: int = 0 + (6 * THICKNESS)
+        self.y_min_start: int = 6 * THICKNESS
         self.y_max_start: int = height - (6 * THICKNESS)
         self.x: float = self.x_start
         self.y: float = self.y_start
@@ -52,14 +54,10 @@ class Ball:
     ) -> None:
         if (
             self.x <= paddle_left.x + paddle_left.width
-            and self.y >= paddle_left.y
-            and self.y <= paddle_left.y + paddle_left.height
-        ):
-            self.bounce(X)
-        elif (
+            and paddle_left.y <= self.y <= paddle_left.y + paddle_left.height
+        ) or (
             self.x + self.size >= paddle_right.x
-            and self.y >= paddle_right.y
-            and self.y <= paddle_right.y + paddle_right.height
+            and paddle_right.y <= self.y <= paddle_right.y + paddle_right.height
         ):
             self.bounce(X)
 
@@ -74,24 +72,33 @@ class Paddle:
     def __init__(self, width: int, height: int, side: str) -> None:
         self.width: int = THICKNESS
         self.height: int = 120
-        self.top_limit: int = 0 + THICKNESS
+        self.top_limit: int = THICKNESS
         self.bottom_limit: int = height - self.height - THICKNESS
-        self.y: float = float(height / 2 - self.height / 2)
+        self.y: float = float(height / 2) - (self.height / 2)
         if side == LEFT:
             self.x: float = float(THICKNESS * 2)
         else:
             self.x: float = float(width - self.width - (THICKNESS * 2))
-        self.speed: int = BALL_SPEED * 2
+        self.speed: int = 0
 
     def move(self, direction: str) -> None:
         if direction == UP:
-            self.y -= self.speed
-            if self.y <= self.top_limit:
-                self.y = self.top_limit
+            self.speed = -PADDLE_SPEED
         elif direction == DOWN:
-            self.y += self.speed
-            if self.y >= self.bottom_limit:
-                self.y = self.bottom_limit
+            self.speed = PADDLE_SPEED
+        elif direction == STOP:
+            self.speed = 0
+
+    def limit(self) -> None:
+        if self.y <= self.top_limit:
+            self.y = self.top_limit
+
+        if self.y >= self.bottom_limit:
+            self.y = self.bottom_limit
+
+    def movement(self) -> None:
+        self.y += self.speed
+        self.limit()
 
 
 class PongGame:
@@ -130,7 +137,7 @@ class PongGame:
     def stop_game(self) -> None:
         self.started = False
 
-    def key_handler(self, key: str) -> None:
+    def paddle_on(self, key: str) -> None:
         if key == "arrowup":
             self.paddle_right.move(UP)
         elif key == "arrowdown":
@@ -140,8 +147,16 @@ class PongGame:
         elif key == "s":
             self.paddle_left.move(DOWN)
 
+    def paddle_off(self, key: str) -> None:
+        if key == "arrowup" or key == "arrowdown":
+            self.paddle_right.move(STOP)
+        if key == "w" or "s":
+            self.paddle_left.move(STOP)
+
     def game_loop(self) -> None:
         self.ball.check_boundaries(self.width, self.height)
+        self.paddle_left.movement()
+        self.paddle_right.movement()
         self.ball.check_paddles_collisions(self.paddle_left, self.paddle_right)
         self.ball.move()
 

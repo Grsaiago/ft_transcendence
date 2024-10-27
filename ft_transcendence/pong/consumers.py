@@ -69,7 +69,10 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
                 await self.start_worker()
 
         if message_type == "keydown":
-            await self.update_paddles_position(text_data_json["key"])
+            await self.update_paddles_position(text_data_json["key"], True)
+
+        if message_type == "keyup":
+            await self.update_paddles_position(text_data_json["key"], False)
 
     async def add_to_group(self, room_id):
         self.room_id = room_id
@@ -113,7 +116,7 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             },
         )
 
-    async def update_paddles_position(self, key):
+    async def update_paddles_position(self, key, state):
         # envia mensagem para o worker
         await self.channel_layer.send(
             "pong_update_channel",
@@ -121,5 +124,6 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
                 "type": "update_paddles_position",
                 "room_group_name": self.room_group_name,
                 "key": key,
+                "state": state,
             },
         )

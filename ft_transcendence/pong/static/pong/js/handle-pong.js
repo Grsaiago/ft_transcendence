@@ -47,11 +47,26 @@ socket.onclose = function (e) {
     console.log('WebSocket connection closed');
 }
 
+// keydown event listener
 document.addEventListener('keydown', function (event) {
     if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "w" || event.key === "s" || event.key === "W" || event.key === "S") {
         event.preventDefault();
         const message = JSON.stringify({
             type: "keydown",
+            key: event.key.toLocaleLowerCase(),
+        });
+        //console.log('Sending message:', message);
+        socket.send(message);
+    }
+});
+
+
+// keyup event listener
+document.addEventListener('keyup', function (event) {
+    if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "w" || event.key === "s" || event.key === "W" || event.key === "S") {
+        event.preventDefault();
+        const message = JSON.stringify({
+            type: "keyup",
             key: event.key.toLocaleLowerCase(),
         });
         //console.log('Sending message:', message);

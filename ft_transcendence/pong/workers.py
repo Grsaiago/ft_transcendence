@@ -49,16 +49,20 @@ class PongGameWorker(AsyncConsumer):
             )
 
     async def update_paddles_position(self, message):
-        room_group_name = message["room_group_name"]
+        # room_group_name = message["room_group_name"]
         key = message["key"]
+        state = message["state"]
 
-        self.game.key_handler(key)
+        if state:
+            self.game.paddle_on(key)
+        else:
+            self.game.paddle_off(key)
 
-        # envia o estado atualizado para o grupo de websockets
-        await self.channel_layer.group_send(
-            room_group_name,
-            {
-                "type": "send_game_state",
-                "game_state": self.game.get_game_state(),
-            },
-        )
+        # # envia o estado atualizado para o grupo de websockets
+        # await self.channel_layer.group_send(
+        #     room_group_name,
+        #     {
+        #         "type": "send_game_state",
+        #         "game_state": self.game.get_game_state(),
+        #     },
+        # )
