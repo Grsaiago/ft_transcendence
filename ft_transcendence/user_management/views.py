@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm
+from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, CustomAuthenticationForm
 from .models import FriendRequest, Friendship
 
 class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
@@ -71,6 +71,7 @@ class UserSignInView(auth_views.LoginView):
     redirect_authenticated_user = True
     # TODO: Change to homepage instead of password change page
     success_url = reverse_lazy("user_management:homepage")
+    form_class = CustomAuthenticationForm
 
     def get_success_url(self):
         return self.success_url

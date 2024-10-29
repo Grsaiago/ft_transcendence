@@ -1,174 +1,250 @@
 @import url("https://fonts.cdnfonts.com/css/arcade");
+/* font-family: "Arcade Rounded", sans-serif; */
+
+@import url('https://fonts.cdnfonts.com/css/lt-galaxy-reverse');
+/* font-family: 'LT Galaxy Reverse', sans-serif; */
 
 :root {
-  --cor-1: #ffffff;
-  --cor-2: #c0c0c0;
-  --cor-3: #157a8c;
-  --cor-4: #003f69;
-  --cor-5: #260d33;
-  --cor-6: #e0e0e0;
+    --cor-1: #ffffff;
+    --cor-2: #c0c0c0;
+    --cor-3: #157a8c;
+    --cor-4: #003f69;
+    --cor-5: #260d33;
+    --cor-6: #e0e0e0;
 
-  --regular: 400;
-  --bold: 700;
+    --regular: 400;
+    --bold: 700;
 }
 
 html,
 body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  background-color: var(--cor-2);
-  font-family: "Arcade Rounded", sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  margin: 0;
-  padding: 0;
+    background-color: var(--cor-2);
+    font-family: "Arcade Rounded", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
 }
 
 .menu {
-  padding: 8px 24px;
-  color: var(--cor-1);
-  background-color: var(--cor-4);
+    padding: 8px 24px;
+    color: var(--cor-1);
+    background-color: var(--cor-4);
 }
 
 .menu-logo {
-  font-size: 25px;
+    font-size: 20px;
+    text-shadow: 2px 2px 4px #fff;
+}
+
+.nav-link:hover {
+    text-shadow: 
+        -0.3px -0.3px 0.1em #fff,  
+        0.3px -0.3px 0.1em #fff,
+        -0.3px 0.3px 0.1em #fff,
+        0.3px 0.3px 0.1em #fff; 
 }
 
 .rodape {
-  padding: 16px 24px;
-  background-color: var(--cor-3);
+    padding: 16px 24px;
+    background-color: var(--cor-3);
 }
 
 .rodape-link {
-  text-decoration: none;
-  font-size: 14px;
-  color: var(--cor-1);
+    text-decoration: none;
+    font-size: 12px;
+    color: var(--cor-1);
 }
 
 .rodape-link:hover {
-  color: var(--cor-4);
+    color: var(--cor-4);
 }
 
 .app-container {
-  background-color: var(--cor-6);
-  min-height: calc(100vh - 144px);
+    background-color: var(--cor-6);
+    min-height: calc(100vh - 126px);
 }
 
-/* Login form styling */
 .form-sign-in {
-  background-color: var(--cor-2); /* Gray background for the form */
-  border-radius: 15px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  width: 500px;
-  text-align: center;
-  margin: 0;
+    width: 400px;
+    background-color: var(--cor-2);
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--cor-5);
+    
 }
+
+.form-title {
+    font-family: "Arcade Rounded", sans-serif;
+    background-color: var(--cor-4);
+    font-size: 16px;
+    color: #fff;
+}
+
+.btn-custom {
+    background-color: var(--cor-4);
+    color: #fff;
+    font-family: "Arcade Rounded", sans-serif;
+    font-size: 14px;
+}
+
+.btn-custom:hover {
+    background-color: var(--cor-4);
+    color: #fff;
+    text-shadow: 
+        -0.3px -0.3px 0.1em #fff,  
+        0.3px -0.3px 0.1em #fff,
+        -0.3px 0.3px 0.1em #fff,
+        0.3px 0.3px 0.1em #fff; 
+}
+
+.alert {
+    font-size: 16px;
+}
+
+
+@media (min-width: 768px) {
+    body {
+        font-size: 16px;
+    }
+
+    .menu-logo {
+        font-size: 25px;
+    }
+
+    .rodape-link {
+        font-size: 14px;
+    }
+
+    .app-container {
+        min-height: calc(100vh - 144px);
+    }
+
+    .form-sign-in {
+        width: 520px;
+    }
+
+    .form-title {
+        font-size: 18px;
+    }
+
+    .btn-custom {
+        font-size: 16px;
+    }
+
+}
+
+@media(min-width: 1200px) {
+    .form-sign-in {
+        width: 600px;
+    }
+}
+
+/* Login form styling
 
 .form-sign-in h2 {
-  font-size: 85%;
-  color: var(--cor-1);
-  background-color: var(--cor-4); /* Darker gray header background */
-  padding: 10px;
-  border-radius: 15px 15px 0 0;
-  margin-bottom: 20px;
-  margin-top: 0;
+    font-size: 85%;
+    color: var(--cor-1);
+    background-color: var(--cor-4);
+    padding: 10px;
+    border-radius: 15px 15px 0 0;
+    margin-bottom: 20px;
+    margin-top: 0;
 }
 
 .form-sign-in label {
-  display: block;
-  font-size: 60%;
-  color: var(--cor-1);
-  margin-bottom: 10px;
+    display: block;
+    font-size: 60%;
+    color: var(--cor-1);
+    margin-bottom: 10px;
 }
 
 .form-sign-in input[type="text"],
 .form-sign-in input[type="password"] {
-  width: 80%;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background-color: var(--cor-6); /* Light gray for input fields */
-  margin: 0 20px 20px 20px;
-  font-size: 1rem;
+    width: 80%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--cor-6);
+    margin: 0 20px 20px 20px;
+    font-size: 1rem;
 }
 
 .form-sign-in input[type="submit"] {
-  font-family: "Arcade Rounded", sans-serif;
-  padding: 10px 20px;
-  background-color: var(--cor-4); /* Button dark gray */
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 65%;
-  cursor: pointer;
-  margin-bottom: 20px;
+    font-family: "Arcade Rounded", sans-serif;
+    padding: 10px 20px;
+    background-color: var(--cor-4);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 65%;
+    cursor: pointer;
+    margin-bottom: 20px;
 }
 
 .form-sign-in input[type="submit"]:hover {
-  background-color: var(--cor-3); /* Slightly darker gray on hover */
+    background-color: var(--cor-3);
 }
+*/
 
 /* Sign-up */
 .form-sign-up {
-  background-color: var(--cor-2); /* Gray background for the form */
-  border-radius: 15px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  width: 500px;
-  text-align: center;
-  margin: 0;
+    background-color: var(--cor-2);
+    border-radius: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    width: 500px;
+    text-align: center;
+    margin: 0;
 }
 
 .form-sign-up h2 {
-  font-size: 85%;
-  color: var(--cor-1);
-  background-color: var(--cor-4); /* Darker gray header background */
-  padding: 10px;
-  border-radius: 15px 15px 0 0;
-  margin-bottom: 20px;
-  margin-top: 0;
+    font-size: 85%;
+    color: var(--cor-1);
+    background-color: var(--cor-4); /* Darker gray header background */
+    padding: 10px;
+    border-radius: 15px 15px 0 0;
+    margin-bottom: 20px;
+    margin-top: 0;
 }
 
 .form-sign-up label {
-  display: block;
-  font-size: 60%;
-  color: var(--cor-1);
-  margin-bottom: 5px;
+    display: block;
+    font-size: 60%;
+    color: var(--cor-1);
+    margin-bottom: 5px;
 }
 
 .form-sign-up input[type="text"],
 .form-sign-up input[type="password"] {
-  width: 80%;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background-color: var(--cor-6); /* Light gray for input fields */
-  margin: 0 20px 10px 20px;
-  font-size: 65%;
+    width: 80%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--cor-6); /* Light gray for input fields */
+    margin: 0 20px 10px 20px;
+    font-size: 65%;
 }
 
 .form-sign-up input[type="submit"] {
-  font-family: "Arcade Rounded", sans-serif;
-  font-size: 65%;
-  padding: 10px 20px;
-  background-color: var(--cor-4); /* Button dark gray */
-  color: var(--cor-1);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  margin-top: 5px;
+    font-family: "Arcade Rounded", sans-serif;
+    font-size: 65%;
+    padding: 10px 20px;
+    background-color: var(--cor-4); /* Button dark gray */
+    color: var(--cor-1);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    margin-top: 5px;
 }
 
 .form-sign-up input[type="submit"]:hover {
-  background-color: var(--cor-3); /* Slightly darker gray on hover */
-}
-
-.alert {
-  color: rgb(123, 0, 0);
-  font-size: 50%;
-  margin-bottom: 15px;
+    background-color: var(--cor-3); /* Slightly darker gray on hover */
 }

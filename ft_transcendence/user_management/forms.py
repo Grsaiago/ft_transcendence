@@ -1,9 +1,17 @@
 import django.forms as forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm, ValidationError
 from django.db.models import Q
 
 from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
+class CustomAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'autofocus': True})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
 
 class TranscendenceUserCreationForm(UserCreationForm):
     usable_password = None
