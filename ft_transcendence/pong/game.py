@@ -16,8 +16,12 @@ STOP = "stop"
 class Ball:
     def __init__(self, width: int, height: int) -> None:
         """
-        Ball class constructor.
-        x and y coordinates are defined relative to the top-left corner.
+        Ball class constructor. Initializes the ball's size, position, and speed.
+        Self x and y coordinates are defined relative to the top-left corner.
+
+        Args:
+            width (int): The width of game are from canvas.
+            height (int): The height of the game area from canvas.
         """
         self.size: int = THICKNESS
         self.center: float = float(self.size / 2)
@@ -32,17 +36,34 @@ class Ball:
         self.y_speed: float = float(self.base_speed)
 
     def move(self) -> None:
+        """
+        Updates the ball's position based on its current speed.
+        """
         self.x += self.x_speed
         self.y += self.y_speed
 
     def bounce(self, direction: str) -> None:
+        """
+        Reverses the ball's speed in the given direction.
+
+        Args:
+            direction (str): The direction in which to reverse the ball's speed ('x' or 'y').
+        """
         if direction == X:
             self.x_speed *= -1
         elif direction == Y:
             self.y_speed *= -1
 
     def check_boundaries(self, width: int, height: int) -> None:
-        if self.y <= (0 + THICKNESS) or self.y + self.size >= (height - THICKNESS):
+        """
+        Checks if the ball hits the top or bottom boundaries and bounces it.
+        Resets the ball if it hits the left or right boundaries.
+
+        Args:
+            width (int): The width of game are from canvas.
+            height (int): The height of the game area from canvas.
+        """
+        if self.y <= THICKNESS or self.y + self.size >= (height - THICKNESS):
             self.bounce(Y)
         if self.x <= 0 or self.x + self.size >= width:
             self.reset()
@@ -52,6 +73,13 @@ class Ball:
     def check_paddles_collisions(
         self, paddle_left: "Paddle", paddle_right: "Paddle"
     ) -> None:
+        """
+        Checks if the ball collides with either paddle and bounces it accordingly.
+
+        Args:
+            paddle_left (Paddle): The left paddle object.
+            paddle_right (Paddle): The right paddle object.
+        """
         if (
             self.x <= paddle_left.x + paddle_left.width
             and paddle_left.y <= self.y <= paddle_left.y + paddle_left.height
@@ -62,6 +90,9 @@ class Ball:
             self.bounce(X)
 
     def reset(self):
+        """
+        Resets the ball's position and speed, but randomizes the y-coordinate.
+        """
         self.x = self.x_start
         self.y = float(random.randint(self.y_min_start, self.y_max_start))
         self.x_speed = self.base_speed
@@ -70,6 +101,14 @@ class Ball:
 
 class Paddle:
     def __init__(self, width: int, height: int, side: str) -> None:
+        """
+        Paddle class constructor. Initializes the paddle's position, size, and movement speed.
+
+        Args:
+            width (int): The width of the game area.
+            height (int): The height of the game area.
+            side (str): The side the paddle is on ('left' or 'right').
+        """
         self.width: int = THICKNESS
         self.height: int = 120
         self.top_limit: int = THICKNESS
@@ -82,6 +121,12 @@ class Paddle:
         self.speed: int = 0
 
     def move(self, direction: str) -> None:
+        """
+        Sets the paddle's speed based on the direction of movement.
+
+        Args:
+            direction (str): The direction to move the paddle ('up', 'down', or 'stop').
+        """
         if direction == UP:
             self.speed = -PADDLE_SPEED
         elif direction == DOWN:
@@ -90,19 +135,32 @@ class Paddle:
             self.speed = 0
 
     def limit(self) -> None:
+        """
+        Limits the paddle's movement to prevent it from moving outside the game area.
+        """
         if self.y <= self.top_limit:
             self.y = self.top_limit
 
         if self.y >= self.bottom_limit:
             self.y = self.bottom_limit
 
-    def movement(self) -> None:
+    def update_position(self) -> None:
+        """
+        Updates the paddle's position based on its speed and applies movement limits.
+        """
         self.y += self.speed
         self.limit()
 
 
 class PongGame:
     def __init__(self, width: int, height: int) -> None:
+        """
+        PongGame class constructor. Initializes the game area, ball, and paddles.
+
+        Args:
+            width (int): The width of the game area.
+            height (int): The height of the game area.
+        """
         self.width: int = width
         self.height: int = height
         self.ball: Ball = Ball(width, height)
@@ -138,6 +196,12 @@ class PongGame:
         self.started = False
 
     def paddle_on(self, key: str) -> None:
+        """
+        Activates the paddle's movement based on the key pressed.
+
+        Args:
+            key (str): The key pressed by the player ('arrowup', 'arrowdown', 'w', 's').
+        """
         if key == "arrowup":
             self.paddle_right.move(UP)
         elif key == "arrowdown":
@@ -148,17 +212,26 @@ class PongGame:
             self.paddle_left.move(DOWN)
 
     def paddle_off(self, key: str) -> None:
-        if key == "arrowup" or key == "arrowdown":
+        """
+        Stops the paddle's movement when the key is released.
+
+        Args:
+            key (str): The key released by the player ('arrowup', 'arrowdown', 'w', 's').
+        """
+        if key in ["arrowup", "arrowdown"]:
             self.paddle_right.move(STOP)
-        if key == "w" or "s":
+        if key in ["w", "s"]:
             self.paddle_left.move(STOP)
 
     def game_loop(self) -> None:
+        """
+        Executes the main game loop, updating the ball and paddle positions and checking for collisions.
+        """
         self.ball.check_boundaries(self.width, self.height)
-        self.paddle_left.movement()
-        self.paddle_right.movement()
         self.ball.check_paddles_collisions(self.paddle_left, self.paddle_right)
         self.ball.move()
+        self.paddle_left.update_position()
+        self.paddle_right.update_position()
 
     def reset_game(self) -> None:
         self.ball.reset()
