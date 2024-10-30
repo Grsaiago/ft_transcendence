@@ -70,25 +70,6 @@ class Ball:
             if random.randint(0, 1) == 0:
                 self.bounce(X)
 
-    def check_paddles_collisions(
-        self, paddle_left: "Paddle", paddle_right: "Paddle"
-    ) -> None:
-        """
-        Checks if the ball collides with either paddle and bounces it accordingly.
-
-        Args:
-            paddle_left (Paddle): The left paddle object.
-            paddle_right (Paddle): The right paddle object.
-        """
-        if (
-            self.x <= paddle_left.x + paddle_left.width
-            and paddle_left.y <= self.y <= paddle_left.y + paddle_left.height
-        ) or (
-            self.x + self.size >= paddle_right.x
-            and paddle_right.y <= self.y <= paddle_right.y + paddle_right.height
-        ):
-            self.bounce(X)
-
     def reset(self):
         """
         Resets the ball's position and speed, but randomizes the y-coordinate.
@@ -120,7 +101,7 @@ class Paddle:
             self.x: float = float(width - self.width - (THICKNESS * 2))
         self.speed: int = 0
 
-    def move(self, direction: str) -> None:
+    def set_speed(self, direction: str) -> None:
         """
         Sets the paddle's speed based on the direction of movement.
 
@@ -144,7 +125,7 @@ class Paddle:
         if self.y >= self.bottom_limit:
             self.y = self.bottom_limit
 
-    def update_position(self) -> None:
+    def move(self) -> None:
         """
         Updates the paddle's position based on its speed and applies movement limits.
         """
@@ -203,13 +184,13 @@ class PongGame:
             key (str): The key pressed by the player ('arrowup', 'arrowdown', 'w', 's').
         """
         if key == "arrowup":
-            self.paddle_right.move(UP)
+            self.paddle_right.set_speed(UP)
         elif key == "arrowdown":
-            self.paddle_right.move(DOWN)
+            self.paddle_right.set_speed(DOWN)
         elif key == "w":
-            self.paddle_left.move(UP)
+            self.paddle_left.set_speed(UP)
         elif key == "s":
-            self.paddle_left.move(DOWN)
+            self.paddle_left.set_speed(DOWN)
 
     def paddle_off(self, key: str) -> None:
         """
@@ -219,19 +200,42 @@ class PongGame:
             key (str): The key released by the player ('arrowup', 'arrowdown', 'w', 's').
         """
         if key in ["arrowup", "arrowdown"]:
-            self.paddle_right.move(STOP)
+            self.paddle_right.set_speed(STOP)
         if key in ["w", "s"]:
-            self.paddle_left.move(STOP)
+            self.paddle_left.set_speed(STOP)
+
+    def check_collisions(self) -> None:
+        """
+        Checks for collisions between the ball and the paddles.
+        """
+        if (
+            self.paddle_left.x
+            <= self.ball.x
+            <= self.paddle_left.x + self.paddle_left.width
+            and self.paddle_left.y
+            <= self.ball.y
+            <= self.paddle_left.y + self.paddle_left.height
+        ):
+            self.ball.bounce(X)
+        if (
+            self.paddle_right.x
+            <= self.ball.x + self.ball.size
+            <= self.paddle_right.x + self.paddle_right.width
+            and self.paddle_right.y
+            <= self.ball.y
+            <= self.paddle_right.y + self.paddle_right.height
+        ):
+            self.ball.bounce(X)
 
     def game_loop(self) -> None:
         """
         Executes the main game loop, updating the ball and paddle positions and checking for collisions.
         """
         self.ball.check_boundaries(self.width, self.height)
-        self.ball.check_paddles_collisions(self.paddle_left, self.paddle_right)
+        self.check_collisions()
         self.ball.move()
-        self.paddle_left.update_position()
-        self.paddle_right.update_position()
+        self.paddle_left.move()
+        self.paddle_right.move()
 
     def reset_game(self) -> None:
         self.ball.reset()
