@@ -1,4 +1,4 @@
-# import asyncio
+import asyncio
 
 from channels.consumer import AsyncConsumer
 
@@ -21,7 +21,7 @@ class PongGameWorker(AsyncConsumer):
         if room_id not in self.game:
             self.game[room_id] = PongGame(width, height)
 
-        game_state = self.game[room_id].get_game_state()
+        game_state = await self.game[room_id].get_game_state()
 
         await self.channel_layer.group_send(
             room_group_name,
@@ -38,8 +38,8 @@ class PongGameWorker(AsyncConsumer):
         if room_id not in self.game:
             await self.initialize_game(message)
 
-        self.game[room_id].game_loop()
-        game_state = self.game[room_id].get_game_state()
+        await self.game[room_id].game_loop()
+        game_state = await self.game[room_id].get_game_state()
 
         await self.channel_layer.group_send(
             room_group_name,
@@ -50,7 +50,7 @@ class PongGameWorker(AsyncConsumer):
         )
 
         # pequena pausa para simular a velocidade do jogo (60fps)
-        # await asyncio.sleep(0.008)
+        await asyncio.sleep(0.016)
 
         # reenvia a tarefa para si mesmo para continuar processando o estado do jogo
         await self.channel_layer.send(
@@ -69,9 +69,9 @@ class PongGameWorker(AsyncConsumer):
         state = message["state"]
 
         if state:
-            self.game[room_id].paddle_on(key)
+            await self.game[room_id].paddle_on(key)
         else:
-            self.game[room_id].paddle_off(key)
+            await self.game[room_id].paddle_off(key)
 
         # # envia o estado atualizado para o grupo de websockets
         # await self.channel_layer.group_send(
