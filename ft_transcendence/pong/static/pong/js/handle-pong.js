@@ -47,6 +47,19 @@ socket.onclose = function (e) {
     console.log('WebSocket connection closed');
 }
 
+
+// key start event listener
+document.addEventListener('keydown', function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        const message = JSON.stringify({
+            type: "start_game",
+        });
+        console.log('Sending message:', message);
+        socket.send(message);
+    }
+});
+
 // keydown event listener
 document.addEventListener('keydown', function (event) {
     if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "w" || event.key === "s" || event.key === "W" || event.key === "S") {
