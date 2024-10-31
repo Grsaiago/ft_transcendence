@@ -9,6 +9,12 @@
             {% if field.errors %}<small>{{ field.errors|striptags }}</small>{% endif %}
         </div>
         {% endfor %}
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert text-danger p-0 mb-2 {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
         <button class="btn btn-custom mt-1" type="submit" value="register">
             <p class="btn-custom-name m-0">register</p>
         </button>

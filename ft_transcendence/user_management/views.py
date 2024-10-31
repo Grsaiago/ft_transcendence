@@ -60,6 +60,18 @@ class UserSignUpView(generic_views.FormView):
         form.save()
         return super().form_valid(form)
     
+    def form_invalid(self, form):
+        if form.has_error('username'):
+            messages.error(self.request, "The username is already taken.")
+
+        elif form.has_error('password2'):
+            messages.error(self.request, "The passwords do not match. Please try again.")
+
+        if not any(form.has_error(field) for field in ['username', 'first_name', 'password2']):
+            messages.error(self.request, "Please correct the errors.")
+
+        return self.render_to_response(self.get_context_data(form=form))
+    
     def get(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             context = self.get_context_data()
@@ -86,7 +98,6 @@ class UserSignInView(auth_views.LoginView):
             return render(request, "user_management/sign_in.html", context)
         return super().get(request, *args, **kwargs)
     
-
     def get(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             context = self.get_context_data()
