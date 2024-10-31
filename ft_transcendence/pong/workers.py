@@ -90,6 +90,13 @@ class PongGameWorker(AsyncConsumer):
         #     },
         # )
 
+    async def finish_game(self, message):
+        room_id = message["room_id"]
+        if room_id in self.game:
+            del self.game[room_id]
+            self.tasks[room_id].cancel()
+            del self.tasks[room_id]
+
 
 #############
 # without async
