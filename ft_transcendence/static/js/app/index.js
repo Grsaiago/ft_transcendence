@@ -112,11 +112,11 @@ const handleMessage = (event) => {
         var data = JSON.parse(event.data);  // Fix typo: JSON.parse() should be called on event.data
         console.log(data);
         let messageInfo = {
-            'sender': data.sender,
-            'message': data.message,
+            ...data,
             'time': Date.now()
         }
-        displayMessage(messageInfo);
+        if (messageInfo.chat_id == currentChatId)
+            displayMessage(messageInfo);
         atualizaHistorico(messageInfo);
     } catch (err) {
         console.error("Error parsing WebSocket message: ", err);
@@ -128,7 +128,7 @@ const displayMessage = (messageInfo, time) => {
     const sender = document.createElement('p');
     const newMessage = document.createElement('p');
     const msgTime = new Date(messageInfo.time);
-    sender.textContent = messageInfo.sender + ', ' + msgTime.getHours() + ':' + msgTime.getMinutes();  // Assuming messageInfo has a 'message' field
+    sender.textContent = messageInfo.sender + ', ' + msgTime.getHours() + ':' + msgTime.getMinutes();  // diplay minutes with two digits
     newMessage.textContent = messageInfo.message;  // Assuming data has a 'message' field
     sender.classList.add('chat-msg-user-time');
     newMessage.classList.add('chat-msg-content');
@@ -137,10 +137,10 @@ const displayMessage = (messageInfo, time) => {
 }
 
 const atualizaHistorico = (messageInfo) => {
-    let chatMessages = chatHistory.get(currentChatId);
+    let chatMessages = chatHistory.get(messageInfo.chat_id);
     if (!chatMessages) {
         chatMessages = [];
-        chatHistory.set(currentChatId, chatMessages);
+        chatHistory.set(messageInfo.chat_id, chatMessages);
     }
     chatMessages.push(messageInfo);
 }
