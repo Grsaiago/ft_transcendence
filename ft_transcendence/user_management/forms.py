@@ -7,14 +7,29 @@ from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control', 'autofocus': True})
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'autofocus': True})
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+        widget=forms.PasswordInput(attrs={'class': 'form-control  form-control-sm'})
     )
 
 class TranscendenceUserCreationForm(UserCreationForm):
     usable_password = None
+
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control  form-control-sm', 'autofocus': True})
+    )
+    first_name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control  form-control-sm'})
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control  form-control-sm'}),
+        label="Password"
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control  form-control-sm'}),
+        label="Password Confirmation"
+    )
 
     class Meta(UserCreationForm.Meta):
         model = TrUser

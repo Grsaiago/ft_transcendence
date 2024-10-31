@@ -6,11 +6,11 @@
 
 :root {
     --cor-1: #ffffff;
-    --cor-2: #c0c0c0;
-    --cor-3: #157a8c;
-    --cor-4: #003f69;
-    --cor-5: #260d33;
-    --cor-6: #e0e0e0;
+    --cor-2: #e0e0e0;
+    --cor-3: #c0c0c0;
+    --cor-4: #157a8c;
+    --cor-5: #003f69;
+    --cor-6: #260d33;
 
     --regular: 400;
     --bold: 700;
@@ -35,7 +35,7 @@ body {
 .menu {
     padding: 8px 24px;
     color: var(--cor-1);
-    background-color: var(--cor-4);
+    background-color: var(--cor-5);
 }
 
 .menu-logo {
@@ -53,7 +53,7 @@ body {
 
 .rodape {
     padding: 16px 24px;
-    background-color: var(--cor-3);
+    background-color: var(--cor-4);
 }
 
 .rodape-link {
@@ -63,46 +63,49 @@ body {
 }
 
 .rodape-link:hover {
-    color: var(--cor-4);
+    color: var(--cor-5);
 }
 
 .app-container {
-    background-color: var(--cor-6);
+    background-color: var(--cor-2);
     min-height: calc(100vh - 126px);
 }
 
-.form-sign-in {
+.form-sign {
     width: 400px;
-    background-color: var(--cor-2);
+    background-color: var(--cor-3);
     font-family: 'LT Galaxy Reverse', sans-serif;
     font-weight: 600;
-    font-size: 20px;
-    color: var(--cor-5);
-    
+    font-size: 18px;
+    color: var(--cor-6);
 }
 
 .form-title {
     font-family: "Arcade Rounded", sans-serif;
-    background-color: var(--cor-4);
+    background-color: var(--cor-5);
     font-size: 16px;
     color: #fff;
 }
 
 .btn-custom {
-    background-color: var(--cor-4);
-    color: #fff;
-    font-family: "Arcade Rounded", sans-serif;
-    font-size: 14px;
+    background-color: var(--cor-5);
 }
 
+
 .btn-custom:hover {
-    background-color: var(--cor-4);
+    background-color: var(--cor-5);
     color: #fff;
     text-shadow: 
-        -0.3px -0.3px 0.1em #fff,  
-        0.3px -0.3px 0.1em #fff,
-        -0.3px 0.3px 0.1em #fff,
-        0.3px 0.3px 0.1em #fff; 
+    -0.3px -0.3px 0.1em #fff,  
+    0.3px -0.3px 0.1em #fff,
+    -0.3px 0.3px 0.1em #fff,
+    0.3px 0.3px 0.1em #fff; 
+}
+
+.btn-custom-name {
+    color: #fff;
+    font-family: "Arcade Rounded", sans-serif;
+    font-size: 12px;
 }
 
 .alert {
@@ -127,7 +130,7 @@ body {
         min-height: calc(100vh - 144px);
     }
 
-    .form-sign-in {
+    .form-sign {
         width: 520px;
     }
 
@@ -142,109 +145,7 @@ body {
 }
 
 @media(min-width: 1200px) {
-    .form-sign-in {
+    .form-sign {
         width: 600px;
     }
-}
-
-/* Login form styling
-
-.form-sign-in h2 {
-    font-size: 85%;
-    color: var(--cor-1);
-    background-color: var(--cor-4);
-    padding: 10px;
-    border-radius: 15px 15px 0 0;
-    margin-bottom: 20px;
-    margin-top: 0;
-}
-
-.form-sign-in label {
-    display: block;
-    font-size: 60%;
-    color: var(--cor-1);
-    margin-bottom: 10px;
-}
-
-.form-sign-in input[type="text"],
-.form-sign-in input[type="password"] {
-    width: 80%;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    background-color: var(--cor-6);
-    margin: 0 20px 20px 20px;
-    font-size: 1rem;
-}
-
-.form-sign-in input[type="submit"] {
-    font-family: "Arcade Rounded", sans-serif;
-    padding: 10px 20px;
-    background-color: var(--cor-4);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 65%;
-    cursor: pointer;
-    margin-bottom: 20px;
-}
-
-.form-sign-in input[type="submit"]:hover {
-    background-color: var(--cor-3);
-}
-*/
-
-/* Sign-up */
-.form-sign-up {
-    background-color: var(--cor-2);
-    border-radius: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 500px;
-    text-align: center;
-    margin: 0;
-}
-
-.form-sign-up h2 {
-    font-size: 85%;
-    color: var(--cor-1);
-    background-color: var(--cor-4); /* Darker gray header background */
-    padding: 10px;
-    border-radius: 15px 15px 0 0;
-    margin-bottom: 20px;
-    margin-top: 0;
-}
-
-.form-sign-up label {
-    display: block;
-    font-size: 60%;
-    color: var(--cor-1);
-    margin-bottom: 5px;
-}
-
-.form-sign-up input[type="text"],
-.form-sign-up input[type="password"] {
-    width: 80%;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    background-color: var(--cor-6); /* Light gray for input fields */
-    margin: 0 20px 10px 20px;
-    font-size: 65%;
-}
-
-.form-sign-up input[type="submit"] {
-    font-family: "Arcade Rounded", sans-serif;
-    font-size: 65%;
-    padding: 10px 20px;
-    background-color: var(--cor-4); /* Button dark gray */
-    color: var(--cor-1);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-bottom: 20px;
-    margin-top: 5px;
-}
-
-.form-sign-up input[type="submit"]:hover {
-    background-color: var(--cor-3); /* Slightly darker gray on hover */
 }
