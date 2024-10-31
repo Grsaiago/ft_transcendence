@@ -34,9 +34,8 @@ class PongGameWorker(AsyncConsumer):
 
     async def start_game_loop(self, room_id, room_group_name):
         while room_id in self.game:
-            await self.game[room_id].game_loop()
-            game_state = await self.game[room_id].get_game_state()
-
+            game_state = await self.game[room_id].calculate_game_tick()
+            # enviar as informações do jogo para o grupo de websockets
             await self.channel_layer.group_send(
                 room_group_name,
                 {
@@ -44,7 +43,6 @@ class PongGameWorker(AsyncConsumer):
                     "game_state": game_state,
                 },
             )
-
             # pequena pausa para simular a velocidade do jogo (60fps)
             await asyncio.sleep(0.016)
 

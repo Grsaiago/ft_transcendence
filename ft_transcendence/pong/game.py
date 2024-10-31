@@ -1,5 +1,5 @@
 import random
-from typing import Any, Dict, Optional
+from typing import Dict, Optional, TypedDict
 
 THICKNESS = 15
 BALL_SPEED = 1
@@ -11,6 +11,35 @@ LEFT = "left"
 UP = "up"
 DOWN = "down"
 STOP = "stop"
+
+
+class BallPosition(TypedDict):
+    x: float
+    y: float
+    size: int
+    center: float
+    x_speed: float
+    y_speed: float
+
+
+class PaddlePosition(TypedDict):
+    x: float
+    y: float
+    width: int
+    height: int
+
+
+class GameState(TypedDict):
+    width: int
+    height: int
+    ball: BallPosition
+    paddle_left: PaddlePosition
+    paddle_right: PaddlePosition
+    players: Dict[str, str]
+    score: Dict[str, int]
+    winner: Optional[int]
+    started: bool
+    finished: bool
 
 
 class Ball:
@@ -53,22 +82,6 @@ class Ball:
             self.x_speed *= -1
         elif direction == Y:
             self.y_speed *= -1
-
-    async def check_boundaries(self, width: int, height: int) -> None:
-        """
-        Checks if the ball hits the top or bottom boundaries and bounces it.
-        Resets the ball if it hits the left or right boundaries.
-
-        Args:
-            width (int): The width of game are from canvas.
-            height (int): The height of the game area from canvas.
-        """
-        if self.y <= THICKNESS or self.y + self.size >= (height - THICKNESS):
-            await self.bounce(Y)
-        if self.x <= 0 or self.x + self.size >= width:
-            await self.reset()
-            if random.randint(0, 1) == 0:
-                await self.bounce(X)
 
     async def reset(self):
         """
@@ -204,10 +217,21 @@ class PongGame:
         if key in ["w", "s"]:
             await self.paddle_left.set_speed(STOP)
 
-    async def check_collisions(self) -> None:
+    async def calculate_ball_colision(self) -> None:
         """
-        Checks for collisions between the ball and the paddles.
+        Checks if the ball hits the top or bottom boundaries and bounces it.
+        Resets the ball if it hits the left or right boundaries.
         """
+        if self.ball.y <= THICKNESS or self.ball.y + self.ball.size >= (
+            self.height - THICKNESS
+        ):
+            await self.ball.bounce(Y)
+        if self.ball.x <= 0 or self.ball.x + self.ball.size >= self.width:
+            await self.ball.reset()
+            if random.randint(0, 1) == 0:
+                await self.ball.bounce(X)
+
+    async def calculate_paddle_colision(self) -> None:
         if (
             self.paddle_left.x
             <= self.ball.x
@@ -227,21 +251,31 @@ class PongGame:
         ):
             await self.ball.bounce(X)
 
-    async def game_loop(self) -> None:
+    async def check_colisions(self) -> None:
         """
-        Executes the main game loop, updating the ball and paddle positions and checking for collisions.
+        Checks for collisions between the ball and the paddles.
         """
-        await self.ball.check_boundaries(self.width, self.height)
-        await self.check_collisions()
+        await self.calculate_ball_colision()
+        await self.calculate_paddle_colision()
+
+    async def move_objects(self) -> None:
         await self.ball.move()
         await self.paddle_left.move()
         await self.paddle_right.move()
+
+    async def calculate_game_tick(self) -> GameState:
+        """
+        Executes the main game loop, updating the ball and paddle positions and checking for collisions.
+        """
+        await self.check_colisions()  # calculates the object's new positions
+        await self.move_objects()  # moves the objects to their new positions
+        return await self.get_game_state()  # returns the current game state
 
     async def reset_game(self) -> None:
         await self.ball.reset()
         self.started = False
 
-    async def get_game_state(self) -> Dict[str, Any]:
+    async def get_game_state(self) -> GameState:
         return {
             "width": self.width,
             "height": self.height,
