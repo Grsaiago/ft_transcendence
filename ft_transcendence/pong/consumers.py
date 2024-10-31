@@ -33,6 +33,8 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
+            # remove os dados do jogo
+            cache.delete(f"{self.room_group_name}_game_data")
 
     async def receive(self, text_data):
         # processa mensagem recebida do cliente
