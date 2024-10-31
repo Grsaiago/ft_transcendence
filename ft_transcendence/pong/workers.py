@@ -62,9 +62,11 @@ class PongGameWorker(AsyncConsumer):
         room_id = message["room_id"]
         room_group_name = message["room_group_name"]
 
+        # Inicializa o jogo se ainda não foi inicializado
         if room_id not in self.game:
             await self.initialize_game(message)
 
+        # Inicia a tarefa de loop do jogo se ainda não foi iniciada
         if room_id not in self.tasks:
             self.tasks[room_id] = asyncio.create_task(
                 self.start_game_loop(room_id, room_group_name)
@@ -72,7 +74,6 @@ class PongGameWorker(AsyncConsumer):
 
     async def update_paddles_position(self, message):
         room_id = message["room_id"]
-        # room_group_name = message["room_group_name"]
         key = message["key"]
         state = message["state"]
 
@@ -80,15 +81,6 @@ class PongGameWorker(AsyncConsumer):
             await self.game[room_id].paddle_on(key)
         else:
             await self.game[room_id].paddle_off(key)
-
-        # # envia o estado atualizado para o grupo de websockets
-        # await self.channel_layer.group_send(
-        #     room_group_name,
-        #     {
-        #         "type": "send_game_state",
-        #         "game_state": self.game.get_game_state(),
-        #     },
-        # )
 
     async def finish_game(self, message):
         room_id = message["room_id"]
