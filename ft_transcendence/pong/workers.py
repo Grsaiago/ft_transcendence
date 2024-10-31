@@ -48,16 +48,6 @@ class PongGameWorker(AsyncConsumer):
             # pequena pausa para simular a velocidade do jogo (60fps)
             await asyncio.sleep(0.016)
 
-            # reenvia a tarefa para si mesmo para continuar processando o estado do jogo
-            await self.channel_layer.send(
-                "pong_update_channel",
-                {
-                    "type": "update_game_state",
-                    "room_id": room_id,
-                    "room_group_name": room_group_name,
-                },
-            )
-
     async def update_game_state(self, message):
         room_id = message["room_id"]
         room_group_name = message["room_group_name"]
