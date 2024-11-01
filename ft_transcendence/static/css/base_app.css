@@ -42,11 +42,11 @@ body {
 }
 
 .nav-link:hover {
-    text-shadow: 
-        -0.3px -0.3px 0.1em #fff,  
+    text-shadow:
+        -0.3px -0.3px 0.1em #fff,
         0.3px -0.3px 0.1em #fff,
         -0.3px 0.3px 0.1em #fff,
-        0.3px 0.3px 0.1em #fff; 
+        0.3px 0.3px 0.1em #fff;
 }
 
 .menu-profile-imagem {
@@ -63,11 +63,11 @@ body {
 }
 
 .menu-profile-username:hover {
-    text-shadow: 
-        -0.3px -0.3px 0.1em #fff,  
+    text-shadow:
+        -0.3px -0.3px 0.1em #fff,
         0.3px -0.3px 0.1em #fff,
         -0.3px 0.3px 0.1em #fff,
-        0.3px 0.3px 0.1em #fff; 
+        0.3px 0.3px 0.1em #fff;
 }
 
 .menu-profile-logout {
@@ -95,14 +95,42 @@ body {
     color: var(--cor-4);
 }
 
-#app {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 5%;
+.app-container {
     background-color: var(--cor-6);
-    gap: 50px;
+    min-height: calc(100vh - 182px);
+}
+
+.profile-image {
+    background-color: var(--cor-5);
+    width: 160px;
+    height: 160px;
+}
+
+.profile-div,
+.history {
+    background-color: var(--cor-2);
+}
+
+.profile-title,
+.history-title {
+    background-color: var(--cor-4);
+    color: var(--cor-1);
+}
+
+.profile-discription,
+.history-discription {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+
+@media (min-width: 574px) {
+    .app-container {
+        min-height: calc(100vh - 126px);
+    }
+
+
 }
 
 @media (min-width: 768px) {
@@ -126,26 +154,35 @@ body {
     .rodape-link {
         font-size: 14px;
     }
+
+    .app-container {
+        min-height: calc(100vh - 144px);
+    }
+
+    .profile-discription,
+    .history-discription {
+        font-size: 18px;
+    }
 }
 
+/* #app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 5%;
+    background-color: var(--cor-6);
+    gap: 50px;
+} */
+
 /*profile*/
-.profile {
+/* .profile {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
 }
 
-.profile-div,
-.history {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    background-color: var(--cor-2);
-    border-radius: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    margin: 0;
-}
 
 .profile-image {
     display: flex;
@@ -206,7 +243,7 @@ body {
     font-size: 50%;
     padding: 0 15px;
     margin: 10px 0;
-}
+} */
 
 /*chat*/
 
@@ -214,7 +251,7 @@ body {
 .friends-list {
     display: flex;
     flex-direction: column;
-    background-color: var(--cor-2); /* Light gray background */
+    background-color: var(--cor-2); 
     border-radius: var(--border-radius);
     width: 20%;
     height: 100%;
@@ -224,7 +261,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--cor-4); /* Dark gray for the header */
+    background-color: var(--cor-4); 
     padding: 10px 25px;
     border-radius: var(--border-radius) var(--border-radius) 0 0;
     color: var(--cor-1);
@@ -240,7 +277,7 @@ body {
 .search {
     display: flex;
     align-items: center;
-    background-color: var(--cor-6); /* Slightly darker gray for the search bar */
+    background-color: var(--cor-6); 
     border-radius: var(--border-radius);
     margin: 10px;
 }
@@ -276,7 +313,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #e0e0e0; /* Light gray for friend list */
+    background-color: #e0e0e0;
     padding: 0px 10px;
     border-radius: var(--border-radius);
     margin: 10px;
@@ -289,17 +326,17 @@ body {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background-color: #fff; /* Default white for status */
+    background-color: #fff;
     margin-right: 10px;
     position: fixed;
 }
 
 .friends-list .friend.online .status-icon {
-    background-color: #33a733; /* Green for online */
+    background-color: #33a733; 
 }
 
 .friends-list .friend.offline .status-icon {
-    background-color: #aa0909; /* Red for offline */
+    background-color: #aa0909; 
 }
 
 .friends-list .friend .status-icon {
@@ -318,9 +355,8 @@ body {
     margin: 5px 10px;
 }
 
-/* Chat Window section */
 .chat-window {
-    background-color: var(--cor-2); /* Light gray background */
+    background-color: var(--cor-2);
     padding: 0;
     border-radius: var(--border-radius);
     height: 100%;
@@ -331,7 +367,7 @@ body {
 }
 
 .chat-window h2 {
-    background-color: var(--cor-4); /* Dark gray for chat header */
+    background-color: var(--cor-4);
     border-radius: var(--border-radius) var(--border-radius) 0 0;
     color: var(--cor-1);
     text-align: center;
@@ -341,7 +377,7 @@ body {
 }
 
 .chat-window .messages {
-    background-color: var(--cor-2); /* Light gray background for messages */
+    background-color: var(--cor-2);
     font-size: 50%;
     padding: 2% 5%;
     text-align: right;
@@ -360,7 +396,7 @@ body {
 .chat-window .message-input {
     display: flex;
     align-items: center;
-    background-color: var(--cor-6); /* Slightly darker gray for input area */
+    background-color: var(--cor-6); 
     border-radius: 20px;
     gap: 5px;
     margin: 10px 5px 7px 5px;
