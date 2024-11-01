@@ -165,6 +165,14 @@ body {
     }
 }
 
+@media (min-width: 1200px) {
+    .profile-image {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+
 /* #app {
     display: flex;
     justify-content: center;
