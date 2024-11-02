@@ -33,7 +33,7 @@
                 </div>
                 <div class="col col-md-2 d-flex justify-content-end">
                     <div class="d-flex flex-row align-items-center gap-1">
-                        <img class="menu-profile-imagem" src="../../../static/assets/foto-perfil.png" alt="imagem do perfil" />
+                        <img class="menu-profile-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
                         <a class="menu-profile-username mt-4" href="/profile/" data-link>{{ user.username }}</a>
                         <form action="{% url 'user_management:logout' %}" method="post">
                             {% csrf_token %}
@@ -47,10 +47,8 @@
         </div>
 
         <div class="container-fluid app-container d-flex align-items-center justify-content-center">
-                <div id="app" class="w-100"></div>
+            <div id="app" class="w-100"></div>
         </div>
-        <!-- <div id="app"></div> -->
-
         <div class="rodape fixed-bottom">
             <div class="row mx-sm-1 mx-md-5 d-flex align-items-center">
                 <div class="col col-12 d-flex justify-content-around">

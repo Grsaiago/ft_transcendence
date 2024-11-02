@@ -1,4 +1,8 @@
 @import url("https://fonts.cdnfonts.com/css/arcade");
+/* font-family: "Arcade Rounded", sans-serif; */
+
+@import url('https://fonts.cdnfonts.com/css/lt-galaxy-reverse');
+/* font-family: 'LT Galaxy Reverse', sans-serif; */
 
 :root {
     --cor-1: #ffffff;
@@ -7,8 +11,6 @@
     --cor-4: #003f69;
     --cor-5: #260d33;
     --cor-6: #e0e0e0;
-    --border-radius: 25px;
-    --h2-size: 65%;
 
     --regular: 400;
     --bold: 700;
@@ -49,10 +51,9 @@ body {
         0.3px 0.3px 0.1em #fff;
 }
 
-.menu-profile-imagem {
+.menu-profile-img {
     width: 50px;
     height: 50px;
-    border-radius: 50%;
     background-color: var(--cor-5);
 }
 
@@ -98,9 +99,11 @@ body {
 .app-container {
     background-color: var(--cor-6);
     min-height: calc(100vh - 182px);
+    display: flex;
 }
 
-.profile-image {
+/* profile page */
+.profile-img {
     background-color: var(--cor-5);
     width: 160px;
     height: 160px;
@@ -111,8 +114,7 @@ body {
     background-color: var(--cor-2);
 }
 
-.profile-title,
-.history-title {
+.title {
     background-color: var(--cor-4);
     color: var(--cor-1);
 }
@@ -124,13 +126,94 @@ body {
     font-size: 16px;
 }
 
+/* chat page */
+.col-friends {
+    background-color: var(--cor-2); 
+}
+
+.search {
+    background-color: var(--cor-1); 
+}
+
+.form-control {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+}
+
+.form-control:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: transparent;
+}
+
+.friend {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+}
+
+.friend-img {
+    width: 20px;
+    height: 20px;
+    background-color: var(--cor-5);
+}
+
+.friend-name:hover {
+    font-weight: 900;
+    color: var(--cor-4);
+    cursor: pointer;
+}
+
+.col-chat{
+    background-color: var(--cor-2);
+}
+
+.messages {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+}
+
+.chat-msg-user-time {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--cor-1);
+    margin: 0;
+    text-align: end;
+}
+
+.chat-msg-content {
+    color: var(--cor-5);
+    margin-bottom: 4px;
+    text-align: end;
+}
+
+.message-input {
+    background-color: var(--cor-1); 
+    font-size: 13px;
+}
+
+.btn-send {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    color: var(--cor-4);
+}
+
+.btn-send:hover {
+    font-weight: 700;
+    color: var(--cor-3);
+}
 
 @media (min-width: 574px) {
     .app-container {
         min-height: calc(100vh - 126px);
     }
-
-
 }
 
 @media (min-width: 768px) {
@@ -142,7 +225,7 @@ body {
         font-size: 25px;
     }
 
-    .menu-profile-imagem {
+    .menu-profile-img {
         width: 60px;
         height: 60px;
     }
@@ -163,6 +246,45 @@ body {
     .history-discription {
         font-size: 18px;
     }
+
+    .friend {
+        font-family: 'LT Galaxy Reverse', sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: 1.5px;
+    }
+    
+    .friend-img {
+        width: 26px;
+        height: 26px;
+        background-color: var(--cor-5);
+    }
+
+    .messages {
+        font-family: 'LT Galaxy Reverse', sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: 1.5px;
+    }
+    
+    .chat-msg-user-time {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--cor-1);
+        margin: 0;
+        text-align: end;
+    }
+    
+    .chat-msg-content {
+        color: var(--cor-5);
+        margin-bottom: 4px;
+        text-align: end;
+    }
+
+    .message-input {
+        background-color: var(--cor-1); 
+        font-size: 14px;
+    }
 }
 
 @media (min-width: 1200px) {
@@ -173,99 +295,11 @@ body {
 }
 
 
-/* #app {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    padding: 5%;
-    background-color: var(--cor-6);
-    gap: 50px;
-} */
-
-/*profile*/
-/* .profile {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-}
-
-
-.profile-image {
-    display: flex;
-    align-items: center;
-    border-radius: 50%;
-    margin: 0 auto;
-    background-color: var(--cor-5);
-    height: 30vh;
-    width: 30vh;
-}
-
-.profile-div {
-    height: 50%;
-    text-align: start;
-}
-
-.profile-title {
-    width: 100%;
-    font-size: 85%;
-    text-align: center;
-    color: var(--cor-1);
-    padding: 10px 0 10px 0;
-    background-color: var(--cor-4);
-    border-radius: 15px 15px 0 0;
-    margin: 0;
-}
-
-.profile-p {
-    text-align: start;
-    padding: 0 15px;
-}
-
-.profile p {
-    font-size: 50%;
-    margin: 10px 0 10px 0;
-}
-
-.history {
-    width: 40%;
-    height: 100%;
-    text-align: center;
-}
-
-.history-title {
-    font-size: 85%;
-    color: var(--cor-1);
-    width: 100%;
-    background-color: var(--cor-4);
-    border-radius: 15px 15px 0 0;
-    padding: 10px 0 10px 0;
-    margin: 0;
-}
-
-.history p {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 50%;
-    padding: 0 15px;
-    margin: 10px 0;
-} */
-
 /*chat*/
 
 /* Friends List section */
-.friends-list {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--cor-2); 
-    border-radius: var(--border-radius);
-    width: 20%;
-    height: 100%;
-}
 
-.friends-list h2 {
+/* .friends-list h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -361,8 +395,8 @@ body {
 .friend p {
     font-size: 50%;
     margin: 5px 10px;
-}
-
+} 
+    
 .chat-window {
     background-color: var(--cor-2);
     padding: 0;
@@ -422,3 +456,5 @@ body {
     cursor: pointer;
     padding: 5px;
 }
+*/
+
