@@ -128,11 +128,19 @@ body {
 
 /* chat page */
 .col-friends {
-    background-color: var(--cor-2); 
+    background-color: var(--cor-2);
+    height: 25vh;
+    overflow: hidden;
+}
+
+.col-chat {
+    background-color: var(--cor-2);
+    height: 40vh;
+    /* overflow: hidden; */
 }
 
 .search {
-    background-color: var(--cor-1); 
+    background-color: var(--cor-1);
 }
 
 .form-control {
@@ -146,6 +154,25 @@ body {
     outline: none;
     box-shadow: none;
     border-color: transparent;
+}
+
+.friends-box {
+    height: 11vh;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.friends-box::-webkit-scrollbar {
+    width: 8px; 
+}
+
+.friends-box::-webkit-scrollbar-thumb {
+    background: var(--cor-);
+    border-radius: 10px; 
+}
+
+.friends-box::-webkit-scrollbar-thumb:hover {
+    background: var(--cor-1);
 }
 
 .friend {
@@ -167,15 +194,32 @@ body {
     cursor: pointer;
 }
 
-.col-chat{
-    background-color: var(--cor-2);
-}
 
 .messages {
     font-family: 'LT Galaxy Reverse', sans-serif;
     font-weight: 500;
     font-size: 13px;
     letter-spacing: 1.5px;
+    height: 26vh;
+    flex-direction: column-reverse;
+}
+
+.messages::before {
+    content: "";
+    flex-grow: 1;
+}
+
+.messages::-webkit-scrollbar {
+    width: 8px; 
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background: var(--cor-6);
+    border-radius: 10px; 
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+    background: var(--cor-1);
 }
 
 .chat-msg-user-time {
@@ -193,8 +237,9 @@ body {
 }
 
 .message-input {
-    background-color: var(--cor-1); 
+    background-color: var(--cor-1);
     font-size: 13px;
+    z-index: 1;
 }
 
 .btn-send {
@@ -247,26 +292,37 @@ body {
         font-size: 18px;
     }
 
+    .friends-box {
+        height: 46vh;
+    }
+
     .friend {
         font-family: 'LT Galaxy Reverse', sans-serif;
         font-weight: 500;
         font-size: 14px;
         letter-spacing: 1.5px;
     }
-    
+
     .friend-img {
         width: 26px;
         height: 26px;
         background-color: var(--cor-5);
     }
 
+    .col-friends,
+    .col-chat {
+        height: calc(100vh - 280px);
+    }
     .messages {
         font-family: 'LT Galaxy Reverse', sans-serif;
         font-weight: 500;
         font-size: 14px;
         letter-spacing: 1.5px;
+        height: 48vh;
+        overflow-y: auto;
+        flex-direction: column-reverse;
     }
-    
+
     .chat-msg-user-time {
         font-size: 12px;
         font-weight: 700;
@@ -274,7 +330,7 @@ body {
         margin: 0;
         text-align: end;
     }
-    
+
     .chat-msg-content {
         color: var(--cor-5);
         margin-bottom: 4px;
@@ -282,7 +338,7 @@ body {
     }
 
     .message-input {
-        background-color: var(--cor-1); 
+        background-color: var(--cor-1);
         font-size: 14px;
     }
 }
@@ -293,168 +349,3 @@ body {
         height: 200px;
     }
 }
-
-
-/*chat*/
-
-/* Friends List section */
-
-/* .friends-list h2 {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--cor-4); 
-    padding: 10px 25px;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-    color: var(--cor-1);
-    font-size: var(--h2-size);
-    margin: 0;
-}
-
-.img-refresh {
-    width: 15px;
-    height: 15px;
-}
-
-.search {
-    display: flex;
-    align-items: center;
-    background-color: var(--cor-6); 
-    border-radius: var(--border-radius);
-    margin: 10px;
-}
-
-.search-icon {
-    height: 50%;
-    margin: 0 10px;
-}
-
-.friends-list .search input {
-    width: 100%;
-    border: none;
-    padding: 10px;
-    border-radius: var(--border-radius);
-    background-color: var(--cor-6);
-}
-
-.friends-list .search .search-icon {
-    margin-left: 10px;
-    cursor: pointer;
-}
-
-.friends-list .status-group {
-    font-size: 40%;
-    color: var(--cor-6);
-}
-
-.status-group span {
-    margin: 0 10px;
-}
-
-.friends-list .friend {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #e0e0e0;
-    padding: 0px 10px;
-    border-radius: var(--border-radius);
-    margin: 10px;
-    font-size: 1.1rem;
-    color: #000;
-    gap: 10px;
-}
-
-.friends-list .friend .status-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: #fff;
-    margin-right: 10px;
-    position: fixed;
-}
-
-.friends-list .friend.online .status-icon {
-    background-color: #33a733; 
-}
-
-.friends-list .friend.offline .status-icon {
-    background-color: #aa0909; 
-}
-
-.friends-list .friend .status-icon {
-    width: 5px;
-    height: 5px;
-}
-
-.friends-list .info-icon {
-    cursor: pointer;
-    width: 15px;
-    height: 15px;
-}
-
-.friend p {
-    font-size: 50%;
-    margin: 5px 10px;
-} 
-    
-.chat-window {
-    background-color: var(--cor-2);
-    padding: 0;
-    border-radius: var(--border-radius);
-    height: 100%;
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.chat-window h2 {
-    background-color: var(--cor-4);
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-    color: var(--cor-1);
-    text-align: center;
-    padding: 10px 0 10px 0;
-    font-size: var(--h2-size);
-    margin: 0;
-}
-
-.chat-window .messages {
-    background-color: var(--cor-2);
-    font-size: 50%;
-    padding: 2% 5%;
-    text-align: right;
-}
-
-.chat-msg-user-time {
-    font-size: 70%;
-    color: var(--cor-1);
-}
-
-.chat-msg-content {
-    font-size: 80%;
-    color: var(--cor-5);
-}
-
-.chat-window .message-input {
-    display: flex;
-    align-items: center;
-    background-color: var(--cor-6); 
-    border-radius: 20px;
-    gap: 5px;
-    margin: 10px 5px 7px 5px;
-}
-
-.chat-window .message-input input {
-    flex-grow: 1;
-    padding: 10px;
-    border-radius: 20px;
-    border: none;
-    background-color: var(--cor-6);
-}
-
-.message-button {
-    cursor: pointer;
-    padding: 5px;
-}
-*/
-
