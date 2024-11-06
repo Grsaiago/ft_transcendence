@@ -110,7 +110,8 @@ body {
 }
 
 .profile-div,
-.history {
+.history,
+.history-info {
     background-color: var(--cor-2);
 }
 
@@ -124,6 +125,18 @@ body {
     font-family: 'LT Galaxy Reverse', sans-serif;
     font-weight: 600;
     font-size: 16px;
+}
+
+.text-profile {
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: bold;
+    color: black;
+}
+
+button {
+    border: none;
+    background-color: transparent;
 }
 
 /* chat page */
@@ -292,6 +305,15 @@ body {
         font-size: 18px;
     }
 
+    .profile-img {
+        width: 200px;
+        height: 200px;
+    }
+
+    .text-profile {
+        font-size: 16px;
+    }
+
     .friends-box {
         height: 46vh;
     }
@@ -344,8 +366,5 @@ body {
 }
 
 @media (min-width: 1200px) {
-    .profile-image {
-        width: 200px;
-        height: 200px;
-    }
+    
 }
