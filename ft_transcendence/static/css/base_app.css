@@ -103,6 +103,7 @@ body {
 }
 
 /* profile page */
+
 .profile-img {
     background-color: var(--cor-5);
     width: 160px;
@@ -120,14 +121,13 @@ body {
     color: var(--cor-1);
 }
 
-.profile-discription,
-.history-discription {
-    font-family: 'LT Galaxy Reverse', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
+.history-box {
+    height: 100px;
 }
 
 .text-profile {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 600;
     font-size: 14px;
     line-height: 1.7;
     font-weight: bold;
@@ -220,16 +220,16 @@ button {
     flex-grow: 1;
 }
 
-.messages::-webkit-scrollbar {
+*::-webkit-scrollbar {
     width: 8px; 
 }
 
-.messages::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
     background: var(--cor-6);
     border-radius: 10px; 
 }
 
-.messages::-webkit-scrollbar-thumb:hover {
+*::-webkit-scrollbar-thumb:hover {
     background: var(--cor-1);
 }
 
@@ -308,13 +308,13 @@ button {
     background-color: transparent;
 }
 
-@media (min-width: 574px){
+@media (min-width: 574px) {
     .app-container {
         min-height: calc(100vh - 126px);
     }
 }
 
-@media (min-width: 768px){
+@media (min-width: 768px) {
     body {
         font-size: 16px;
     }
@@ -340,9 +340,12 @@ button {
         min-height: calc(100vh - 144px);
     }
 
-    .profile-discription,
-    .history-discription {
-        font-size: 18px;
+    .col-profile {
+        min-width: 220px;
+    }
+
+    .history-box {
+        height: 160px;
     }
 
     .profile-img {
@@ -403,4 +406,20 @@ button {
         background-color: var(--cor-1);
         font-size: 14px;
     }
+}
+
+@media (min-width: 1200px) {
+    .profile-img {
+        width: 240px;
+        height: 240px;
+    }
+
+    .col-profile {
+        min-width: 260px;
+    }
+
+    .history-box {
+        height: 200px;
+    }
+
 }

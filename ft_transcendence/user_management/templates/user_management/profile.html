@@ -1,36 +1,43 @@
 {% load static %}
-<div class="row app-row justify-content-center gap-5 px-3 px-md-4 px-lg-5">
+<div class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-5">
     <div class="col-profile col col-12 col-md-4 col-lg-3 col-xl-2 p-0 d-flex flex-row flex-md-column align-items-center justify-content-center gap-4">
         <img class="profile-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
         <div class="col col-5 col-md-12 p-0">
             <div class="profile-div shadow-sm rounded-4">
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">{{ user.username }}</p>
-                <div class="profile-discription d-flex flex-column gap-1 p-3 px-lg-4">
-                    <p class="text-profile m-0 text-nowrap">{{ user.first_name }}</p>
-                    <a class="text-profile m-0 cursor-pointer text-decoration-none text-nowrap">Update picture</a>
-                    <a class="text-profile m-0 cursor-pointer text-decoration-none text-nowrap" href="/change_password" data-link>Change Password</a>
-                    <form class="d-inline" action="{% url 'user_management:logout' %}" method="post" style="width:auto;">
-                        {% csrf_token %}
-                        <button type="submit"class="text-profile m-0 p-0 text-nowrap cursor-pointer fw-bold ">Logout</button>
-                    </form>
+                <div class="p-3 px-lg-4">
+                    <div class="profile-box d-flex flex-column gap-1">
+                        <p class="text-profile m-0 text-nowrap">{{ user.first_name }}</p>
+                        <a class="text-profile m-0 cursor-pointer text-decoration-none text-nowrap">Update picture</a>
+                        <a class="text-profile m-0 cursor-pointer text-decoration-none text-nowrap" href="/change_password" data-link>Change Password</a>
+                        <form class="d-inline" action="{% url 'user_management:logout' %}" method="post" style="width:auto;">
+                            {% csrf_token %}
+                            <button type="submit"class="text-profile m-0 p-0 text-nowrap cursor-pointer fw-bold ">Logout</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-history col col-12 col-md-7 col-lg-6 col-xl-5 p-0 d-flex flex-column justify-content-center gap-3">
-        <div class="h-60 history-info shadow-sm rounded-4">
+    <div class="col-history col col-10 col-md-7 col-lg-7 col-xl-6 p-0 d-flex flex-column justify-content-center gap-4">
+        <div class="history-info shadow-sm rounded-4">
             <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game information</p>
-            <div class=" history-discription p-3 px-lg-4 d-flex flex-column gap-1">
-                <p class="text-profile m-0">Online on: 03/11/2024 at 23:37</p>
-                <p class="text-profile m-0">Games played: 3</p>
-                <p class="text-profile m-0">Total wins: 2</p>
+            <div class="p-3 px-lg-4">
+                <div class=" history-info-box d-flex flex-column gap-1">
+                    <p class="text-profile m-0">Online on: 03/11/2024 at 23:37</p>
+                    <p class="text-profile m-0">Games played: 3</p>
+                    <p class="text-profile m-0">Total wins: 2</p>
+                </div>
             </div>
         </div>
         
-        <div class="h-100 history shadow-sm rounded-4 d-none d-md-block">
+        <!-- <div class="h-100 history shadow-sm rounded-4 d-none d-md-block"> -->
+        <div class="history shadow-sm rounded-4">
             <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game history</p>
-            <div class=" history-discription p-3 px-lg-4 d-flex flex-column gap-1">
-                <p class="text-profile text-center m-0">You haven't played any games yet.</p>
+            <div class="py-3 px-2">
+                <div class="history-box d-flex flex-column gap-1 align-items-center justify-content-center overflow-y-auto">
+                    <p class="text-profile text-center px-2 m-0">You haven't played any games yet.</p>
+                </div>
             </div>
         </div>
     </div>
