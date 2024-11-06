@@ -18,7 +18,7 @@ class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
-class UserProfileView(generic_views.TemplateView):
+class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/base_app.html"
 
     def get(self, request, *args, **kwargs):
@@ -28,7 +28,7 @@ class UserProfileView(generic_views.TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-class UserChatView(generic_views.TemplateView):
+class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/base_app.html"
 
     def get(self, request, *args, **kwargs):
@@ -105,7 +105,7 @@ class UserSignInView(auth_views.LoginView):
         return super().get(request, *args, **kwargs)
     
 
-class UserLogoutView(auth_views.LogoutView):
+class UserLogoutView(LoginRequiredMixin, auth_views.LogoutView):
     next_page = reverse_lazy("user_management:sign_in")
 
 
