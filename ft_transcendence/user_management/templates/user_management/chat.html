@@ -1,12 +1,14 @@
 {% load static %}
-<div class="row app-row justify-content-center gap-3 gap-md-4 gap-lg-5 px-5">
+<div class="row app-row justify-content-center gap-5 px-3 px-md-4 px-lg-5">
     <div class="col-friends col col-8 col-sm-6 col-md-4 col-lg-3 col-xl-2 p-0 rounded-4">
-        <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Amigos</p>
+        <div class="title rounded-top-4 d-flex flex-row align-items-center justify-content-center">
+            <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Amigos</p>
+            <i class="refresh-icon mb-1 bi bi-arrow-clockwise"></i>
+        </div>
         <div class="p-2 p-lg-3">
             <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
                 <input type="text" class="form-control rounded-5 border-0" placeholder="search user">
-                <!-- <img class="search-icon mx-2" src="{% static 'assets/icons/Search.png' %}"> -->
-                <i class="search-icon mx-2 bi bi-search"></i>
+                <i class="search-icon mx-2 mb-1 bi bi-search"></i>
             </div>
             <div class="friends-box d-flex flex-column justify-content-start overflow-y-auto">
             {% for friend, chat_room_id in current_friends.items %}
@@ -19,9 +21,7 @@
                             {{ friend }}
                         </p>
                     </div>
-                    <i class="bi bi-info-circle"></i>
-                    
-                    <!-- <img class="info-icon" src="{% static 'assets/icons/Info.png' %}"> -->
+                    <i class="info-icon bi bi-info-circle"></i>
                 </div>
                 {% empty %}
                 <p>You have no friends!</p>
@@ -46,7 +46,9 @@
             </div>
             <div class="message-input d-flex flex-row align-items-center justify-content-end rounded-5 m-0 mt-auto">
                 <input class="form-control rounded-5 border-0" type="text" id="chat-message-input" placeholder="Type a message">
-            <button type="button" class="btn-send btn border-0 rounded-end-4 rounded-start-0 cursor-pointer" value="send" data-send-msg >send</button>
+                <button type="button" class="p-0 cursor-pointer" value="send" data-send-msg>
+                    <i class="send-icon bi bi-play-fill p-0 m-0"></i>
+                </button>
             </div>
         </div>
     </div>

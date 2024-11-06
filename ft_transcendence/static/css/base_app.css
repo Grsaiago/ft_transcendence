@@ -149,7 +149,6 @@ button {
 .col-chat {
     background-color: var(--cor-2);
     height: 40vh;
-    /* overflow: hidden; */
 }
 
 .search {
@@ -255,17 +254,59 @@ button {
     z-index: 1;
 }
 
-.btn-send {
-    font-family: 'LT Galaxy Reverse', sans-serif;
-    font-weight: 500;
-    font-size: 14px;
-    letter-spacing: 1.5px;
-    color: var(--cor-4);
+.refresh-icon {
+    font-size: 20px;
+    text-shadow:
+    0.3px 0 #fff,
+    -0.3px 0 #fff,
+    0 0.3px #fff,
+    0 -0.3px #fff,
+    0.3px 0.3px #fff,
+    -0.3px -0.3px #fff,
+    0.3px -0.3px #fff,
+    -0.3px 0.3px #fff;
 }
 
-.btn-send:hover {
-    font-weight: 700;
-    color: var(--cor-3);
+.search-icon {
+    font-size: 16px;
+    text-shadow:
+    0.1px 0 black,
+    -0.1px 0 black,
+    0 0.1px black,
+    0 -0.1px black,
+    0.1px 0.1px black,
+    -0.1px -0.1px black,
+    0.1px -0.1px black,
+    -0.1px 0.1px black;
+}
+
+.info-icon {
+    font-size: 14px;
+    text-shadow:
+    0.1px 0 black,
+    -0.1px 0 black,
+    0 0.1px black,
+    0 -0.1px black,
+    0.1px 0.1px black,
+    -0.1px -0.1px black,
+    0.1px -0.1px black,
+    -0.1px 0.1px black;
+}
+
+.send-icon {
+    font-size: 30px;
+    line-height: 0.5;
+    color: var(--cor-4);
+    pointer-events: none;
+    text-shadow: 0.3px 0 var(--cor-4), -0.3px 0 var(--cor-4),
+                 0 0.3px var(--cor-4), 0 -0.3px var(--cor-4),
+                 0.3px 0.3px var(--cor-4), -0.3px -0.3px var(--cor-4),
+                 0.3px -0.3px var(--cor-4), -0.3px 0.3px var(--cor-4);
+}
+
+button {
+    border: none;
+    background-color: transparent;
 }
 
 @media (min-width: 574px) {
@@ -366,5 +407,5 @@ button {
 }
 
 @media (min-width: 1200px) {
-    
+
 }
