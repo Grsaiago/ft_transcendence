@@ -12,19 +12,19 @@
             </div>
             <div class="friends-box d-flex flex-column justify-content-start overflow-y-auto">
             {% for friend, chat_room_id in current_friends.items %}
-                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1">
-                    <div class="d-flex flex-row align-items-center gap-2">
+                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5" >
+                    <div class="d-flex flex-row align-items-center gap-3">
                         <div class="status-icon">
                             <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
                         </div>
-                        <p class="friend-name m-0 cursor-pointer" chat_id="{{ chat_room_id }}" data-chat>
+                        <p class="friend-name m-0 mt-1" chat_id="{{ chat_room_id }}" data-chat>
                             {{ friend }}
                         </p>
                     </div>
-                    <i class="info-icon bi bi-info-circle"></i>
+                    <i class="info-icon mt-1 bi bi-info-circle"></i>
                 </div>
                 {% empty %}
-                <p>You have no friends!</p>
+                <p class="no-friend-msg my-4 text-nowrap d-flex justify-content-center">You have no friends!</p>
                 {% endfor %}
             </div>
         </div>

@@ -134,6 +134,12 @@ body {
     color: black;
 }
 
+.text-profile.option:hover {
+    font-weight: 900;
+    color: var(--cor-4);
+    cursor: pointer;
+}
+
 button {
     border: none;
     background-color: transparent;
@@ -194,6 +200,12 @@ button {
     letter-spacing: 1.5px;
 }
 
+.friend:hover {
+    background-color: var(--cor-6);
+    font-weight: 900;
+    font-size: 14px;
+}
+
 .friend-img {
     width: 20px;
     height: 20px;
@@ -204,6 +216,14 @@ button {
     font-weight: 900;
     color: var(--cor-4);
     cursor: pointer;
+}
+
+.no-friend-msg {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+    color: #505050;
 }
 
 .messages {
