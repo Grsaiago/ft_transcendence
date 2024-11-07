@@ -1,11 +1,12 @@
 import django.forms as forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm, ValidationError
+from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q
 
 from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
-class CustomAuthenticationForm(AuthenticationForm):
+class SignInAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'autofocus': True})
     )
@@ -54,6 +55,19 @@ class TranscendenceUserCreationForm(UserCreationForm):
     #      label="user's profile picture",
     #  )
 
+class CustomPasswordChangeForm(PasswordChangeForm):
+    old_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
+        label="Old Password"
+    )
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
+        label="New Password"
+    )
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
+        label="Confirm New Password"
+    )
 
 class FriendRequestForm(forms.ModelForm):
     class Meta:

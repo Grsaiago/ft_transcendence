@@ -328,6 +328,62 @@ button {
     background-color: transparent;
 }
 
+/* change_password */
+
+.form-style {
+    background-color: var(--cor-2);
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    color: var(--cor-5);
+}
+
+.form-title {
+    font-family: "Arcade Rounded", sans-serif;
+    background-color: var(--cor-4);
+    font-size: 16px;
+    color: #fff;
+}
+
+.btn-custom {
+    background-color: var(--cor-4);
+}
+
+.btn-custom:hover {
+    background-color: var(--cor-4);
+    color: #fff;
+    text-shadow:
+    -0.3px -0.3px 0.1em #fff,
+    0.3px -0.3px 0.1em #fff,
+    -0.3px 0.3px 0.1em #fff,
+    0.3px 0.3px 0.1em #fff;
+}
+
+.btn-custom-name {
+    color: #fff;
+    font-family: "Arcade Rounded", sans-serif;
+    font-size: 12px;
+}
+
+.form-control {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+}
+
+.form-control[name="old_password"],
+.form-control[name="new_password1"], 
+.form-control[name="new_password2"] {
+    letter-spacing: 3px;
+    font-weight: 700;
+}
+
+.alert {
+    font-size: 16px;
+}
+
 @media (min-width: 574px) {
     .app-container {
         min-height: calc(100vh - 126px);
@@ -425,6 +481,14 @@ button {
     .message-input {
         background-color: var(--cor-1);
         font-size: 14px;
+    }
+
+    .form-title {
+        font-size: 18px;
+    }
+
+    .btn-custom {
+        font-size: 16px;
     }
 }
 
