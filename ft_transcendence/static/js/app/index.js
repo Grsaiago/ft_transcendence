@@ -1,5 +1,6 @@
 import Profile from "./views/profile.js";
 import Chat from "./views/chat.js";
+import Change_password from "./views/change_password.js";
 
 let currentChatId = null;
 
@@ -14,6 +15,7 @@ const router = async () => {
     const routes = [
         {path: "/profile/", view: Profile },
         {path: "/chat/", view: Chat },
+        {path: "/change_password/", view: Change_password },
     ];
 
     //Test each route for potential match
