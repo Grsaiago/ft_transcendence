@@ -2,6 +2,7 @@ const TABLE_COLOR = 'black';
 const LINE_COLOR = 'gray';
 const BALL_COLOR = LINE_COLOR;
 const PADDLE_COLOR = LINE_COLOR;
+const SCORE_COLOR = LINE_COLOR;
 
 export class PongGame {
     constructor(context, canvasWidth, canvasHeight) {
@@ -48,6 +49,27 @@ export class PongGame {
         this.context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
     }
 
+    drawScore(score) {
+        this.context.fillStyle = SCORE_COLOR;
+        this.context.font = "42px Monospace";
+        this.context.textAlign = "center";
+
+        // Draw left score
+        this.context.fillText(score.left, (this.canvasWidth / 2) - 50, 60);
+
+        // Draw right score
+        this.context.fillText(score.right, (this.canvasWidth / 2) + 50, 60);
+    }
+
+    drawWin(winner) {
+        this.context.font = "bold 42px Monospace";
+        const message = "Win!"
+        if (winner === "left") {
+            this.context.fillText(message, (this.canvasWidth / 4), this.canvasHeight/3);
+        } else {
+            this.context.fillText(message, 3 * (this.canvasWidth / 4), this.canvasHeight/3);
+        }
+    }
 
     drawGameState(gameState) {
         this.clearCanvas();
@@ -55,5 +77,9 @@ export class PongGame {
         this.drawBall(gameState.ball);
         this.drawPaddle(gameState.paddle_left);
         this.drawPaddle(gameState.paddle_right);
+        this.drawScore(gameState.score);
+        if (gameState.winner) {
+            this.drawWin(gameState.winner)
+        }
     }
 }

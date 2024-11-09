@@ -181,7 +181,7 @@ class PongGame:
 
     async def update_score(self, side: str) -> None:
         self.score[side] += 1
-        if self.score[side] == 10:
+        if self.score[side] == 3:
             self.winner = side
             # self.finished = True
 
