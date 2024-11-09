@@ -160,34 +160,33 @@ class PongGame:
         self.ball: Ball = Ball(width, height)
         self.paddle_left: Paddle = Paddle(width, height, LEFT)
         self.paddle_right: Paddle = Paddle(width, height, RIGHT)
-        self.players: Dict[str, str] = {}
+        # self.players: Dict[str, str] = {}
         self.score: Dict[str, int] = {}
-        self.winner: Optional[int] = None
-        self.started: bool = False
-        self.finished: bool = False
+        self.winner: Optional[str] = None
+        # self.started: bool = False
+        # self.finished: bool = False
 
-    async def add_player(self, user_id: int, user_name: str) -> None:
-        self.players[str(user_id)] = user_name
-        self.score[str(user_id)] = 0
+    # async def add_player(self, user_id: int, user_name: str) -> None:
+    #     self.players[str(user_id)] = user_name
+    #     self.score[str(user_id)] = 0
 
-    async def remove_player(self, user_id: int) -> None:
-        user_id_str = str(user_id)
-        if user_id_str in self.players:
-            del self.players[user_id_str]
-            del self.score[user_id_str]
+    # async def remove_player(self, user_id: int) -> None:
+    #     user_id_str = str(user_id)
+    #     if user_id_str in self.players:
+    #         del self.players[user_id_str]
+    #         del self.score[user_id_str]
 
-    async def update_score(self, user_id: int) -> None:
-        user_id_str = str(user_id)
-        self.score[user_id_str] += 1
-        if self.score[user_id_str] == 10:
-            self.winner = user_id
-            self.finished = True
+    async def update_score(self, side: str) -> None:
+        self.score[side] += 1
+        if self.score[side] == 10:
+            self.winner = side
+            # self.finished = True
 
-    async def start_game(self) -> None:
-        self.started = True
+    # async def start_game(self) -> None:
+    #     self.started = True
 
-    async def stop_game(self) -> None:
-        self.started = False
+    # async def stop_game(self) -> None:
+    #     self.started = False
 
     async def paddle_on(self, key: str) -> None:
         """
@@ -299,9 +298,9 @@ class PongGame:
                 "width": self.paddle_right.width,
                 "height": self.paddle_right.height,
             },
-            "players": self.players,
+            # "players": self.players,
             "score": self.score,
             "winner": self.winner,
-            "started": self.started,
-            "finished": self.finished,
+            # "started": self.started,
+            # "finished": self.finished,
         }
