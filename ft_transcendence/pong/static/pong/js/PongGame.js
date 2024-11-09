@@ -48,6 +48,7 @@ export class PongGame {
         this.context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
     }
 
+
     drawGameState(gameState) {
         this.clearCanvas();
         this.drawTable(gameState.ball.size);

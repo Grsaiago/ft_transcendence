@@ -2,7 +2,7 @@ import random
 from typing import Dict, Optional, TypedDict
 
 THICKNESS = 15
-BALL_SPEED = 1
+BALL_SPEED = 5
 PADDLE_SPEED = BALL_SPEED * 2
 X = "x"
 Y = "y"
@@ -87,10 +87,13 @@ class Ball:
         """
         Resets the ball's position and speed, but randomizes the y-coordinate.
         """
+        print("enter in reset ball")
         self.x = self.x_start
         self.y = float(random.randint(self.y_min_start, self.y_max_start))
         self.x_speed = self.base_speed
         self.y_speed = self.base_speed
+        if random.randint(0, 1) == 0:
+            await self.bounce(X)
 
 
 class Paddle:
@@ -161,7 +164,7 @@ class PongGame:
         self.paddle_left: Paddle = Paddle(width, height, LEFT)
         self.paddle_right: Paddle = Paddle(width, height, RIGHT)
         # self.players: Dict[str, str] = {}
-        self.score: Dict[str, int] = {}
+        self.score: Dict[str, int] = {"left": 0, "right": 0}
         self.winner: Optional[str] = None
         # self.started: bool = False
         # self.finished: bool = False
@@ -225,10 +228,12 @@ class PongGame:
             self.height - THICKNESS
         ):
             await self.ball.bounce(Y)
-        if self.ball.x <= 0 or self.ball.x + self.ball.size >= self.width:
+        if self.ball.x <= 0:
+            await self.update_score(RIGHT)
             await self.ball.reset()
-            if random.randint(0, 1) == 0:
-                await self.ball.bounce(X)
+        if self.ball.x + self.ball.size >= self.width:
+            await self.update_score(LEFT)
+            await self.ball.reset()
 
     async def calculate_paddle_colision(self) -> None:
         if (
@@ -272,7 +277,7 @@ class PongGame:
 
     async def reset_game(self) -> None:
         await self.ball.reset()
-        self.started = False
+        # self.started = False
 
     async def get_game_state(self) -> GameState:
         return {
