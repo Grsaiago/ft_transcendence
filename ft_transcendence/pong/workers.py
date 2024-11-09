@@ -10,7 +10,7 @@ from .game import PongGame
 class PongGameWorker(AsyncConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.game = {}  # Dicionários para armazenar instâncias
+        self.game = {}  # Dicionários para armazenar instâncias dos jogos
         self.tasks = {}  # Dicionários para armazenar tarefas de cada jogo
 
     async def initialize_game(self, message):
@@ -18,6 +18,9 @@ class PongGameWorker(AsyncConsumer):
         room_group_name = message["room_group_name"]
         width = message["width"]
         height = message["height"]
+
+        # print("games: ", self.game)
+        # print("tasks: ", self.game)
 
         if room_id not in self.game:
             self.game[room_id] = PongGame(width, height)
@@ -74,8 +77,9 @@ class PongGameWorker(AsyncConsumer):
         room_id = message["room_id"]
         if room_id in self.game:
             del self.game[room_id]
-            self.tasks[room_id].cancel()
-            del self.tasks[room_id]
+            if room_id in self.tasks:
+                self.tasks[room_id].cancel()
+                del self.tasks[room_id]
 
 
 #############

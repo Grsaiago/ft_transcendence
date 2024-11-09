@@ -42,6 +42,7 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
         type = text_data_json["type"]
 
         if type == "join_room":
+            print("join_room")
             await self.add_to_group(text_data_json["room_id"])
             await self.initialize_game_data(
                 text_data_json["width"], text_data_json["height"]
@@ -49,6 +50,7 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             await self.worker_initialize_game()
 
         if type == "start_game":
+            print("start_game")
             await self.worker_start_game()
 
         if type == "keydown":
@@ -58,12 +60,14 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             await self.worker_update_paddles_position(text_data_json["key"], False)
 
     async def add_to_group(self, room_id):
+        print("add_to_group")
         self.room_id = room_id
         self.room_group_name = f"pong_{self.room_id}"
         self.game_data = cache.get(f"{self.room_group_name}_game_data", {})
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
     async def initialize_game_data(self, width, height):
+        print("initialize_game_data")
         # verifica se já existe dados do jogo em andamento se não cria um novo
         if not self.game_data:
             self.game_data["width"] = width
@@ -73,6 +77,7 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
         # adicionar dados necessários para o jogo, como os jogadores?
 
     async def worker_initialize_game(self):
+        print("worker_initialize_game")
         # enviar mensagem ao worker para instanciar o jogo e retornar o estado inicial para desenhar na tela
         await self.channel_layer.send(
             "pong_update_channel",
