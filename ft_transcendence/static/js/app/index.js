@@ -57,31 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
             navigateTo(e.target.href);
         }
 
-        else if (e.target.matches("[data-send-msg]")) {
-            console.log('Send message clicked!');
-
-            const messageInputDom = document.getElementById('chat-message-input');
-            if (!messageInputDom) {
-                console.error('Message input field not found.');
-                return;
-            }
-
-            const message = messageInputDom.value;
-
-            if (!message || !view.currentChatId) {
-                return;
-            }
-
-            if (chatManager.chatSocket.readyState === WebSocket.OPEN) {
-                chatManager.chatSocket.send(JSON.stringify({
-                    'message': message,
-                    'chat_id': view.currentChatId
-                }));
-                messageInputDom.value = '';
-            } else {
-                console.log('WebSocket is not open.');
-            }
-        }
     });
 
     router();

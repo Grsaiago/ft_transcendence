@@ -11,6 +11,7 @@ export default class Chat extends AbstractView {
         this.handleMessageUI = this.handleMessageUI.bind(this);
         this.atualizaChat = this.atualizaChat.bind(this);
         this.handleChatChange = this.handleChatChange.bind(this);
+        this.sendMessage = this.sendMessage.bind(this);
     }
 
     async getHtml() {
@@ -33,23 +34,27 @@ export default class Chat extends AbstractView {
     bindUIEventHandlers() {
         console.log('Loading chat event handlers...');
         this.chatManager.chatSocket.addEventListener("message", this.handleMessageUI);
+
         var chatList = document.getElementsByClassName('friend online');
         for (var i = 0; i < chatList.length; i++) {
             chatList[i].addEventListener('click', this.handleChatChange);
         }
+
+        var sendButton = document.getElementById('data-send-msg');
+        sendButton.addEventListener('click', this.sendMessage);
     }
 
     removeUIEventHandlers() {
         console.log('Removing chat event handlers...');
         this.chatManager.chatSocket.removeEventListener("message", this.handleMessageUI);
+
         var chatList = document.getElementsByClassName('friend online');
         for (var i = 0; i < chatList.length; i++) {
             chatList[i].removeEventListener('click', this.handleChatChange);
         }
-    }
 
-    handlerUI() {
-        console.log('Chat.js handler called!!');
+        var sendButton = document.getElementById('data-send-msg');
+        sendButton.removeEventListener('click', this.sendMessage);
     }
 
     chatWindowIsOpen() {
@@ -66,6 +71,34 @@ export default class Chat extends AbstractView {
         this.currentChatId = event.currentTarget.getAttribute('chat_id');
         console.log('Chat changed. CurrentChatId: ' + this.currentChatId);
         this.atualizaChat();
+    }
+
+    sendMessage(event) {
+        console.log('Send message clicked!');
+
+        const messageInputDom = document.getElementById('chat-message-input');
+        if (!messageInputDom) {
+            console.error('Message input field not found.');
+            return;
+        }
+
+        const message = messageInputDom.value;
+
+        // FIX: Sanitize message
+
+        if (!message || !this.currentChatId) {
+            return;
+        }
+
+        if (this.chatManager.chatSocket.readyState === WebSocket.OPEN) {
+            this.chatManager.chatSocket.send(JSON.stringify({
+                'message': message,
+                'chat_id': this.currentChatId
+            }));
+            messageInputDom.value = '';
+        } else {
+            console.log('WebSocket is not open.');
+        }
     }
 
     displayMessage(messageInfo) {
