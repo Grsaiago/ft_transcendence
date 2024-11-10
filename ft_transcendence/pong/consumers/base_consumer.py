@@ -14,25 +14,10 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             self.room_id = None
             self.room_group_name = None
             self.game_data = {}
-
-        await self.accept()
+            await self.accept()
 
     async def disconnect(self, close_code):
-        if self.room_group_name:
-            # envia mensagem para o worker para finalizar o jogo
-            await self.channel_layer.send(
-                "pong_update_channel",
-                {
-                    "type": "finish_game",
-                    "room_id": str(self.room_id),
-                },
-            )
-            # remove o usuário do grupo
-            await self.channel_layer.group_discard(
-                self.room_group_name, self.channel_name
-            )
-            # remove os dados do jogo
-            cache.delete(f"{self.room_group_name}_game_data")
+        await self.finish_game()
 
     async def receive(self, text_data):
         # processa mensagem recebida do cliente
@@ -40,22 +25,27 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         type = text_data_json["type"]
 
         if type == "join_room":
-            print("join_room")
-            self.room_id = text_data_json["room_id"]
-            await self.add_to_group(self.room_id)
-            await self.initialize_game_data(
-                text_data_json["width"], text_data_json["height"]
-            )
-            await self.worker_initialize_game()
+            await self.join_room(text_data_json)
 
         elif type == "start_game":
-            print("start_game")
-            await self.worker_start_game()
+            await self.start_game()
 
         elif type in ["keydown", "keyup"]:
             key = text_data_json["key"]
             state = type == "keydown"  # True se for keydown, False se for keyup
             await self.handle_key_paddle_event(key, state)
+
+    async def join_room(self, text_data_json):
+        pass  # implementar nas classes filhas
+
+    async def start_game(self):
+        pass
+
+    async def handle_key_paddle_event(self, key, state):
+        pass  # implementar nas classes filhas
+
+    async def finish_game(self):
+        pass
 
     async def add_to_group(self, room_id):
         print("add_to_group")
@@ -70,8 +60,6 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             self.game_data["width"] = width
             self.game_data["height"] = height
             cache.set(f"{self.room_group_name}_game_data", self.game_data)
-
-        # adicionar dados necessários para o jogo, como os jogadores?
 
     async def worker_initialize_game(self):
         print("worker_initialize_game")
@@ -110,9 +98,6 @@ class BasePongConsumer(AsyncWebsocketConsumer):
                 "state": state,  # True se for keydown, False se for keyup
             },
         )
-
-    async def handle_key_paddle_event(self, key, state):
-        pass  # implementar nas classes filhas
 
     async def send_game_state(self, event):
         # Recebe o estado do worker

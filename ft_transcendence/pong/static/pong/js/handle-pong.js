@@ -14,7 +14,7 @@ const room_id = gameData.dataset.roomId;
 console.log("room_id:", room_id);
 
 //need to implement gamemode, for now need to indicate
-const modeGame = "local";
+const modeGame = "online";
 
 //Websocket connection
 const socketUrl = `ws://${window.location.host}/ws/pong/${modeGame}/`;
