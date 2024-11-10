@@ -272,8 +272,12 @@ class PongGame:
         Executes the main game loop, updating the ball and paddle positions and checking for collisions.
         """
         await self.check_colisions()  # calculates the object's new positions
-        await self.move_objects()  # moves the objects to their new positions
+        if not self.has_winner():
+            await self.move_objects()  # moves the objects to their new positions
         return await self.get_game_state()  # returns the current game state
+
+    def has_winner(self) -> bool:
+        return bool(self.winner)
 
     async def reset_game(self) -> None:
         await self.ball.reset()

@@ -121,3 +121,10 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
         await self.send(
             text_data=json.dumps({"type": "game_init", "game_state": game_state})
         )
+
+    async def get_winner(self, event):
+        # Recebe o estado do worker
+        game_state = event["game_state"]
+
+        winner = game_state["winner"]
+        print("winner", winner)

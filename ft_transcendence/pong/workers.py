@@ -47,6 +47,20 @@ class PongGameWorker(AsyncConsumer):
                     "game_state": game_state,
                 },
             )
+
+            if self.game[room_id].has_winner():
+                await self.channel_layer.group_send(
+                    room_group_name,
+                    {
+                        "type": "get_winner",
+                        "game_state": game_state,
+                    },
+                )
+                del self.game[room_id]
+                if self.tasks[room_id]:
+                    self.tasks[room_id].cancel()
+                    del self.tasks[room_id]
+
             # pequena pausa para simular a velocidade do jogo (60fps)
             await asyncio.sleep(0.016)
 
