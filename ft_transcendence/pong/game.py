@@ -85,7 +85,7 @@ class Ball:
 
     async def reset(self):
         """
-        Resets the ball's position and speed, but randomizes the y-coordinate.
+        Reset the ball to the center of the game area with a random y position and speed.
         """
         print("enter in reset ball")
         self.x = self.x_start
@@ -163,33 +163,16 @@ class PongGame:
         self.ball: Ball = Ball(width, height)
         self.paddle_left: Paddle = Paddle(width, height, LEFT)
         self.paddle_right: Paddle = Paddle(width, height, RIGHT)
-        # self.players: Dict[str, str] = {}
         self.score: Dict[str, int] = {"left": 0, "right": 0}
         self.winner: Optional[str] = None
-        # self.started: bool = False
-        # self.finished: bool = False
-
-    # async def add_player(self, user_id: int, user_name: str) -> None:
-    #     self.players[str(user_id)] = user_name
-    #     self.score[str(user_id)] = 0
-
-    # async def remove_player(self, user_id: int) -> None:
-    #     user_id_str = str(user_id)
-    #     if user_id_str in self.players:
-    #         del self.players[user_id_str]
-    #         del self.score[user_id_str]
 
     async def update_score(self, side: str) -> None:
+        """
+        Updates the score for the given side and checks if a player has won.
+        """
         self.score[side] += 1
         if self.score[side] == 3:
             self.winner = side
-            # self.finished = True
-
-    # async def start_game(self) -> None:
-    #     self.started = True
-
-    # async def stop_game(self) -> None:
-    #     self.started = False
 
     async def paddle_on(self, key: str) -> None:
         """
@@ -236,6 +219,9 @@ class PongGame:
             await self.ball.reset()
 
     async def calculate_paddle_colision(self) -> None:
+        """
+        Checks if the ball hits the paddles and bounces it.
+        """
         if (
             self.paddle_left.x
             <= self.ball.x
@@ -263,27 +249,34 @@ class PongGame:
         await self.calculate_paddle_colision()
 
     async def move_objects(self) -> None:
+        """
+        Moves the ball and paddles based on their current speeds.
+        """
         await self.ball.move()
         await self.paddle_left.move()
         await self.paddle_right.move()
 
     async def calculate_game_tick(self) -> GameState:
         """
-        Executes the main game loop, updating the ball and paddle positions and checking for collisions.
+        Checks for collisions and moves the objects in the game if the game has no winner.
+        Returns the current state of the game.
         """
-        await self.check_colisions()  # calculates the object's new positions
+        await self.check_colisions()
+        # just do next move if the game is not finished, so don't have a winner
         if not self.has_winner():
-            await self.move_objects()  # moves the objects to their new positions
-        return await self.get_game_state()  # returns the current game state
+            await self.move_objects()
+        return await self.get_game_state()
 
     def has_winner(self) -> bool:
+        """
+        Checks if a player has reached the winning score.
+        """
         return bool(self.winner)
 
-    async def reset_game(self) -> None:
-        await self.ball.reset()
-        # self.started = False
-
     async def get_game_state(self) -> GameState:
+        """
+        Returns the current state of the game.
+        """
         return {
             "width": self.width,
             "height": self.height,
@@ -307,9 +300,6 @@ class PongGame:
                 "width": self.paddle_right.width,
                 "height": self.paddle_right.height,
             },
-            # "players": self.players,
             "score": self.score,
             "winner": self.winner,
-            # "started": self.started,
-            # "finished": self.finished,
         }
