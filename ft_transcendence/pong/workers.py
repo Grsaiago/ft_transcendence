@@ -80,13 +80,15 @@ class PongGameWorker(AsyncConsumer):
 
     async def update_paddles_position(self, message):
         room_id = message["room_id"]
-        key = message["key"]
+        paddle = message["paddle"]
+        direction = message["direction"]
         state = message["state"]
 
-        if state:
-            await self.game[room_id].paddle_on(key)
-        else:
-            await self.game[room_id].paddle_off(key)
+        if room_id in self.game:
+            if state:
+                await self.game[room_id].paddle_on(paddle, direction)
+            else:
+                await self.game[room_id].paddle_off(paddle)
 
     async def finish_game(self, message):
         room_id = message["room_id"]

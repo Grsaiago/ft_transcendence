@@ -3,10 +3,8 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.cache import cache
 
-# from .game import PongGame
 
-
-class PongPlayerConsumer(AsyncWebsocketConsumer):
+class BasePongConsumer(AsyncWebsocketConsumer):
     # para connectar por enquanto, precisa estar logado, a adição ao grupo esta sendo feita no receive com a mensagem vinda de onopen
     # dessa forma o usuário só entra no grupo quando ele envia a mensagem de join_room e não pela url
     async def connect(self):
@@ -43,25 +41,24 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
 
         if type == "join_room":
             print("join_room")
-            await self.add_to_group(text_data_json["room_id"])
+            self.room_id = text_data_json["room_id"]
+            await self.add_to_group(self.room_id)
             await self.initialize_game_data(
                 text_data_json["width"], text_data_json["height"]
             )
             await self.worker_initialize_game()
 
-        if type == "start_game":
+        elif type == "start_game":
             print("start_game")
             await self.worker_start_game()
 
-        if type == "keydown":
-            await self.worker_update_paddles_position(text_data_json["key"], True)
-
-        if type == "keyup":
-            await self.worker_update_paddles_position(text_data_json["key"], False)
+        elif type in ["keydown", "keyup"]:
+            key = text_data_json["key"]
+            state = type == "keydown"  # True se for keydown, False se for keyup
+            await self.handle_key_paddle_event(key, state)
 
     async def add_to_group(self, room_id):
         print("add_to_group")
-        self.room_id = room_id
         self.room_group_name = f"pong_{self.room_id}"
         self.game_data = cache.get(f"{self.room_group_name}_game_data", {})
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -101,17 +98,21 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
             },
         )
 
-    async def worker_update_paddles_position(self, key, state):
+    async def worker_update_paddles_position(self, paddle, direction, state):
         # envia mensagem para o worker e atualiza as variáveis dos paddles
         await self.channel_layer.send(
             "pong_update_channel",
             {
                 "type": "update_paddles_position",
                 "room_id": str(self.room_id),
-                "key": key,
-                "state": state,
+                "paddle": paddle,  # left ou right
+                "direction": direction,  # up ou down
+                "state": state,  # True se for keydown, False se for keyup
             },
         )
+
+    async def handle_key_paddle_event(self, key, state):
+        pass  # implementar nas classes filhas
 
     async def send_game_state(self, event):
         # Recebe o estado do worker
@@ -127,4 +128,7 @@ class PongPlayerConsumer(AsyncWebsocketConsumer):
         game_state = event["game_state"]
 
         winner = game_state["winner"]
-        print("winner", winner)
+        if winner:
+            print("winner", winner)
+            # envia uma mensagem para o cliente informando o vencedor
+            await self.send(text_data=json.dumps({"type": "winner", "winner": winner}))

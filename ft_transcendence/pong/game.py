@@ -174,33 +174,30 @@ class PongGame:
         if self.score[side] == 3:
             self.winner = side
 
-    async def paddle_on(self, key: str) -> None:
+    async def paddle_on(self, paddle: str, direction: str) -> None:
         """
         Activates the paddle's movement based on the key pressed.
 
         Args:
-            key (str): The key pressed by the player ('arrowup', 'arrowdown', 'w', 's').
+            paddle (str): The paddle to move ('left' or 'right').
+            direction (str): The direction to move the paddle ('up' or 'down').
         """
-        if key == "arrowup":
-            await self.paddle_right.set_speed(UP)
-        elif key == "arrowdown":
-            await self.paddle_right.set_speed(DOWN)
-        elif key == "w":
-            await self.paddle_left.set_speed(UP)
-        elif key == "s":
-            await self.paddle_left.set_speed(DOWN)
+        if paddle == "left":
+            await self.paddle_left.set_speed(direction)
+        if paddle == "right":
+            await self.paddle_right.set_speed(direction)
 
-    async def paddle_off(self, key: str) -> None:
+    async def paddle_off(self, paddle: str) -> None:
         """
         Stops the paddle's movement when the key is released.
 
         Args:
-            key (str): The key released by the player ('arrowup', 'arrowdown', 'w', 's').
+            paddle(str): The paddle to stop ('left' or 'right').
         """
-        if key in ["arrowup", "arrowdown"]:
-            await self.paddle_right.set_speed(STOP)
-        if key in ["w", "s"]:
+        if paddle == "left":
             await self.paddle_left.set_speed(STOP)
+        elif paddle == "right":
+            await self.paddle_right.set_speed(STOP)
 
     async def calculate_ball_colision(self) -> None:
         """
