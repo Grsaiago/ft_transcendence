@@ -20,6 +20,7 @@ python-dotenv = "^1.0.1"
 daphne = "^4.1.2"
 django-redis = "^5.4.0"
 redis = "^5.0.8"
+django-prometheus = "^2.3.1"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1.1"
