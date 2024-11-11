@@ -1,3 +1,4 @@
+# TODO: segregate containers in diferent networks
 name: transcendence
 
 services:
@@ -6,7 +7,7 @@ services:
     container_name: tr_db
     restart: always
     volumes:
-      - pg_data:/var/lib/postgresql/data:rwx
+      - pg-data:/var/lib/postgresql/data:rwx
     ports:
       - "5432:5432"
     env_file:
@@ -23,10 +24,46 @@ services:
     image: redis:latest
     container_name: tr_redis
     restart: always
+    volumes:
+      - redis-data:/data:rw
     ports:
       - "6379:6379"
     depends_on:
       - db
 
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    volumes:
+      - prometheus-data:/prometheus:rw
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    # Take this off when the app is in the docker network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "9090:9090"
+    depends_on:
+      - db
+      - redis
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: always
+    volumes:
+      - grafana-data:/var/lib/grafana:rw
+      - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # strong passowrd xD
+    depends_on:
+      - db
+      - prometheus
+
 volumes:
-  pg_data:
+  pg-data: {}
+  redis-data: {}
+  grafana-data: {}
+  prometheus-data: {}
