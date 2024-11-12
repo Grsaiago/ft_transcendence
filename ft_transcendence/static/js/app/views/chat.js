@@ -35,12 +35,12 @@ export default class Chat extends AbstractView {
         console.log('Loading chat event handlers...');
         this.chatManager.chatSocket.addEventListener("message", this.handleMessageUI);
 
-        var chatList = document.getElementsByClassName('friend online');
+        const chatList = document.querySelectorAll('.friend.d-flex.flex-row.align-items-center.justify-content-between.gap-2.px-2.py-1.mb-1.me-1.rounded-5');
         for (var i = 0; i < chatList.length; i++) {
             chatList[i].addEventListener('click', this.handleChatChange);
         }
 
-        var sendButton = document.getElementById('data-send-msg');
+        var sendButton = document.getElementById('send-msg-button');
         sendButton.addEventListener('click', this.sendMessage);
     }
 
@@ -48,12 +48,12 @@ export default class Chat extends AbstractView {
         console.log('Removing chat event handlers...');
         this.chatManager.chatSocket.removeEventListener("message", this.handleMessageUI);
 
-        var chatList = document.getElementsByClassName('friend online');
+        var chatList = document.querySelectorAll('.friend.d-flex.flex-row.align-items-center.justify-content-between.gap-2.px-2.py-1.mb-1.me-1.rounded-5');
         for (var i = 0; i < chatList.length; i++) {
             chatList[i].removeEventListener('click', this.handleChatChange);
         }
 
-        var sendButton = document.getElementById('data-send-msg');
+        var sendButton = document.getElementById('send-msg-button');
         sendButton.removeEventListener('click', this.sendMessage);
     }
 
