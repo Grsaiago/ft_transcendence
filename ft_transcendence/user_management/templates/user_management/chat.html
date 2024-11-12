@@ -1,70 +1,55 @@
 {% load static %}
-
-<div class="friends-list">
-        <h2>Amigos
-            <img class="img-refresh" src="{% static 'assets/icons/refresh-page-option.png' %}"> <!-- Refresh icon -->
-        </h2>
-
-    <div class="search">
-        <input type="text" placeholder="search user">
-        <img class="search-icon" src="{% static 'assets/icons/Search.png' %}"> <!-- Search icon -->
-    </div>
-
-    <div class="status-group">
-        <span>Online</span>
-        {% for friend, chat_room_id in current_friends.items %}
-            <div class="friend online" chat_id="{{ chat_room_id }}" data-chat>
-                <div class="status-icon"></div>
-                <p class="friend-chat-item">
-                    {{ friend }}
-                </p>
-                <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
-            </div>
-        {% empty %}
-            <p>You have no friends!</p>
-        {% endfor %}
-
-        <!-- 
-        <div class="friend online">
-            <div class="status-icon"></div>
-            <p>fcaetano</p>
-            <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
+<div class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-4">
+    <div class="col-friends col col-8 col-sm-6 col-md-4 col-lg-3 col-xl-3 p-0 rounded-4">
+        <div class="title rounded-top-4 d-flex flex-row align-items-center justify-content-center">
+            <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Amigos</p>
+            <i class="refresh-icon mb-1 bi bi-arrow-clockwise"></i>
         </div>
-        <div class="friend online">
-            <div class="status-icon"></div>
-            <p>izsoares</p>
-            <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
-        </div> -->
-    </div>
-
-    <div class="status-group">
-        <span>Offline</span>
-        <div class="friend offline">
-            <div class="status-icon"></div>
-            <p>gsaiago</p>
-            <img class="info-icon" src="{% static 'assets/icons/Info.png' %}">
-        </div>
-    </div>
-</div>
-
-<!-- Chat Window Section -->
-<div class="chat-window">
-    <h2>Chat</h2>
-    <div>
-        <div class="messages" id ="chat-messages">
-            <!-- Chat messages will appear here -->
-            <div>
-                <p class="chat-msg-user-time">Fernanda, 15:04</p>
-                <p class="chat-msg-content">Fala ai fdp</p>
+        <div class="p-2 p-lg-3">
+            <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
+                <input type="text" class="form-control rounded-5 border-0" placeholder="search user">
+                <i class="search-icon mx-2 mb-1 bi bi-search"></i>
             </div>
-            <div>
-                <p class="chat-msg-user-time">Fernanda, 15:07</p>
-                <p class="chat-msg-content">Turo bom ?</p>
+            <div class="friends-box d-flex flex-column justify-content-start overflow-y-auto">
+            {% for friend, chat_room_id in current_friends.items %}
+                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5" >
+                    <div class="d-flex flex-row align-items-center gap-3">
+                        <div class="status-icon">
+                            <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
+                        </div>
+                        <p class="friend-name m-0 mt-1" chat_id="{{ chat_room_id }}" data-chat>
+                            {{ friend }}
+                        </p>
+                    </div>
+                    <i class="info-icon mt-1 bi bi-info-circle"></i>
+                </div>
+                {% empty %}
+                <p class="no-friend-msg my-4 text-nowrap d-flex justify-content-center">You have no friends!</p>
+                {% endfor %}
             </div>
         </div>
-        <div class="message-input">
-            <input type="text" id="chat-message-input" placeholder="Type a message">
-            <button class="message-button" data-send-msg id="data-send-msg"> send </button>
+    </div>
+
+
+    <div class="col-chat col col-12 col-md-7 col-lg-8 col-xl-7 p-0 d-flex flex-column rounded-4">
+        <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Chat</p>
+        <div class="p-2 d-flex flex-column flex-grow-1 gap-1">
+            <div class="messages d-flex flex-column align-items-end px-2 overflow-y-auto" id ="chat-messages">
+                <div>
+                    <p class="chat-msg-user-time">Fernanda, 15:04</p>
+                    <p class="chat-msg-content">Fala ai fdp</p>
+                </div>
+                <div>
+                    <p class="chat-msg-user-time">Fernanda, 15:07</p>
+                    <p class="chat-msg-content">Turo bom ?</p>
+                </div>
+            </div>
+            <div class="message-input d-flex flex-row align-items-center justify-content-end rounded-5 m-0 mt-auto">
+                <input class="form-control rounded-5 border-0" type="text" id="chat-message-input" placeholder="Type a message">
+                <button type="button" class="p-0 cursor-pointer" value="send" data-send-msg>
+                    <i class="send-icon bi bi-play-fill p-0 m-0"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
