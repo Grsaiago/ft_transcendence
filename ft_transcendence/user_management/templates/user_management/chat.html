@@ -12,12 +12,12 @@
             </div>
             <div class="friends-box d-flex flex-column justify-content-start overflow-y-auto">
             {% for friend, chat_room_id in current_friends.items %}
-                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5" chat_id="{{ chat_room_id }}">
+                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5">
                     <div class="d-flex flex-row align-items-center gap-3">
                         <div class="status-icon">
                             <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
                         </div>
-                        <p class="friend-name m-0 mt-1" data-chat>
+                        <p class="friend-name m-0 mt-1" chat_id="{{ chat_room_id }}">
                             {{ friend }}
                         </p>
                     </div>
@@ -35,14 +35,7 @@
         <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Chat</p>
         <div class="p-2 d-flex flex-column flex-grow-1 gap-1">
             <div class="messages d-flex flex-column align-items-end px-2 overflow-y-auto" id ="chat-messages">
-                <div>
-                    <p class="chat-msg-user-time">Fernanda, 15:04</p>
-                    <p class="chat-msg-content">Fala ai fdp</p>
-                </div>
-                <div>
-                    <p class="chat-msg-user-time">Fernanda, 15:07</p>
-                    <p class="chat-msg-content">Turo bom ?</p>
-                </div>
+
             </div>
             <div class="message-input d-flex flex-row align-items-center justify-content-end rounded-5 m-0 mt-auto">
                 <input class="form-control rounded-5 border-0" type="text" id="chat-message-input" placeholder="Type a message">

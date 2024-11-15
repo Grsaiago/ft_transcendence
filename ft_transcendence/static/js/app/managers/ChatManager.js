@@ -34,13 +34,13 @@ export default class ChatManager {
     handleMessage(event) {
         console.log("handleMessage() called");
         try {
-            var data = JSON.parse(event.data);  // Fix typo: JSON.parse() should be called on event.data
+            var data = JSON.parse(event.data);
             let messageInfo = {
                 ...data,
                 'time': Date.now()
             }
             this.atualizaHistorico(messageInfo);
-            //lançar evento pra atualizar para disparar Chat.handleMessageUI e evitar data race
+            document.dispatchEvent(new CustomEvent('chatMessageReceived', {detail: messageInfo.chat_id}));
         } catch (err) {
             console.error("Error parsing WebSocket message: ", err);
         }

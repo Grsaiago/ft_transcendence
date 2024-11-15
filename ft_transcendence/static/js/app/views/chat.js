@@ -12,6 +12,7 @@ export default class Chat extends AbstractView {
         this.atualizaChat = this.atualizaChat.bind(this);
         this.handleChatChange = this.handleChatChange.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
+        this.sendMessageButton = this.sendMessageButton.bind(this);
     }
 
     async getHtml() {
@@ -33,28 +34,39 @@ export default class Chat extends AbstractView {
 
     bindUIEventHandlers() {
         console.log('Loading chat event handlers...');
-        this.chatManager.chatSocket.addEventListener("message", this.handleMessageUI);
 
-        const chatList = document.querySelectorAll('.friend.d-flex.flex-row.align-items-center.justify-content-between.gap-2.px-2.py-1.mb-1.me-1.rounded-5');
+        const chatList = document.querySelectorAll('[chat_id]');
+        this.selectFirstChat(chatList[0]);
         for (var i = 0; i < chatList.length; i++) {
             chatList[i].addEventListener('click', this.handleChatChange);
         }
 
         var sendButton = document.getElementById('send-msg-button');
         sendButton.addEventListener('click', this.sendMessage);
+
+        var input = document.getElementById('chat-message-input');
+        input.addEventListener('keydown', this.sendMessageButton);
+
+        document.addEventListener('chatMessageReceived', this.handleMessageUI);
+    }
+    
+    selectFirstChat(chatDiv) {
+        this.currentChatId = chatDiv.getAttribute('chat_id');
+        this.highlightSlectedChat(chatDiv);
     }
 
     removeUIEventHandlers() {
         console.log('Removing chat event handlers...');
-        this.chatManager.chatSocket.removeEventListener("message", this.handleMessageUI);
 
-        var chatList = document.querySelectorAll('.friend.d-flex.flex-row.align-items-center.justify-content-between.gap-2.px-2.py-1.mb-1.me-1.rounded-5');
+        var chatList = document.querySelectorAll('[chat_id]');
         for (var i = 0; i < chatList.length; i++) {
             chatList[i].removeEventListener('click', this.handleChatChange);
         }
-
+        
         var sendButton = document.getElementById('send-msg-button');
         sendButton.removeEventListener('click', this.sendMessage);
+
+        document.removeEventListener('chatMessageReceived', this.handleMessageUI);
     }
 
     chatWindowIsOpen() {
@@ -62,18 +74,36 @@ export default class Chat extends AbstractView {
     }
 
     handleMessageUI(event) {
-        var data = JSON.parse(event.data);
-        if (this.chatWindowIsOpen() && data.chat_id == this.currentChatId)
-            this.displayMessage(this.chatManager.chatHistory.get(data.chat_id).at(-1));
+        if (this.chatWindowIsOpen() && event.detail == this.currentChatId)
+            this.displayMessage(this.chatManager.chatHistory.get(event.detail).at(-1));
     }
 
     handleChatChange(event) {
+        this.unhighlightPreviousChat();
         this.currentChatId = event.currentTarget.getAttribute('chat_id');
         console.log('Chat changed. CurrentChatId: ' + this.currentChatId);
+        this.highlightSlectedChat(event.currentTarget);
         this.atualizaChat();
     }
 
-    sendMessage(event) {
+    highlightSlectedChat(eventTarget) {
+        const outerDiv = eventTarget.closest('.friend');
+        if (outerDiv)
+            outerDiv.classList.add('selected');
+    }
+
+    unhighlightPreviousChat() {
+        const selectedChat = document.querySelector('.selected');
+        if (selectedChat)
+            selectedChat.classList.remove('selected');
+    }
+
+    sendMessageButton(event) {
+        if (event.key === "Enter")
+            this.sendMessage();
+    }
+
+    sendMessage() {
         console.log('Send message clicked!');
 
         const messageInputDom = document.getElementById('chat-message-input');
@@ -83,8 +113,6 @@ export default class Chat extends AbstractView {
         }
 
         const message = messageInputDom.value;
-
-        // FIX: Sanitize message
 
         if (!message || !this.currentChatId) {
             return;
@@ -106,12 +134,13 @@ export default class Chat extends AbstractView {
         const sender = document.createElement('p');
         const newMessage = document.createElement('p');
         const msgTime = new Date(messageInfo.time);
-        sender.textContent = messageInfo.sender + ', ' + msgTime.getHours() + ':' + msgTime.getMinutes();  // FIX/IMPLEMENT: diplay minutes with two digits
+        sender.textContent = messageInfo.sender + ', ' + String(msgTime.getHours()).padStart(2, '0') + ':' + String(msgTime.getMinutes()).padStart(2, '0');
         newMessage.textContent = messageInfo.message;
         sender.classList.add('chat-msg-user-time');
         newMessage.classList.add('chat-msg-content');
         messagesContainer.appendChild(sender);
         messagesContainer.appendChild(newMessage);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     atualizaChat() {
