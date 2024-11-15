@@ -200,7 +200,7 @@ button {
     letter-spacing: 1.5px;
 }
 
-.friend:hover {
+.friend-selected {
     background-color: var(--cor-6);
     font-weight: 900;
     font-size: 14px;
