@@ -200,10 +200,12 @@ button {
     letter-spacing: 1.5px;
 }
 
-.friend-selected {
+.friend.selected {
+    font-family: 'LT Galaxy Reverse', sans-serif;
     background-color: var(--cor-6);
     font-weight: 900;
     font-size: 14px;
+    letter-spacing: 1.5px;
 }
 
 .friend-img {

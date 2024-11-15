@@ -89,13 +89,13 @@ export default class Chat extends AbstractView {
     highlightSlectedChat(eventTarget) {
         const outerDiv = eventTarget.closest('.friend');
         if (outerDiv)
-            outerDiv.classList.add('friend-selected');
+            outerDiv.classList.add('selected');
     }
 
     unhighlightPreviousChat() {
-        const selectedChat = document.querySelector('.friend-selected');
+        const selectedChat = document.querySelector('.selected');
         if (selectedChat)
-            selectedChat.classList.remove('friend-selected');
+            selectedChat.classList.remove('selected');
     }
 
     sendMessageButton(event) {
