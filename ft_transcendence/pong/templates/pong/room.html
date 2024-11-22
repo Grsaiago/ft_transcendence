@@ -6,7 +6,10 @@
     <section class="section_enter">
         <h2>{{ room.id }}</h2>
         <h2>{{ room.name }}</h2>
-        <section class="section_pong" id="game-data" data-room-id="{{ room.id }}">
+        <section class="section_pong"
+                 id="game-data"
+                 data-room-id="{{ room.id }}"
+                 data-game-mode="{{ game_mode }}">
             <canvas id="pongCanvas" width="650" height="480"></canvas>
             <button id="startGame">Start!</button>
         </section>

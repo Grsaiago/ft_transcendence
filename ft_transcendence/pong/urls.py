@@ -4,6 +4,7 @@ from . import views
 
 app_name = "pong"
 urlpatterns = [
-    path("enter/", views.PongEnterView.as_view(), name="pongenter"),
+    path("play/", views.PongSelectGameMode.as_view(), name="selectmode"),
+    path("enter/<str:room_type>/", views.PongEnterView.as_view(), name="pongenter"),
     path("room/<int:room_id>/", views.PongRoomView.as_view(), name="pongroom"),
 ]

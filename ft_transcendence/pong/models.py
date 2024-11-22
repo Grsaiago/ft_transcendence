@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.db import models
 
 # Cada sala é um jogo?
@@ -12,7 +14,22 @@ from django.db import models
 # - Eu posso ver o placar da sala. Não sei? faz sentido? Será que cada sala deveria ser um jogo?
 
 
+class GameMode(Enum):
+    LOCAL = "local"
+    ONLINE = "online"
+    TOURNAMENT = "tournament"
+
+    @classmethod
+    def choices(cls):
+        return [(gameMode.value, gameMode.name.capitalize()) for gameMode in cls]
+
+    @classmethod
+    def as_dict(cls):
+        return {gameMode.name: gameMode.value for gameMode in cls}
+
+
 class PongRoom(models.Model):
     # limitando o nome da sala para 50 caracteres pois channel_name é limitado a 100 caracteres
     name = models.CharField(max_length=50)
+    game_mode = models.CharField(max_length=20, choices=GameMode.choices())
     created_at = models.DateTimeField(auto_now_add=True)

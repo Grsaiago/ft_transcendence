@@ -7,6 +7,7 @@ from .workers import PongGameWorker
 ws_pong_application = [
     path("ws/pong/local/", LocalPongConsumer.as_asgi()),
     path("ws/pong/online/", OnlinePongConsumer.as_asgi()),
+    # path("ws/pong/tournament/", tournamentPongConsumer.as_asgi()), #future implementation
 ]
 
 channel_routing = {
