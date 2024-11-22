@@ -30,14 +30,14 @@ class PongEnterView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         form = PongRoomForm()
-        game_mode = kwargs.get("game_mode", PongRoom.ONLINE)
+        game_mode = kwargs["game_mode"]
         rooms = PongRoom.objects.filter(game_mode=game_mode)
         return self.render_to_response(
             {"form": form, "rooms": rooms, "game_mode": game_mode}
         )
 
     def post(self, request, *args, **kwargs):
-        game_mode = kwargs.get("game_mode", PongRoom.ONLINE)
+        game_mode = kwargs["game_mode"]
         form = PongRoomForm(request.POST)
         if form.is_valid():
             room = form.save(commit=False)
