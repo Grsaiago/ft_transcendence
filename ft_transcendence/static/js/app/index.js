@@ -1,5 +1,13 @@
 import Profile from "./views/profile.js";
 import Chat from "./views/chat.js";
+import ChatManager from "./managers/ChatManager.js";
+import Change_password from "./views/change_password.js";
+
+var view = null;
+
+var chatManager = new ChatManager();
+
+chatManager.loadEventHandlers();
 
 const navigateTo = url => {
     history.pushState(null, null, url);
@@ -10,6 +18,7 @@ const router = async () => {
     const routes = [
         {path: "/profile/", view: Profile },
         {path: "/chat/", view: Chat },
+        {path: "/change_password/", view: Change_password },
     ];
 
     //Test each route for potential match
@@ -29,9 +38,13 @@ const router = async () => {
         };
     }
 
-    const view = new match.route.view();
+    if (view) {
+        view.removeUIEventHandlers();
+    }
 
+    view = new match.route.view();
     document.querySelector("#app").innerHTML = await view.getHtml();
+    view.bindUIEventHandlers();
 
 };
 

@@ -37,7 +37,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     "user_management.apps.UserManagementConfig",
+    "chat.apps.ChatConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -77,6 +79,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "ft_transcendence.wsgi.application"
 
+# Configuração pra usar o websocket
+ASGI_APPLICATION = "ft_transcendence.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            # Mudar isso depois pro host do container com redis
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -89,6 +102,18 @@ DATABASES = {
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "HOST": "127.0.0.1",
         "PORT": "5432",
+    }
+}
+
+# Setup do cache pra usar o redis
+# https://docs.djangoproject.com/en/5.1/topics/cache/#redis
+CACHES = {
+    'default': { 
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
     }
 }
 

@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm
+from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm
 from .models import FriendRequest, Friendship
 
 class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
@@ -18,7 +18,7 @@ class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
-class UserProfileView(generic_views.TemplateView):
+class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/base_app.html"
 
     def get(self, request, *args, **kwargs):
@@ -28,17 +28,18 @@ class UserProfileView(generic_views.TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-class UserChatView(generic_views.TemplateView):
+class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/base_app.html"
 
     def get(self, request, *args, **kwargs):
         friends = Friendship.objects.filter(
             Q(first_user=request.user.id) | Q(second_user=request.user.id)
         )
-        current_friends = [
-            entry.first_user if entry.first_user != request.user else entry.second_user
+
+        current_friends = {
+            (entry.first_user if entry.first_user != request.user else entry.second_user).username: entry.chat_room_id
             for entry in friends
-        ]
+        }
 
         context = {
             "current_friends": current_friends,
@@ -59,6 +60,18 @@ class UserSignUpView(generic_views.FormView):
         form.save()
         return super().form_valid(form)
     
+    def form_invalid(self, form):
+        if form.has_error('username'):
+            messages.error(self.request, "The username is already taken.")
+
+        elif form.has_error('password2'):
+            messages.error(self.request, "The passwords do not match. Please try again.")
+
+        if not any(form.has_error(field) for field in ['username', 'first_name', 'password2']):
+            messages.error(self.request, "Please correct the errors.")
+
+        return self.render_to_response(self.get_context_data(form=form))
+    
     def get(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             context = self.get_context_data()
@@ -70,6 +83,7 @@ class UserSignInView(auth_views.LoginView):
     redirect_authenticated_user = True
     # TODO: Change to homepage instead of password change page
     success_url = reverse_lazy("user_management:homepage")
+    form_class = SignInAuthenticationForm
 
     def get_success_url(self):
         return self.success_url
@@ -85,23 +99,32 @@ class UserSignInView(auth_views.LoginView):
         return super().get(request, *args, **kwargs)
     
 
-    def get(self, request, *args, **kwargs):
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            context = self.get_context_data()
-            return render(request, "user_management/sign_in.html", context)
-        return super().get(request, *args, **kwargs)
-    
-
-class UserLogoutView(auth_views.LogoutView):
-    next_page = reverse_lazy("user_management:sign_in")
-
-
 class UserChangePasswordView(
     auth_mixins.LoginRequiredMixin, auth_views.PasswordChangeView
 ):
-    template_name = "user_management/change_password.html"
+    template_name = "user_management/base_app.html"
     form_class = auth_forms.PasswordChangeForm
-    success_url = reverse_lazy("user_management:friend_list")
+    success_url = reverse_lazy("user_management:homepage")
+    form_class = CustomPasswordChangeForm
+
+    def form_invalid(self, form):
+        if form.has_error('old_password'):
+            messages.error(self.request, "Invalid old password.")
+
+        elif form.has_error('new_password2'):
+            messages.error(self.request, "The new passwords do not match.")
+
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            context = self.get_context_data()
+            return render(request, "user_management/change_password.html", context)
+        return super().get(request, *args, **kwargs)
+
+
+class UserLogoutView(LoginRequiredMixin, auth_views.LogoutView):
+    next_page = reverse_lazy("user_management:sign_in")
 
 
 class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
