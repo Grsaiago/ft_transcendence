@@ -14,6 +14,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             self.room_id = None
             self.room_group_name = None
             self.game_data = {}
+            self.winner = None
             await self.accept()
 
     async def disconnect(self, close_code):
@@ -39,7 +40,9 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         pass  # implementar nas classes filhas
 
     async def start_game(self):
-        pass
+        await self.send(
+            text_data=json.dumps({"type": "start_game", "message": "start_game"})
+        )
 
     async def handle_key_paddle_event(self, key, state):
         pass  # implementar nas classes filhas
@@ -83,6 +86,8 @@ class BasePongConsumer(AsyncWebsocketConsumer):
                 "type": "update_game_state",
                 "room_id": str(self.room_id),
                 "room_group_name": self.room_group_name,
+                "width": self.game_data["width"],
+                "height": self.game_data["height"],
             },
         )
 
@@ -112,8 +117,10 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         # Recebe o estado do worker
         game_state = event["game_state"]
 
-        winner = game_state["winner"]
-        if winner:
-            print("winner", winner)
+        self.winner = game_state["winner"]
+        if self.winner:
+            print("winner", self.winner)
             # envia uma mensagem para o cliente informando o vencedor
-            await self.send(text_data=json.dumps({"type": "winner", "winner": winner}))
+            await self.send(
+                text_data=json.dumps({"type": "winner", "winner": self.winner})
+            )

@@ -11,8 +11,9 @@
                  data-room-id="{{ room.id }}"
                  data-game-mode="{{ game_mode }}">
             <canvas id="pongCanvas" width="650" height="480"></canvas>
-            <button id="startGame">Start!</button>
         </section>
+        <div id="messageContainer"></div>
+        <button id="startGame">Start!</button>
     </section>
     <script type="module" src="{% static 'pong/js/handle-pong.js' %}"></script>
 {% endblock content %}

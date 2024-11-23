@@ -11,6 +11,7 @@ class LocalPongConsumer(BasePongConsumer):
         await self.worker_initialize_game()
 
     async def start_game(self):
+        await super().start_game()
         # no modo local inicia imediatemento ao precionar Start e receber a msg star_game
         await self.worker_start_game()
 

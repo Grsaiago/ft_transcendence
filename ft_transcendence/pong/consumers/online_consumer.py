@@ -1,6 +1,9 @@
 import asyncio
 
+from asgiref.sync import sync_to_async
+from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from pong.models import Match
 
 from .base_consumer import BasePongConsumer
 
@@ -59,6 +62,18 @@ class OnlinePongConsumer(BasePongConsumer):
                 cache.set(f"{self.room_group_name}_ready_players", self.ready_players)
 
                 if self.ready_players == 2:
+                    players_data = cache.get(f"{self.room_group_name}_players", [])
+                    if players_data:
+                        player1 = await self.get_user_by_username(players_data[0])
+                        player2 = await self.get_user_by_username(players_data[1])
+
+                        match = sync_to_async(Match.objects.create)(
+                            room_id=self.room_id,
+                            player1=player1,
+                            player2=player2,
+                        )
+                        print(match)
+
                     await self.worker_start_game()
 
     async def handle_key_paddle_event(self, key, state):
@@ -99,3 +114,8 @@ class OnlinePongConsumer(BasePongConsumer):
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
+
+    # métodos auxiliares para OnlinePongConsumer
+    async def get_user_by_username(self, username):
+        User = get_user_model()
+        return await sync_to_async(User.objects.get)(username=username)

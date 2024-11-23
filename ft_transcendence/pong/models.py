@@ -1,5 +1,6 @@
 from enum import Enum
 
+from django.contrib.auth import get_user_model
 from django.db import models
 
 # Cada sala é um jogo?
@@ -33,3 +34,40 @@ class PongRoom(models.Model):
     name = models.CharField(max_length=50)
     game_mode = models.CharField(max_length=20, choices=GameMode.choices())
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.id}:{self.name} - {self.game_mode}"
+
+
+class Match(models.Model):
+    room = models.ForeignKey(PongRoom, on_delete=models.CASCADE, related_name="matches")
+    player1 = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="player1"
+    )
+    player2 = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name="player2"
+    )
+    winner = models.ForeignKey(
+        get_user_model(), on_delete=models.SET_NULL, null=True, blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.id}:{self.room.name} - {self.player1.username} vs {self.player2.username}"
+
+
+class UserMatchStats(models.Model):
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    total_matches = models.PositiveIntegerField(default=0)
+    total_wins = models.PositiveIntegerField(default=0)
+
+    def increment_matches(self):
+        self.total_matches += 1
+        self.save()
+
+    def increment_wins(self):
+        self.total_wins += 1
+        self.save()
+
+    def __str__(self):
+        return f"{self.id}:{self.user.username} - Matches: {self.total_matches}, Wins: {self.total_wins}"

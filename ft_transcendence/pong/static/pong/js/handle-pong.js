@@ -43,6 +43,22 @@ socket.onmessage = function (e) {
   if (data.type === "update_game_state") {
     pongGame.drawGameState(data.game_state);
   }
+
+  if (data.type === "start_game") {
+    const startButton = document.getElementById("startGame");
+    startButton.style.display = "none";
+    const messageContainer = document.getElementById("messageContainer");
+    messageContainer.textContent = "Game started";
+    console.log("Game started");
+  }
+
+  if (data.type ==="winner") {
+    const messageContainer = document.getElementById("messageContainer");
+    messageContainer.textContent = data.winner + " wins!";
+    const startButton = document.getElementById("startGame");
+    startButton.style.display = "block";
+  }
+
 };
 
 socket.onclose = function (e) {
