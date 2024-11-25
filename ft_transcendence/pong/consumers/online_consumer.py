@@ -119,6 +119,17 @@ class OnlinePongConsumer(BasePongConsumer):
                 self.room_group_name, self.channel_name
             )
 
+    async def get_winner(self, event):
+        if self.is_spectator:
+            return
+
+        else:
+            async with self.ready_lock:
+                self.ready_players = 0
+                self.is_ready = False
+                cache.set(f"{self.room_group_name}_ready_players", self.ready_players)
+            await super().get_winner(event)
+
     # métodos auxiliares para OnlinePongConsumer
     async def get_user_by_username(self, username):
         User = get_user_model()
