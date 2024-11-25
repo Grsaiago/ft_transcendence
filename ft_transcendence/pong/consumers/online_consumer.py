@@ -3,9 +3,13 @@ import asyncio
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from pong.models import Match
 
 from .base_consumer import BasePongConsumer
+
+# import json
+
+
+# from pong.models import Match
 
 
 class OnlinePongConsumer(BasePongConsumer):
@@ -51,7 +55,7 @@ class OnlinePongConsumer(BasePongConsumer):
         await self.worker_initialize_game()
 
     async def start_game(self):
-        # começar o jogo apenas quanto ambos estiverem prontos
+        # começar o jogo apenas quando ambos estiverem prontos
         if not self.is_spectator and not self.is_ready:
             async with self.ready_lock:
                 self.ready_players = cache.get(
@@ -62,19 +66,19 @@ class OnlinePongConsumer(BasePongConsumer):
                 cache.set(f"{self.room_group_name}_ready_players", self.ready_players)
 
                 if self.ready_players == 2:
-                    players_data = cache.get(f"{self.room_group_name}_players", [])
-                    if players_data:
-                        player1 = await self.get_user_by_username(players_data[0])
-                        player2 = await self.get_user_by_username(players_data[1])
-
-                        match = sync_to_async(Match.objects.create)(
-                            room_id=self.room_id,
-                            player1=player1,
-                            player2=player2,
-                        )
-                        print(match)
-
                     await self.worker_start_game()
+                    await super().start_game()
+                    # players_data = cache.get(f"{self.room_group_name}_players", [])
+                    # if players_data:
+                    #     player1 = await self.get_user_by_username(players_data[0])
+                    #     player2 = await self.get_user_by_username(players_data[1])
+
+                    #     match = sync_to_async(Match.objects.create)(
+                    #         room_id=self.room_id,
+                    #         player1=player1,
+                    #         player2=player2,
+                    #     )
+                    #     print(match)
 
     async def handle_key_paddle_event(self, key, state):
         if self.is_spectator:

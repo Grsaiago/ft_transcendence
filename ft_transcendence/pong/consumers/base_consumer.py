@@ -40,8 +40,12 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         pass  # implementar nas classes filhas
 
     async def start_game(self):
-        await self.send(
-            text_data=json.dumps({"type": "start_game", "message": "start_game"})
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "start_game_message",
+                "message": "Game started",
+            },
         )
 
     async def handle_key_paddle_event(self, key, state):
@@ -50,6 +54,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
     async def finish_game(self):
         pass
 
+    # Métodos inicialização
     async def add_to_group(self, room_id):
         print("add_to_group")
         self.room_group_name = f"pong_{self.room_id}"
@@ -64,6 +69,13 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             self.game_data["height"] = height
             cache.set(f"{self.room_group_name}_game_data", self.game_data)
 
+    async def start_game_message(self, event):
+        # Envia uma mensagem para o cliente WebSocket
+        await self.send(
+            text_data=json.dumps({"type": "start_game", "message": event["message"]})
+        )
+
+    # Métodos para enviar mensagens ao worker
     async def worker_initialize_game(self):
         print("worker_initialize_game")
         # enviar mensagem ao worker para instanciar o jogo e retornar o estado inicial para desenhar na tela
@@ -104,6 +116,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             },
         )
 
+    # Métodos para receber mensagens do worker e enviar para o cliente
     async def send_game_state(self, event):
         # Recebe o estado do worker
         game_state = event["game_state"]
