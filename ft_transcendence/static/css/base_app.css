@@ -135,11 +135,16 @@ body {
     background-color: #2c72a1;
     color: var(--cor-1);
     font-size: 14px;
+    font-weight: 400;
     cursor: pointer;
 }
 
-.title-friends.selected {
+.title-friends:hover {
     font-weight: 900;
+}
+
+
+.title-friends.selected {
     background-color: var(--cor-4);
     color: var(--cor-1);
     cursor: pointer;
@@ -582,6 +587,7 @@ button {
 
     .col-friends.friends {
         height: 460px;
+        min-width: 220px;
     }
     
     .friends-box.friends {
