@@ -9,6 +9,7 @@ from .views import (
     HomepageView,
     UserProfileView,
     UserChatView,
+    UserFriendsView,
 )
 
 app_name = "user_management"
@@ -22,4 +23,5 @@ urlpatterns = [
     path("friend_list/", UserFriendListView.as_view(), name="friend_list"),
     path("profile/", UserProfileView.as_view(), name="profile"),
     path("chat/", UserChatView.as_view(), name="chat"),
+    path("friends/", UserFriendsView.as_view(), name="friends"),
 ]

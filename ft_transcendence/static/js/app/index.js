@@ -1,5 +1,6 @@
 import Profile from "./views/profile.js";
 import Chat from "./views/chat.js";
+import Friends from "./views/friends.js";
 import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
 
@@ -18,6 +19,7 @@ const router = async () => {
     const routes = [
         {path: "/profile/", view: Profile },
         {path: "/chat/", view: Chat },
+        {path: "/friends/", view: Friends },
         {path: "/change_password/", view: Change_password },
     ];
 

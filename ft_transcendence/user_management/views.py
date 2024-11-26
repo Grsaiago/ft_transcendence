@@ -48,6 +48,27 @@ class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return render(request, "user_management/chat.html", context)
         return super().get(request, *args, **kwargs)
+    
+class UserFriendsView(LoginRequiredMixin, generic_views.TemplateView):
+    template_name = "user_management/base_app.html"
+
+    def get(self, request, *args, **kwargs):
+        friends = Friendship.objects.filter(
+            Q(first_user=request.user.id) | Q(second_user=request.user.id)
+        )
+
+        current_friends = {
+            (entry.first_user if entry.first_user != request.user else entry.second_user).username: entry.chat_room_id
+            for entry in friends
+        }
+
+        context = {
+            "current_friends": current_friends,
+        }
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "user_management/friends.html", context)
+        return super().get(request, *args, **kwargs)
 
 
 class UserSignUpView(generic_views.FormView):
