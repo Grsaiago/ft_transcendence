@@ -57,7 +57,7 @@ class TranscendenceUserCreationForm(UserCreationForm):
 
 class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm', 'autofocus': True}),
         label="Old Password"
     )
     new_password1 = forms.CharField(

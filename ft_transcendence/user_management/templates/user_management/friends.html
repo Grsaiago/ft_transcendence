@@ -5,7 +5,7 @@
             <p class="title-friends selected col col-6 rounded-top-start-4 text-center m-0 p-2 text-nowrap cursor-pointer">Amigos</p>
             <p class="title-friends col col-6 rounded-top-end-4 text-center m-0 p-2 text-nowrap cursor-pointer">Search</p>
         </div>
-        <div class="p-2 p-lg-3">
+        <div class="div-friend p-2 p-lg-3">
             <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
                 <input type="text" class="form-control rounded-5 border-0" placeholder="search user">
                 <i class="search-icon mx-2 mb-1 bi bi-search"></i>
@@ -28,6 +28,49 @@
                 {% endfor %}
             </div>
         </div>
+        <!-- <div class="div-search p-2 p-lg-3">
+            <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
+                <input type="text" class="form-control rounded-5 border-0" placeholder="search user">
+                <i class="search-icon mx-2 mb-1 bi bi-search"></i>
+            </div>
+            <div class="friends-box friends d-flex flex-column justify-content-start overflow-y-auto">
+                <p class="text-profile m-0">Pending requests</p>
+                    {% for request in pending_friend_requests %}
+                            <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
+                                <div class="d-flex flex-row align-items-center gap-3">
+                                    <div class="status-icon">
+                                        <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
+                                    </div>
+                                    <p class="friend-name m-0 mt-1">
+                                        {{ request.sender.username }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <form action="{% url 'db-user_management:accept_friend_request' %}"
+                                    method="post"
+                                    style="display:inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="sender" value="{{ request.sender.id }}">
+                                    <button type="submit" class="p-0 cursor-pointer">
+                                        <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
+                                    </button>
+                                    </form>
+                                    <form action="{% url 'db-user_management:refuse_friend_request' %}"
+                                    method="post"
+                                    style="display:inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="sender" value="{{ request.sender.id }}">
+                                    <button type="submit" class="p-0 cursor-pointer">
+                                        <i class="refuse-icon bi bi-x" style="color:brown; font-size: 20px;"></i>
+                                    </button>
+                                    </form>
+                                </div>
+                            </div>
+                    {% empty %}
+                        <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No friends request found</p>
+                    {% endfor %}
+            </div>
+        </div> -->
     </div>
 
     <div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4">

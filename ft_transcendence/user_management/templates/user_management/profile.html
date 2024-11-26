@@ -9,7 +9,7 @@
                     <div class="profile-box d-flex flex-column gap-1">
                         <p class="text-profile m-0 text-nowrap">{{ user.first_name }}</p>
                         <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap">Update picture</a>
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" href="/change_password" data-link>Change Password</a>
+                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" href="/change_password/" data-link>Change Password</a>
                         <form class="d-inline" action="{% url 'user_management:logout' %}" method="post" style="width:auto;">
                             {% csrf_token %}
                             <button type="submit"class="text-profile option m-0 p-0 text-nowrap cursor-pointer fw-bold ">Logout</button>
