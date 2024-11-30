@@ -116,9 +116,33 @@ class OnlinePongConsumer(BasePongConsumer):
 
         else:
             async with self.ready_lock:
-                self.ready_players = 0
-                self.is_ready = False
-                cache.set(f"{self.room_group_name}_ready_players", self.ready_players)
+                players_data = cache.get(f"{self.room_group_name}_players", [])
+                if players_data:
+                    winner = event["game_state"]["winner"]
+                    winner_id = None
+                    if winner == "left":
+                        winner_id = players_data[0]
+                    else:
+                        winner_id = players_data[1]
+
+                    if winner_id:
+                        match_id = cache.get(f"{self.room_group_name}_match_id", None)
+                        if match_id:
+                            match = await self.get_match_by_id(match_id)
+                            if match.winner is None:
+                                match.winner = await self.get_player_by_id(winner_id)
+                                match.finished = True
+                                await sync_to_async(match.save)()
+                                self.ready_players = 0
+                                self.is_ready = False
+                                self.match_id = None
+                                cache.set(
+                                    f"{self.room_group_name}_ready_players",
+                                    self.ready_players,
+                                )
+                                cache.set(
+                                    f"{self.room_group_name}_match_id", self.match_id
+                                )
             await super().get_winner(event)
 
     # métodos de online_consumer
@@ -142,3 +166,6 @@ class OnlinePongConsumer(BasePongConsumer):
 
     async def get_pongroom_by_id(self, room_id):
         return await sync_to_async(PongRoom.objects.get)(id=room_id)
+
+    async def get_match_by_id(self, match_id):
+        return await sync_to_async(Match.objects.get)(id=match_id)
