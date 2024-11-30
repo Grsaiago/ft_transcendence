@@ -3,13 +3,11 @@ import asyncio
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from pong.models import Match, PongRoom
 
 from .base_consumer import BasePongConsumer
 
 # import json
-
-
-# from pong.models import Match
 
 
 class OnlinePongConsumer(BasePongConsumer):
@@ -21,6 +19,7 @@ class OnlinePongConsumer(BasePongConsumer):
 
         self.ready_players = cache.get(f"{self.room_group_name}_ready_players", 0)
         self.players_data = cache.get(f"{self.room_group_name}_players", [])
+        self.match_id = cache.get(f"{self.room_group_name}_match_id", None)
 
         self.ready_lock = asyncio.Lock()
 
@@ -33,20 +32,20 @@ class OnlinePongConsumer(BasePongConsumer):
 
             if (
                 len(self.players_data) < 2
-                and self.scope["user"].username not in self.players_data
+                and self.scope["user"].id not in self.players_data
             ):
                 self.player_paddle = "left" if not self.players_data else "right"
-                self.players_data.append(self.scope["user"].username)
+                self.players_data.append(self.scope["user"].id)
                 cache.set(f"{self.room_group_name}_players", self.players_data)
-            elif self.scope["user"].username in self.players_data:
+            elif self.scope["user"].id in self.players_data:
                 # reatribuir o paddle caso o usuário se reconecte
                 self.player_paddle = (
                     "left"
-                    if self.players_data.index(self.scope["user"].username) == 0
+                    if self.players_data.index(self.scope["user"].id) == 0
                     else "right"
                 )
                 self.is_spectator = self.ready_players > self.players_data.index(
-                    self.scope["user"].username
+                    self.scope["user"].id
                 )
             else:
                 self.is_spectator = True
@@ -66,19 +65,11 @@ class OnlinePongConsumer(BasePongConsumer):
                 cache.set(f"{self.room_group_name}_ready_players", self.ready_players)
 
                 if self.ready_players == 2:
-                    await self.worker_start_game()
-                    await super().start_game()
-                    # players_data = cache.get(f"{self.room_group_name}_players", [])
-                    # if players_data:
-                    #     player1 = await self.get_user_by_username(players_data[0])
-                    #     player2 = await self.get_user_by_username(players_data[1])
-
-                    #     match = sync_to_async(Match.objects.create)(
-                    #         room_id=self.room_id,
-                    #         player1=player1,
-                    #         player2=player2,
-                    #     )
-                    #     print(match)
+                    self.match_id = cache.get(f"{self.room_group_name}_match_id", None)
+                    if not self.match_id:
+                        await self.worker_start_game()
+                        await super().start_game()
+                        await self.create_match()
 
     async def handle_key_paddle_event(self, key, state):
         if self.is_spectator:
@@ -95,8 +86,8 @@ class OnlinePongConsumer(BasePongConsumer):
         await self.worker_update_paddles_position(paddle, direction, state)
 
     async def finish_game(self):
-        if self.scope["user"].username in self.players_data:
-            self.players_data.remove(self.scope["user"].username)
+        if self.scope["user"].id in self.players_data:
+            self.players_data.remove(self.scope["user"].id)
             cache.set(f"{self.room_group_name}_players", self.players_data)
 
         if len(self.players_data) == 0:
@@ -130,7 +121,24 @@ class OnlinePongConsumer(BasePongConsumer):
                 cache.set(f"{self.room_group_name}_ready_players", self.ready_players)
             await super().get_winner(event)
 
-    # métodos auxiliares para OnlinePongConsumer
-    async def get_user_by_username(self, username):
-        User = get_user_model()
-        return await sync_to_async(User.objects.get)(username=username)
+    # métodos de online_consumer
+    async def create_match(self):
+        players_data = cache.get(f"{self.room_group_name}_players", [])
+        if players_data:
+            player1 = await self.get_player_by_id(players_data[0])
+            player2 = await self.get_player_by_id(players_data[1])
+            pongroom = await self.get_pongroom_by_id(self.room_id)
+
+            match = await sync_to_async(Match.objects.create)(
+                room=pongroom,
+                player1=player1,
+                player2=player2,
+            )
+            cache.set(f"{self.room_group_name}_match_id", match.id)
+            print(match)
+
+    async def get_player_by_id(self, player_id):
+        return await sync_to_async(get_user_model().objects.get)(id=player_id)
+
+    async def get_pongroom_by_id(self, room_id):
+        return await sync_to_async(PongRoom.objects.get)(id=room_id)

@@ -36,7 +36,7 @@ class PongRoom(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.id}:{self.name} - {self.game_mode}"
+        return f"PongRoom {self.id}:{self.name} - {self.game_mode}"
 
 
 class Match(models.Model):
@@ -50,10 +50,13 @@ class Match(models.Model):
     winner = models.ForeignKey(
         get_user_model(), on_delete=models.SET_NULL, null=True, blank=True
     )
+    active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.id}:{self.room.name} - {self.player1.username} vs {self.player2.username}"
+        return (
+            f"Match {self.id}:{self.room_id} - {self.player1_id} vs {self.player2_id}"
+        )
 
 
 class UserMatchStats(models.Model):
