@@ -52,7 +52,7 @@ class PongGameWorker(AsyncConsumer):
                 await self.channel_layer.group_send(
                     room_group_name,
                     {
-                        "type": "get_winner",
+                        "type": "send_winner",
                         "game_state": game_state,
                     },
                 )

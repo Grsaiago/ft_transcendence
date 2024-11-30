@@ -110,32 +110,33 @@ class OnlinePongConsumer(BasePongConsumer):
                 self.room_group_name, self.channel_name
             )
 
-    async def get_winner(self, event):
+    async def define_winner(self, event):
         if self.is_spectator:
             return
 
-        else:
-            async with self.ready_lock:
-                match_id = cache.get(f"{self.room_group_name}_match_id", None)
-                if match_id:
-                    match = await self.get_match_by_id(match_id)
-                    if match.winner is None:
-                        winner = event["game_state"]["winner"]
-                        if winner == "left":
-                            match.winner = await self.get_player_by_id(match.player1.id)
-                        else:
-                            match.winner = await self.get_player_by_id(match.player2.id)
-                        match.finished = True
-                        await sync_to_async(match.save)()
-                        self.ready_players = 0
-                        self.is_ready = False
-                        self.match_id = None
-                        cache.set(
-                            f"{self.room_group_name}_ready_players",
-                            self.ready_players,
-                        )
-                        cache.set(f"{self.room_group_name}_match_id", self.match_id)
-            await super().get_winner(event)
+        async with self.ready_lock:
+            match_id = cache.get(f"{self.room_group_name}_match_id", None)
+            if match_id:
+                match = await self.get_match_by_id(match_id)
+                if match.winner is None:
+                    winner_side = event["game_state"]["winner"]
+                    if winner_side == "left":
+                        match.winner = await self.get_player_by_id(match.player1.id)
+                    else:
+                        match.winner = await self.get_player_by_id(match.player2.id)
+                    self.winner = match.winner.username
+                    match.finished = True
+                    await sync_to_async(match.save)()
+                    self.ready_players = 0
+                    self.is_ready = False
+                    self.match_id = None
+                    cache.set(
+                        f"{self.room_group_name}_ready_players",
+                        self.ready_players,
+                    )
+                    cache.set(f"{self.room_group_name}_match_id", self.match_id)
+                else:
+                    self.winner = None
 
     # métodos de online_consumer
     async def create_match(self):

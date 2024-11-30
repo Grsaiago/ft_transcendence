@@ -126,11 +126,13 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             text_data=json.dumps({"type": "game_init", "game_state": game_state})
         )
 
-    async def get_winner(self, event):
-        # Recebe o estado do worker
+    async def define_winner(self, event):
         game_state = event["game_state"]
-
         self.winner = game_state["winner"]
+
+    async def send_winner(self, event):
+        # Recebe o estado do worker
+        await self.define_winner(event)
         if self.winner:
             print("winner", self.winner)
             # envia uma mensagem para o cliente informando o vencedor
