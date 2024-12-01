@@ -7,6 +7,7 @@ export default class Profile extends AbstractView {
 
         this.handleFriendChange = this.handleFriendChange.bind(this);
         this.updateFriend = this.updateFriend.bind(this);
+        this.handleTabSwitch = this.handleTabSwitch.bind(this);
     }
 
     async getHtml() {
@@ -29,15 +30,20 @@ export default class Profile extends AbstractView {
     bindUIEventHandlers() {
         console.log('Loading friends event handlers...');
 
+        //select first friend and set eventlistener for change friends
         const friendList = document.querySelectorAll("[data-friend]");
         this.selectFirstFriend(friendList[0]);
         console.log(friendList[0]);
         friendList.forEach(friend => {
             friend.addEventListener("click", this.handleFriendChange);
         });
-        this.updateFriend(friendList[0]);
-    }
 
+        //add click event for switch tabs between friends and search
+        const titleFriends = document.querySelector("#title-friends-friend");
+        const titleSearch = document.querySelector("#title-friends-search");
+        titleFriends.addEventListener("click", this.handleTabSwitch);
+        titleSearch.addEventListener("click", this.handleTabSwitch);
+    }
     
     removeUIEventHandlers() {
         console.log('Removing friends event handlers...');
@@ -46,11 +52,60 @@ export default class Profile extends AbstractView {
         friendList.forEach(friend => {
             friend.removeEventListener("click", this.handleFriendChange);
         });
+
+        const titleFriends = document.querySelector("#title-friends-friend");
+        const titleSearch = document.querySelector("#title-friends-search");
+        titleFriends.removeEventListener("click", this.handleTabSwitch);
+        titleSearch.removeEventListener("click", this.handleTabSwitch);
+    }
+
+
+    handleTabSwitch(event) {
+        const tab = event.target.textContent.trim().toLowerCase();
+        this.toggleTabs(tab);
+    }
+
+    toggleTabs(tab) {
+        const divFriend = document.querySelector('.div-friend');
+        const divSearch = document.querySelector('.div-search');
+        const titleFriends = document.querySelector("#title-friends-friend");
+        const titleSearch = document.querySelector("#title-friends-search");
+    
+        if (tab === 'friends') {
+            divFriend.style.display = 'block';
+            divSearch.style.display = 'none';
+            titleSearch.classList.remove('selected'); 
+            titleFriends.classList.add('selected');
+            console.log("change tab to friends");
+            
+            this.unhighlightPreviousFriend();
+
+            setTimeout(() => {
+                const friendList = document.querySelectorAll("[data-friend]");
+                if (friendList.length > 0) {
+                    this.selectFirstFriend(friendList[0]);
+                }
+            }, 0); 
+        } else if (tab === 'search') {
+            divFriend.style.display = 'none';
+            divSearch.style.display = 'block';
+            titleFriends.classList.remove('selected');
+            titleSearch.classList.add('selected');
+            console.log("change tab to search");
+
+            this.unhighlightPreviousFriend();
+
+            const firstSearchFriend = document.querySelector(".div-search [data-friend]");
+            if (firstSearchFriend) {
+                this.selectFirstFriend(firstSearchFriend);
+            }
+        }
     }
     
     selectFirstFriend(friendDiv) {
         this.currentFriend = friendDiv.getAttribute('data-friend');
         this.highlightSelectedFriend(friendDiv);
+        this.updateFriend(friendDiv);
     }
 
     handleFriendChange(event) {
