@@ -1,141 +1,344 @@
 import json
+import logging
+from enum import Enum
+from typing import Dict, Optional, TypedDict, Union
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.cache import cache
+from pong.game import GameState
+
+logger = logging.getLogger(__name__)
+
+
+class Paddle(str, Enum):
+    LEFT = "left"
+    RIGHT = "right"
+
+
+class Direction(str, Enum):
+    UP = "up"
+    DOWN = "down"
+
+
+class MessageType(str, Enum):
+    JOIN_ROOM = "join_room"
+    START_GAME = "start_game"
+    KEYDOWN = "keydown"
+    KEYUP = "keyup"
+
+
+class ClientMessageRequired(TypedDict):
+    type: MessageType
+
+
+class ClientMessage(ClientMessageRequired, total=False):
+    room_id: int
+    width: int
+    height: int
+    key: str
+
+
+class StartGameEvent(TypedDict):
+    type: str
+    message: str
+
+
+class GameStateEvent(TypedDict):
+    type: str
+    game_state: GameState
 
 
 class BasePongConsumer(AsyncWebsocketConsumer):
-    # para connectar por enquanto, precisa estar logado, a adição ao grupo esta sendo feita no receive com a mensagem vinda de onopen
-    # dessa forma o usuário só entra no grupo quando ele envia a mensagem de join_room e não pela url
-    async def connect(self):
+    """
+    Base consumer for the Pong game.
+    Manages WebSocket connections and communication with the game worker.
+    Subclasses should implement game-specific logic.
+    """
+
+    async def connect(self) -> None:
+        """
+        Handles the WebSocket connection event.
+        Only authenticated users can connect. Otherwise, the connection is closed.
+        Initializes game data and accepts the connection.
+        """
         if self.scope["user"].is_anonymous:
             await self.close()
         else:
-            self.room_id = None
-            self.room_group_name = None
-            self.game_data = {}
-            self.winner = None
+            self.room_id: Optional[int] = None
+            self.room_group_name: Optional[str] = None
+            self.game_data: Dict[str, Union[int, float]] = {}
+            self.winner: Optional[str] = None
             await self.accept()
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, close_code: int) -> None:
+        """
+        Handles the WebSocket disconnection event.
+        Calls the finish_game method to perform any necessary cleanup.
+        """
         await self.finish_game()
 
-    async def receive(self, text_data):
-        # processa mensagem recebida do cliente
-        text_data_json = json.loads(text_data)
-        type = text_data_json["type"]
+    async def receive(self, text_data: str) -> None:
+        """
+        Receives messages from the Websocket client and routes them to appropriate handlers.
 
-        if type == "join_room":
-            await self.join_room(text_data_json)
+        Args:
+            text_data (str): The JSON string received from the WebSocket client.
+        """
+        try:
+            data_json: ClientMessage = json.loads(text_data)
+            message_type: MessageType = data_json["type"]
 
-        elif type == "start_game":
-            await self.start_game()
+            if message_type == MessageType.JOIN_ROOM:
+                await self.handle_join_room(data_json)
+            elif message_type == MessageType.START_GAME:
+                await self.handle_start_game()
+            elif message_type in [MessageType.KEYDOWN, MessageType.KEYUP]:
+                key: Optional[str] = data_json["key"]
+                state: bool = (
+                    message_type == MessageType.KEYDOWN
+                )  # True if 'keydown', False if 'keyup'
+                if key is not None:
+                    await self.handle_key_paddle_event(key, state)
+                else:
+                    await self.send_error("Key not provided")
+            else:
+                await self.send_error("Received an unknown message type.")
+                logger.warning(f"Unknown message type received: {message_type}")
+        except json.JSONDecodeError:
+            await self.send_error("Invalid JSON data")
+            logger.exception("JSON decoding failed.")
+        except Exception as e:
+            await self.send_error("An unexpected error occurred.")
+            logger.exception(f"An error occurred: {e}")
 
-        elif type in ["keydown", "keyup"]:
-            key = text_data_json["key"]
-            state = type == "keydown"  # True se for keydown, False se for keyup
-            await self.handle_key_paddle_event(key, state)
+    async def handle_join_room(self, data: ClientMessage) -> None:
+        """
+        Handles the `join_room` message from the client.
+        Should be implemented by subclasses.
 
-    async def join_room(self, text_data_json):
-        pass  # implementar nas classes filhas
-
-    async def start_game(self):
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "start_game_message",
-                "message": "Game started",
-            },
-        )
-
-    async def handle_key_paddle_event(self, key, state):
-        pass  # implementar nas classes filhas
-
-    async def finish_game(self):
+        Args:
+            data (ClientMessage): The data received from the client.
+        """
         pass
 
-    # Métodos inicialização
-    async def add_to_group(self, room_id):
-        print("add_to_group")
-        self.room_group_name = f"pong_{self.room_id}"
-        self.game_data = cache.get(f"{self.room_group_name}_game_data", {})
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+    async def start_game(self) -> bool:
+        """
+        Should be implemented by subclasses.
+        """
+        pass
 
-    async def initialize_game_data(self, width, height):
-        print("initialize_game_data")
-        # verifica se já existe dados do jogo em andamento se não cria um novo
-        if not self.game_data:
-            self.game_data["width"] = width
-            self.game_data["height"] = height
-            cache.set(f"{self.room_group_name}_game_data", self.game_data)
+    async def handle_start_game(self) -> None:
+        """
+        Handles the `start_game` message from the client.
+        Calls the `start_game` method and sends a message to the group indicate that game has started!
+        """
+        start_game = await self.start_game()
+        if start_game:
+            logger.info("Game started")
+            if self.room_group_name:
+                try:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_start_game_message",
+                            "message": "Game started",
+                        },
+                    )
+                except Exception as e:
+                    await self.send_error("Failed to send start game message to group.")
+                    logger.exception(f"Failed to send start game message: {e}")
+            else:
+                await self.send_error("Room group name not set")
+                logger.warning(
+                    "Room group name is not set when trying to start the game."
+                )
 
-    async def start_game_message(self, event):
-        # Envia uma mensagem para o cliente WebSocket
-        await self.send(
-            text_data=json.dumps({"type": "start_game", "message": event["message"]})
-        )
+    async def handle_key_paddle_event(self, key: str, state: bool) -> None:
+        """
+        Handles key events from the client for moving paddles.
+        Should be implemented by subclasses.
 
-    # Métodos para enviar mensagens ao worker
-    async def worker_initialize_game(self):
-        print("worker_initialize_game")
-        # enviar mensagem ao worker para instanciar o jogo e retornar o estado inicial para desenhar na tela
-        await self.channel_layer.send(
-            "pong_update_channel",
-            {
-                "type": "initialize_game",
-                "room_id": str(self.room_id),
-                "room_group_name": self.room_group_name,
-                "width": self.game_data["width"],
-                "height": self.game_data["height"],
-            },
-        )
+        Args:
+            key (str): The key that was pressed or released.
+            state (bool): True if the key is pressed, False if it is released.
+        """
+        pass
 
-    async def worker_start_game(self):
-        # envia mensagem para o worker para atualizar o estado do jogo, no caso, começar o loop
-        await self.channel_layer.send(
-            "pong_update_channel",
-            {
-                "type": "update_game_state",
-                "room_id": str(self.room_id),
-                "room_group_name": self.room_group_name,
-                "width": self.game_data["width"],
-                "height": self.game_data["height"],
-            },
-        )
+    async def finish_game(self) -> None:
+        """
+        Performs any necessary cleanup when the game ends.
+        Should be implemented by subclasses.
+        """
+        pass
 
-    async def worker_update_paddles_position(self, paddle, direction, state):
-        # envia mensagem para o worker e atualiza as variáveis dos paddles
-        await self.channel_layer.send(
-            "pong_update_channel",
-            {
-                "type": "update_paddles_position",
-                "room_id": str(self.room_id),
-                "paddle": paddle,  # left ou right
-                "direction": direction,  # up ou down
-                "state": state,  # True se for keydown, False se for keyup
-            },
-        )
+    # Initialization methods
+    async def add_to_group(self, room_id: int) -> None:
+        """
+        Adds the consumer to the appropriate group based on the room ID.
 
-    # Métodos para receber mensagens do worker e enviar para o cliente
-    async def send_game_state(self, event):
-        # Recebe o estado do worker
-        game_state = event["game_state"]
+        Args:
+            room_id (int): The ID of the room to join.
+        """
+        try:
+            self.room_id = room_id
+            self.room_group_name = f"pong_{self.room_id}"
+            cached_data = cache.get(f"{self.room_group_name}_game_data")
+            if cached_data is not None:
+                self.game_data = cached_data
+            await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+            logger.info(f"Consumer added to group {self.room_group_name}")
+        except Exception as e:
+            await self.send_error("Failed to add to group.")
+            logger.exception(f"Failed to add to group: {e}")
 
-        # Envia o estado do jogo para o cliente WebSocket
-        await self.send(
-            text_data=json.dumps({"type": "game_init", "game_state": game_state})
-        )
+    async def initialize_game_data(self, width: int, height: int) -> None:
+        """
+        Initializes the game data with the provided width and height if not already set.
 
-    async def define_winner(self, event):
-        game_state = event["game_state"]
-        self.winner = game_state["winner"]
+        Args:
+            width (int): The width of the game area.
+            height (int): The height of the game area.
+        """
+        try:
+            if not self.game_data:
+                self.game_data["width"] = width
+                self.game_data["height"] = height
+                cache.set(f"{self.room_group_name}_game_data", self.game_data)
+                logger.info(f"Game data initialized: {self.game_data}")
+        except Exception as e:
+            await self.send_error("Failed to initialize game data.")
+            logger.exception(f"Failed to initialize game data: {e}")
 
-    async def send_winner(self, event):
-        # Recebe o estado do worker
+    # Methods to send messages to the worker
+    async def worker_initialize_game(self) -> None:
+        """
+        Sends a message to the worker to initialize the game. Its purpose is to draw the game without starting it.
+        """
+        try:
+            await self.channel_layer.send(
+                "pong_update_channel",
+                {
+                    "type": "initialize_game",
+                    "room_id": str(self.room_id),
+                    "room_group_name": self.room_group_name,
+                    "width": self.game_data["width"],
+                    "height": self.game_data["height"],
+                },
+            )
+        except Exception as e:
+            await self.send_error("Failed to initialize game in worker.")
+            logger.exception(f"Failed to send initialize_game to worker: {e}")
+
+    async def worker_start_game(self) -> None:
+        """
+        Sends a message to the worker to start the game loop.
+        """
+        try:
+            await self.channel_layer.send(
+                "pong_update_channel",
+                {
+                    "type": "update_game_state",
+                    "room_id": str(self.room_id),
+                    "room_group_name": self.room_group_name,
+                    "width": self.game_data["width"],
+                    "height": self.game_data["height"],
+                },
+            )
+        except Exception as e:
+            await self.send_error("Failed to start game in worker.")
+            logger.exception(f"Failed to send update_game_state to worker: {e}")
+
+    async def worker_update_paddles_position(
+        self, paddle: Paddle, direction: Direction, state: bool
+    ) -> None:
+        """
+        Sends a message to the worker to update the positions based on user input.
+
+        Args:
+            paddle (Paddle): The paddle to move (`left` or `right`).
+            direction (Direction): The direction to move (`up` or `down`).
+            state (bool): True if the key is pressed, False if it is released.
+        """
+        try:
+            await self.channel_layer.send(
+                "pong_update_channel",
+                {
+                    "type": "update_paddles_position",
+                    "room_id": str(self.room_id),
+                    "paddle": paddle,
+                    "direction": direction,
+                    "state": state,
+                },
+            )
+        except Exception as e:
+            await self.send_error("Failed to send update_paddles_position to worker.")
+            logger.exception(f"Failed to send update_paddles_position to worker: {e}")
+
+    # Methods to send messages to the client
+    async def send_start_game_message(self, event: StartGameEvent) -> None:
+        """
+        Sends a message to the client indicating that the game has started.
+
+        Args:
+            event (StartGameEvent): The event data containing the message.
+        """
+        try:
+            await self.send(
+                text_data=json.dumps(
+                    {"type": "start_game", "message": event["message"]}
+                )
+            )
+        except Exception as e:
+            await self.send_error("Failed to send start game message to client.")
+            logger.exception(f"Failed to send start game message to client: {e}")
+
+    async def send_game_state(self, event: GameStateEvent) -> None:
+        """
+        Receives the game state from the worker and sends it to the client.
+
+        Args:
+            event (GameStateEvent): The event data containing the game state.
+        """
+        try:
+            game_state = event["game_state"]
+            await self.send(
+                text_data=json.dumps({"type": "game_init", "game_state": game_state})
+            )
+        except Exception as e:
+            await self.send_error("Failed to send game state to client.")
+            logger.exception(f"Failed to send game state to client: {e}")
+
+    async def define_winner(self, event: GameStateEvent) -> None:
+        """
+        Defines the winner.
+        Should be implemented by subclasses.
+        """
+        pass
+
+    async def send_winner(self, event: GameStateEvent) -> None:
+        """
+        Receives the game state from the worker and sends the winner to the client.
+
+        Args:
+            event (GameStateEvent): The event data containing the game state.
+        """
         await self.define_winner(event)
         if self.winner:
-            print("winner", self.winner)
-            # envia uma mensagem para o cliente informando o vencedor
-            await self.send(
-                text_data=json.dumps({"type": "winner", "winner": self.winner})
-            )
+            logger.info(f"Winner: {self.winner}")
+            try:
+                await self.send(
+                    text_data=json.dumps({"type": "winner", "winner": self.winner})
+                )
+            except Exception as e:
+                await self.send_error("Failed to send winner to client.")
+                logger.exception(f"Failed to send winner to client: {e}")
+
+    # Utility methods
+    async def send_error(self, message: str) -> None:
+        """
+        Sends an error message to the client.
+
+        Args:
+            message (str): The error message to send.
+        """
+        await self.send(text_data=json.dumps({"type": "error", "message": message}))

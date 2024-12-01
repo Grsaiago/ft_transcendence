@@ -1,46 +1,112 @@
 from django.core.cache import cache
 
-from .base_consumer import BasePongConsumer
+from .base_consumer import (
+    BasePongConsumer,
+    ClientMessage,
+    Direction,
+    GameStateEvent,
+    Paddle,
+    logger,
+)
 
 
 class LocalPongConsumer(BasePongConsumer):
-    async def join_room(self, data):
-        self.room_id = data["room_id"]
-        await self.add_to_group(self.room_id)
-        await self.initialize_game_data(data["width"], data["height"])
-        await self.worker_initialize_game()
+    """
+    LocalPongConsumer handles the game logic for local (single-player) games.
+    Inherits from BasePongConsumer.
+    """
 
-    async def start_game(self):
-        # no modo local inicia imediatemento ao precionar Start e receber a msg star_game
-        await self.worker_start_game()
-        await super().start_game()
+    async def handle_join_room(self, data: ClientMessage) -> None:
+        """
+        Handles the 'join_room' message from the client.
 
-    async def handle_key_paddle_event(self, key, state):
-        # mapeia as para os paddle no modo local
-        # w e s para o paddle esquerdo
-        # arrowup e arrowdown para o paddle direito
-        if key in ["w", "s"]:
-            paddle = "left"
-            direction = "up" if key == "w" else "down"
-        elif key in ["arrowup", "arrowdown"]:
-            paddle = "right"
-            direction = "up" if key == "arrowup" else "down"
+        Args:
+            data (ClientMessage): The data received from the client.
+        """
+        try:
+            self.room_id = data["room_id"]
+            await self.add_to_group(self.room_id)
+            await self.initialize_game_data(data["width"], data["height"])
+            await self.worker_initialize_game()
+        except Exception as e:
+            await self.send_error("Failed to join room.")
+            logger.exception(f"Failed to handle join_room: {e}")
 
-        await self.worker_update_paddles_position(paddle, direction, state)
+    async def start_game(self) -> bool:
+        """
+        Starts the game. In local mode, the game starts immediately upon receiving the 'start_game' message
+        """
+        try:
+            await self.worker_start_game()
+            return True
+        except Exception as e:
+            await self.send_error("Failed to start game.")
+            logger.exception(f"Failed to start game: {e}")
+        return False
 
-    async def finish_game(self):
-        if self.room_group_name:
-            # envia mensagem para o worker para finalizar o jogo
-            await self.channel_layer.send(
-                "pong_update_channel",
-                {
-                    "type": "finish_game",
-                    "room_id": str(self.room_id),
-                },
-            )
-            # remove o usuário do grupo
-            await self.channel_layer.group_discard(
-                self.room_group_name, self.channel_name
-            )
-            # remove os dados do jogo
-            cache.delete(f"{self.room_group_name}_game_data")
+    async def handle_key_paddle_event(self, key: str, state: bool) -> None:
+        """
+        Handles key events from the client for moving paddles.
+        In local mode, `w` and `s` keys are used to move the left paddle, and `arrowup` and `arrowdown` keys are used to move the right paddle.
+
+        Args:
+            key (str): The key that was pressed or released.
+            state (bool): True if the key is pressed, False if it is released.
+        """
+        try:
+            if key in ["w", "s"]:
+                paddle = Paddle.LEFT
+                direction = Direction.UP if key == "w" else Direction.DOWN
+            elif key in ["arrowup", "arrowdown"]:
+                paddle = Paddle.RIGHT
+                direction = Direction.UP if key == "arrowup" else Direction.DOWN
+            else:
+                logger.warning(f"Unhandled key: {key}")
+                return
+
+            await self.worker_update_paddles_position(paddle, direction, state)
+        except Exception as e:
+            await self.send_error("Failed to handle key event.")
+            logger.exception(f"Failed to handle key_paddle_event: {e}")
+
+    async def finish_game(self) -> None:
+        """
+        Finishes the game. In local mode, the game is finished when the user closes the browser window.
+        Performs any necessary cleanup operations.
+        """
+        try:
+            if self.room_group_name:
+                # Send a message to the worker to finish the game
+                await self.channel_layer.send(
+                    "pong_update_channel",
+                    {
+                        "type": "finish_game",
+                        "room_id": str(self.room_id),
+                    },
+                )
+                # Remove the user from the group
+                await self.channel_layer.group_discard(
+                    self.room_group_name, self.channel_name
+                )
+                # Delete game data
+                cache.delete(f"{self.room_group_name}_game_data")
+                logger.info(
+                    f"Game finished and cleaned up for room {self.room_group_name}"
+                )
+        except Exception as e:
+            await self.send_error("Failed to finish game.")
+            logger.exception(f"Failed to finish game: {e}")
+
+    async def define_winner(self, event: GameStateEvent) -> None:
+        """
+        Defines the winner based on the game state received from the worker.
+
+        Args:
+            event (GameStateEvent): The event data containing the game state.
+        """
+        try:
+            game_state = event["game_state"]
+            self.winner = game_state["winner"]
+        except Exception as e:
+            await self.send_error("Failed to define winner.")
+            logger.exception(f"Failed to define winner: {e}")

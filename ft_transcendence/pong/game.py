@@ -38,8 +38,6 @@ class GameState(TypedDict):
     players: Dict[str, str]
     score: Dict[str, int]
     winner: Optional[int]
-    started: bool
-    finished: bool
 
 
 class Ball:
@@ -83,7 +81,7 @@ class Ball:
         elif direction == Y:
             self.y_speed *= -1
 
-    async def reset(self):
+    async def reset(self) -> None:
         """
         Reset the ball to the center of the game area with a random y position and speed.
         """
