@@ -174,6 +174,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
+# in production disable existing_loggers to True, change handlers to ["null"]
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

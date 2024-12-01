@@ -85,7 +85,6 @@ class Ball:
         """
         Reset the ball to the center of the game area with a random y position and speed.
         """
-        print("enter in reset ball")
         self.x = self.x_start
         self.y = float(random.randint(self.y_min_start, self.y_max_start))
         self.x_speed = self.base_speed

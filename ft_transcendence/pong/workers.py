@@ -1,45 +1,57 @@
 import asyncio
+import logging
+from dataclasses import dataclass
+from typing import Dict, Optional
 
 from channels.consumer import AsyncConsumer
 
 from .game import PongGame
 
-# from django.core.cache import cache
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class GameSession:
+    """
+    Represents a game session with its game instance and associated task.
+    """
+
+    game: PongGame
+    task: Optional[asyncio.Task] = None
 
 
 class PongGameWorker(AsyncConsumer):
+    """
+    Worker that handles the game logic and communication with the websocket group
+    """
+
     def __init__(self, *args, **kwargs):
+        """
+        Initializes the worker with empty dictionaries to store game sessions.
+        """
         super().__init__(*args, **kwargs)
-        self.game = {}  # Dicionários para armazenar instâncias dos jogos
-        self.tasks = {}  # Dicionários para armazenar tarefas de cada jogo
+        self.sessions: Dict[str, GameSession] = {}
 
-    async def initialize_game(self, message):
-        room_id = message["room_id"]
-        room_group_name = message["room_group_name"]
-        width = message["width"]
-        height = message["height"]
+    async def initialize_game(self, message: dict) -> None:
+        """
+        Initializes a new game session and sends the initial game state to the clients.
 
-        # print("games: ", self.game)
-        # print("tasks: ", self.game)
+        Args:
+            message (dict): The message containing initialization parameters.
+        """
+        try:
+            room_id: str = message["room_id"]
+            room_group_name: str = message["room_group_name"]
+            width: int = message["width"]
+            height: int = message["height"]
 
-        if room_id not in self.game:
-            self.game[room_id] = PongGame(width, height)
+            if room_id not in self.sessions:
+                game = PongGame(width, height)
+                self.sessions[room_id] = GameSession(game=game)
+                logger.info(f"Game initialized for room {room_id}")
 
-        game_state = await self.game[room_id].get_game_state()
+            game_state = await self.sessions[room_id].game.get_game_state()
 
-        await self.channel_layer.group_send(
-            room_group_name,
-            {
-                "type": "send_game_state",
-                "game_state": game_state,
-            },
-        )
-
-    async def start_game_loop(self, room_id, room_group_name):
-        while room_id in self.game:
-            game_state = await self.game[room_id].calculate_game_tick()
-            print("game_state: ", game_state)
-            # enviar as informações do jogo para o grupo de websockets
             await self.channel_layer.group_send(
                 room_group_name,
                 {
@@ -47,132 +59,138 @@ class PongGameWorker(AsyncConsumer):
                     "game_state": game_state,
                 },
             )
+        except Exception as e:
+            logger.exception(f"Failed to initialize game: {e}")
 
-            if self.game[room_id].has_winner():
+    async def start_game_loop(self, room_id: str, room_group_name: str) -> None:
+        """
+        Runs the game loop, updating the game state and sending it to clients.
+
+        Args:
+            room_id (str): The ID of the room.
+            room_group_name (str): The name of the room group.
+        """
+        try:
+            session: Optional[GameSession] = self.sessions.get(room_id)
+            if not session:
+                logger.warning(f"No game session found for room {room_id}")
+                return
+
+            while room_id in self.sessions:
+                game_state = await session.game.calculate_game_tick()
+                logger.debug(f"Game state for room {room_id}: {game_state}")
+
+                # Send game state to clients
                 await self.channel_layer.group_send(
                     room_group_name,
                     {
-                        "type": "send_winner",
+                        "type": "send_game_state",
                         "game_state": game_state,
                     },
                 )
-                del self.game[room_id]
-                if self.tasks[room_id]:
-                    self.tasks[room_id].cancel()
-                    del self.tasks[room_id]
 
-            # pequena pausa para simular a velocidade do jogo (60fps)
-            await asyncio.sleep(0.016)
+                # checks if game has a winner and send to clients
+                if session.game.has_winner():
+                    await self.channel_layer.group_send(
+                        room_group_name,
+                        {
+                            "type": "send_winner",
+                            "game_state": game_state,
+                        },
+                    )
+                    await self.cleanup_game(room_id)
+                    break  # Exit the loop since the game has ended
 
-    async def update_game_state(self, message):
-        room_id = message["room_id"]
-        room_group_name = message["room_group_name"]
+                # Sleep to simulate game tick rate (e.g., 60 FPS)
+                await asyncio.sleep(0.016)
+        except Exception as e:
+            logger.exception(f"Error in game loop for room {room_id}: {e}")
+            await self.cleanup_game(room_id)
 
-        # Inicializa o jogo se ainda não foi inicializado
-        if room_id not in self.game:
-            await self.initialize_game(message)
+    async def start_game(self, message: dict) -> None:
+        """
+        Starts the game loop if not already started.
 
-        # Inicia a tarefa de loop do jogo se ainda não foi iniciada
-        if room_id not in self.tasks:
-            self.tasks[room_id] = asyncio.create_task(
-                self.start_game_loop(room_id, room_group_name)
+        Args:
+            message (dict): The message containing room information.
+        """
+        try:
+            room_id: str = message["room_id"]
+            room_group_name: str = message["room_group_name"]
+
+            # Initialize the game if not already initialized
+            if room_id not in self.sessions:
+                await self.initialize_game(message)
+
+            session: Optional[GameSession] = self.sessions.get(room_id)
+            if not session:
+                logger.warning(f"No game session found for room {room_id}")
+                return
+
+            # Start the game loop task if not already started
+            if not session.task or session.task.done():
+                session.task = asyncio.create_task(
+                    self.start_game_loop(room_id, room_group_name)
+                )
+        except Exception as e:
+            logger.exception(f"Failed to update game state for room {room_id}: {e}")
+
+    async def update_paddles_position(self, message: dict) -> None:
+        """
+        Updates the paddle positions based on user input.
+
+        Args:
+            message (dict): The message containing paddle movement information.
+        """
+        try:
+            room_id: str = message["room_id"]
+            paddle: str = message["paddle"]
+            direction: str = message["direction"]
+            state: bool = message["state"]
+
+            session: Optional[GameSession] = self.sessions.get(room_id)
+            if session:
+                if state:
+                    await session.game.paddle_on(paddle, direction)
+                else:
+                    await session.game.paddle_off(paddle)
+        except Exception as e:
+            logger.exception(
+                f"Failed to update paddle positions for room {room_id}: {e}"
             )
 
-    async def update_paddles_position(self, message):
-        room_id = message["room_id"]
-        paddle = message["paddle"]
-        direction = message["direction"]
-        state = message["state"]
+    async def finish_game(self, message: dict) -> None:
+        """
+        Cleans up the game and task when the game ends.
 
-        if room_id in self.game:
-            if state:
-                await self.game[room_id].paddle_on(paddle, direction)
+        Args:
+            message (dict): The message containing room information.
+        """
+        try:
+            room_id: str = message["room_id"]
+            await self.cleanup_game(room_id)
+            logger.info(f"Game finished and cleaned up for room {room_id}")
+        except Exception as e:
+            logger.exception(f"Failed to finish game for room {room_id}: {e}")
+
+    async def cleanup_game(self, room_id: str) -> None:
+        """
+        Cleans up game sessions for a room.
+
+        Args:
+            room_id (str): The ID of the room to clean up.
+        """
+        try:
+            session: Optional[GameSession] = self.sessions.get(room_id)
+            if session:
+                # cancel the task it it's running
+                if session.task and not session.task.cancelled():
+                    session.task.cancel()
+                    logger.info(f"Game task cancelled for room {room_id}")
+                # remove the session
+                del self.sessions[room_id]
+                logger.info(f"Game session deleted for room {room_id}")
             else:
-                await self.game[room_id].paddle_off(paddle)
-
-    async def finish_game(self, message):
-        room_id = message["room_id"]
-        if room_id in self.game:
-            del self.game[room_id]
-            if room_id in self.tasks:
-                self.tasks[room_id].cancel()
-                del self.tasks[room_id]
-
-
-#############
-# without async
-
-# class PongGameWorker(AsyncConsumer):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.game = {}  # Dicionários para armazenar instâncias
-
-#     async def initialize_game(self, message):
-#         room_id = message["room_id"]
-#         room_group_name = message["room_group_name"]
-#         width = message["width"]
-#         height = message["height"]
-
-#         if room_id not in self.game:
-#             self.game[room_id] = PongGame(width, height)
-
-#         game_state = await self.game[room_id].get_game_state()
-
-#         await self.channel_layer.group_send(
-#             room_group_name,
-#             {
-#                 "type": "send_game_state",
-#                 "game_state": game_state,
-#             },
-#         )
-
-#     async def update_game_state(self, message):
-#         room_id = message["room_id"]
-#         room_group_name = message["room_group_name"]
-
-#         if room_id not in self.game:
-#             await self.initialize_game(message)
-
-#         await self.game[room_id].game_loop()
-#         game_state = await self.game[room_id].get_game_state()
-
-#         await self.channel_layer.group_send(
-#             room_group_name,
-#             {
-#                 "type": "send_game_state",
-#                 "game_state": game_state,
-#             },
-#         )
-
-#         # pequena pausa para simular a velocidade do jogo (60fps)
-#         await asyncio.sleep(0.016)
-
-#         # reenvia a tarefa para si mesmo para continuar processando o estado do jogo
-#         await self.channel_layer.send(
-#             "pong_update_channel",
-#             {
-#                 "type": "update_game_state",
-#                 "room_id": room_id,
-#                 "room_group_name": room_group_name,
-#             },
-#         )
-
-#     async def update_paddles_position(self, message):
-#         room_id = message["room_id"]
-#         # room_group_name = message["room_group_name"]
-#         key = message["key"]
-#         state = message["state"]
-
-#         if state:
-#             await self.game[room_id].paddle_on(key)
-#         else:
-#             await self.game[room_id].paddle_off(key)
-
-#         # # envia o estado atualizado para o grupo de websockets
-#         # await self.channel_layer.group_send(
-#         #     room_group_name,
-#         #     {
-#         #         "type": "send_game_state",
-#         #         "game_state": self.game.get_game_state(),
-#         #     },
-#         # )
+                logger.warning(f"No game session to clean up for room {room_id}")
+        except Exception as e:
+            logger.exception(f"Failed to clean up game for room {room_id}: {e}")

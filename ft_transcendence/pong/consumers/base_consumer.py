@@ -237,7 +237,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.send(
                 "pong_update_channel",
                 {
-                    "type": "update_game_state",
+                    "type": "start_game",
                     "room_id": str(self.room_id),
                     "room_group_name": self.room_group_name,
                     "width": self.game_data["width"],
