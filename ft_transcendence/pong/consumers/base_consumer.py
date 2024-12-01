@@ -64,6 +64,12 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         Initializes game data and accepts the connection.
         """
         if self.scope["user"].is_anonymous:
+            await self.accept()
+            await self.send(
+                text_data=json.dumps(
+                    {"type": "not_auth", "message": "User not authenticated"}
+                )
+            )
             await self.close()
         else:
             self.room_id: Optional[int] = None

@@ -36,6 +36,12 @@ socket.onmessage = function (e) {
   //console.log("Message from server: ", data);
   //console.log("data type: ", data.type);
 
+  if (data.type ==="not_auth") {
+    alert(data.message);
+    //redirect to login page
+    socket.close();
+  }
+
   if (data.type === "game_init") {
     pongGame.drawGameState(data.game_state);
   }
@@ -62,7 +68,7 @@ socket.onmessage = function (e) {
 };
 
 socket.onclose = function (e) {
-  console.log("WebSocket connection closed");
+  console.log("WebSocket connection closed", e.code);
 };
 
 // button start game event listener
