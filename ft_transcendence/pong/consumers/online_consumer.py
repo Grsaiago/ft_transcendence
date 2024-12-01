@@ -1,10 +1,10 @@
 import asyncio
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from pong.models import Match, PongRoom
+from pong.models import Match
 from user_management.models import TrUser
 
 from .base_consumer import (
@@ -37,6 +37,7 @@ class OnlinePongConsumer(BasePongConsumer):
         self.ready_players: int = 0
         self.players_data: List[int] = []
         self.match_id: Optional[int] = None
+        self.connected_players: Dict[int, bool] = {}
 
         self.ready_lock = asyncio.Lock()
 
@@ -54,27 +55,34 @@ class OnlinePongConsumer(BasePongConsumer):
             # Now that self.room_group_name is initialized
             async with self.ready_lock:
                 self.players_data = cache.get(f"{self.room_group_name}_players", [])
+                self.connected_players = cache.get(
+                    f"{self.room_group_name}_connected_players", {}
+                )
                 self.ready_players = cache.get(
                     f"{self.room_group_name}_ready_players", 0
                 )
                 self.match_id = cache.get(f"{self.room_group_name}_match_id", None)
 
-                if (
-                    len(self.players_data) < 2
-                    and self.scope["user"].id not in self.players_data
-                ):
+                if self.scope["user"].id in self.players_data:
+                    # User is reconnecting
+                    self.connected_players[self.scope["user"].id] = True
+                    index = self.players_data.index(self.scope["user"].id)
+                    self.player_paddle = Paddle.LEFT if index == 0 else Paddle.RIGHT
+                    self.is_spectator = self.ready_players > index
+                elif len(self.players_data) < 2:
+                    # New player
                     self.player_paddle = (
                         Paddle.LEFT if not self.players_data else Paddle.RIGHT
                     )
                     self.players_data.append(self.scope["user"].id)
+                    self.connected_players[self.scope["user"].id] = True
                     cache.set(f"{self.room_group_name}_players", self.players_data)
-                elif self.scope["user"].id in self.players_data:
-                    # Reassign the paddle if the user reconnects
-                    index = self.players_data.index(self.scope["user"].id)
-                    self.player_paddle = Paddle.LEFT if index == 0 else Paddle.RIGHT
-                    self.is_spectator = self.ready_players > index
                 else:
                     self.is_spectator = True
+
+                cache.set(
+                    f"{self.room_group_name}_connected_players", self.connected_players
+                )
 
             await self.initialize_game_data(data["width"], data["height"])
             await self.worker_initialize_game()
@@ -146,11 +154,18 @@ class OnlinePongConsumer(BasePongConsumer):
         Performs any necessary cleanup when the game ends.
         """
         try:
-            if self.scope["user"].id in self.players_data:
-                self.players_data.remove(self.scope["user"].id)
-                cache.set(f"{self.room_group_name}_players", self.players_data)
+            if self.scope["user"].id in self.connected_players:
+                self.connected_players[self.scope["user"].id] = False
+                cache.set(
+                    f"{self.room_group_name}_connected_players", self.connected_players
+                )
 
-            if len(self.players_data) == 0:
+            # Check if all players are disconnected
+            all_disconnected = all(
+                not connected for connected in self.connected_players.values()
+            )
+
+            if all_disconnected:
                 # Send a message to the worker to finish the game
                 await self.channel_layer.send(
                     "pong_update_channel",
@@ -164,6 +179,11 @@ class OnlinePongConsumer(BasePongConsumer):
                 cache.delete(f"{self.room_group_name}_game_data")
                 cache.delete(f"{self.room_group_name}_ready_players")
                 cache.delete(f"{self.room_group_name}_match_id")
+                cache.delete(f"{self.room_group_name}_connected_players")
+
+                # Set the room as inactive
+                await self.set_room_inactive()
+
                 logger.info(
                     f"Game finished and cleaned up for room {self.room_group_name}"
                 )
@@ -249,18 +269,6 @@ class OnlinePongConsumer(BasePongConsumer):
             User (TrUser): The User object corresponding to the player ID.
         """
         return await sync_to_async(get_user_model().objects.get)(id=player_id)
-
-    async def get_pongroom_by_id(self, room_id: int) -> PongRoom:
-        """
-        Retrieves a PongRoom by ID.
-
-        Args:
-            room_id (int): The ID of the PongRoom.
-
-        Returns:
-            PongRoom: The PongRoom object corresponding to the room ID.
-        """
-        return await sync_to_async(PongRoom.objects.get)(id=room_id)
 
     async def get_match_by_id(self, match_id: int) -> Match:
         """

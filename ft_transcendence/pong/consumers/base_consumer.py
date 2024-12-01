@@ -3,9 +3,11 @@ import logging
 from enum import Enum
 from typing import Dict, Optional, TypedDict, Union
 
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.cache import cache
 from pong.game import GameState
+from pong.models import PongRoom
 
 logger = logging.getLogger(__name__)
 
@@ -342,3 +344,29 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             message (str): The error message to send.
         """
         await self.send(text_data=json.dumps({"type": "error", "message": message}))
+
+    # Methods to interact with the database
+    async def get_pongroom_by_id(self, room_id: int) -> PongRoom:
+        """
+        Retrieves a PongRoom by ID.
+
+        Args:
+            room_id (int): The ID of the PongRoom.
+
+        Returns:
+            PongRoom: The PongRoom object corresponding to the room ID.
+        """
+
+        return await sync_to_async(PongRoom.objects.get)(id=room_id)
+
+    async def set_room_inactive(self) -> None:
+        """
+        Sets the room as inactive in the database.
+        """
+        try:
+            pongroom = await self.get_pongroom_by_id(self.room_id)
+            pongroom.is_active = False
+            await sync_to_async(pongroom.save)()
+            logger.info(f"Room {self.room_id} set to inactive")
+        except Exception as e:
+            logger.exception(f"Failed to set room inactive: {e}")

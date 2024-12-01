@@ -90,6 +90,7 @@ class LocalPongConsumer(BasePongConsumer):
                 )
                 # Delete game data
                 cache.delete(f"{self.room_group_name}_game_data")
+                await self.set_room_inactive()
                 logger.info(
                     f"Game finished and cleaned up for room {self.room_group_name}"
                 )

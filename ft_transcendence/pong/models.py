@@ -34,6 +34,7 @@ class PongRoom(models.Model):
     name = models.CharField(max_length=50)
     game_mode = models.CharField(max_length=20, choices=GameMode.choices())
     created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"PongRoom id: {self.id}. Room name: {self.name} - Game_mode: {self.game_mode}"
