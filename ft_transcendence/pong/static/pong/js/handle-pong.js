@@ -1,5 +1,13 @@
 import { PongGame } from "./PongGame.js";
 
+//Set environment
+const hostname = window.location.hostname;
+if (hostname === "www.transcendence.com") {
+  log.setLevel(log.levels.ERROR);
+} else {
+  log.setLevel(log.levels.DEBUG);
+}
+
 //Get canvas and context
 const canvas = document.getElementById("pongCanvas");
 const context = canvas.getContext("2d");
@@ -9,114 +17,126 @@ const pongGame = new PongGame(context, canvas.width, canvas.height);
 
 //Get game data
 const gameData = document.getElementById("game-data");
-const room_id = gameData.dataset.roomId;
-const game_mode = gameData.dataset.gameMode;
+const roomId = gameData.dataset.roomId;
+const gameMode = gameData.dataset.gameMode;
 
-console.log("room_id:", room_id);
-console.log("game_mode:", game_mode);
+log.info("room_id:", roomId);
+log.info("game_mode:", gameMode);
 
 //Websocket connection
-const socketUrl = `ws://${window.location.host}/ws/pong/${game_mode}/`;
+const socketUrl = `ws://${window.location.host}/ws/pong/${gameMode}/`;
 const socket = new WebSocket(socketUrl);
 
-socket.onopen = function (e) {
-  const message = JSON.stringify({
+//Websocket
+socket.onopen = (event) => {
+  handleSocketOpen(event);
+};
+
+socket.onmessage = (event) => {
+  handleSocketMessage(event);
+};
+
+socket.onclose = (event) => {
+  log.info("WebSocket connection closed", event.code);
+};
+
+socket.onerror = (event) => {
+  log.error("WebSocket connection error", event);
+};
+
+//Event listeners - Start game button
+const startButton = document.getElementById("startGame");
+startButton.addEventListener("click", () => {
+  handleClickStartButton();
+});
+
+//Event listeners - Keys
+document.addEventListener("keydown", (event) => {
+  handleKeyEvent(event, "keydown");
+});
+
+document.addEventListener("keyup", (event) => {
+  handleKeyEvent(event, "keyup");
+});
+
+//Functions
+function handleSocketOpen(event) {
+  const message = {
     type: "join_room",
-    room_id: room_id,
+    room_id: roomId,
     width: canvas.width,
     height: canvas.height,
-  });
-  //console.log('Sending message:', message);
-  socket.send(message);
-  console.log("WebSocket connection established");
-};
+  };
+  sendMessage(message);
+  log.info("WebSocket connection established with:", event);
+}
 
-socket.onmessage = function (e) {
-  const data = JSON.parse(e.data);
-  //console.log("Message from server: ", data);
-  //console.log("data type: ", data.type);
+function handleSocketMessage(event) {
+  const data = JSON.parse(event.data);
+  log.debug("Message from server:", data);
 
-  if (data.type ==="not_auth") {
-    alert(data.message);
-    //redirect to login page
-    socket.close();
+  switch (data.type) {
+    case "not_auth":
+      alert(data.message);
+      socket.close();
+      break;
+
+    case "game_init":
+      pongGame.drawGameState(data.game_state);
+      break;
+
+    case "update_game_state":
+      pongGame.drawGameState(data.game_state);
+      break;
+
+    case "game_has_started":
+      handleGameHasStarted();
+      break;
+
+    case "winner":
+      handleWinner(data.winner);
+      break;
+
+    default:
+      log.error("Unknown message type:", data.type);
   }
+}
 
-  if (data.type === "game_init") {
-    pongGame.drawGameState(data.game_state);
-  }
-
-  if (data.type === "update_game_state") {
-    pongGame.drawGameState(data.game_state);
-  }
-
-  if (data.type === "start_game") {
-    const startButton = document.getElementById("startGame");
-    startButton.style.display = "none";
-    const messageContainer = document.getElementById("messageContainer");
-    messageContainer.textContent = "Game started";
-    console.log("Game started");
-  }
-
-  if (data.type ==="winner") {
-    const messageContainer = document.getElementById("messageContainer");
-    messageContainer.textContent = data.winner + " wins!";
-    const startButton = document.getElementById("startGame");
-    startButton.style.display = "block";
-  }
-
-};
-
-socket.onclose = function (e) {
-  console.log("WebSocket connection closed", e.code);
-};
-
-// button start game event listener
-const startButton = document.getElementById("startGame");
-startButton.addEventListener("click", function () {
-  const message = JSON.stringify({
+function handleClickStartButton() {
+  const message = {
     type: "start_game",
-  });
-  console.log("Sending message:", message);
-  socket.send(message);
-});
+  };
+  sendMessage(message);
+}
 
-// keydown event listener
-document.addEventListener("keydown", function (event) {
-  if (
-    event.key === "ArrowUp" ||
-    event.key === "ArrowDown" ||
-    event.key === "w" ||
-    event.key === "s" ||
-    event.key === "W" ||
-    event.key === "S"
-  ) {
+function handleKeyEvent(event, keyType) {
+  const validKeys = ["ArrowUp", "ArrowDown", "w", "s", "W", "S"];
+  if (validKeys.includes(event.key)) {
     event.preventDefault();
-    const message = JSON.stringify({
-      type: "keydown",
+    const message = {
+      type: keyType,
       key: event.key.toLocaleLowerCase(),
-    });
-    //console.log('Sending message:', message);
-    socket.send(message);
+    };
+    sendMessage(message);
   }
-});
+}
 
-// keyup event listener
-document.addEventListener("keyup", function (event) {
-  if (
-    event.key === "ArrowUp" ||
-    event.key === "ArrowDown" ||
-    event.key === "w" ||
-    event.key === "s" ||
-    event.key === "W" ||
-    event.key === "S"
-  ) {
-    event.preventDefault();
-    const message = JSON.stringify({
-      type: "keyup",
-      key: event.key.toLocaleLowerCase(),
-    });
-    //console.log('Sending message:', message);
-    socket.send(message);
-  }
-});
+function handleGameHasStarted() {
+  startButton.style.display = "none";
+  const messageContainer = document.getElementById("messageContainer");
+  messageContainer.textContent = "Game has started!";
+  log.info("Game has started!");
+}
+
+function handleWinner(winner) {
+  const messageContainer = document.getElementById("messageContainer");
+  messageContainer.textContent = `${winner} wins!`;
+  startButton.textContent = "Play Again!";
+  startButton.style.display = "block";
+}
+
+function sendMessage(message) {
+  const jsonMessage = JSON.stringify(message);
+  log.debug("Sending message:", jsonMessage);
+  socket.send(jsonMessage);
+}

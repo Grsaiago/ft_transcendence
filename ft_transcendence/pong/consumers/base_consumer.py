@@ -148,7 +148,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
                     await self.channel_layer.group_send(
                         self.room_group_name,
                         {
-                            "type": "send_start_game_message",
+                            "type": "send_game_has_started_message",
                             "message": "Game started",
                         },
                     )
@@ -283,7 +283,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             logger.exception(f"Failed to send update_paddles_position to worker: {e}")
 
     # Methods to send messages to the client
-    async def send_start_game_message(self, event: StartGameEvent) -> None:
+    async def send_game_has_started_message(self, event: StartGameEvent) -> None:
         """
         Sends a message to the client indicating that the game has started.
 
@@ -293,7 +293,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         try:
             await self.send(
                 text_data=json.dumps(
-                    {"type": "start_game", "message": event["message"]}
+                    {"type": "game_has_started", "message": event["message"]}
                 )
             )
         except Exception as e:
