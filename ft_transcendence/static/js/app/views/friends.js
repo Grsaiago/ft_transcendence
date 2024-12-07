@@ -8,6 +8,8 @@ export default class Profile extends AbstractView {
         this.handleFriendChange = this.handleFriendChange.bind(this);
         this.updateFriend = this.updateFriend.bind(this);
         this.handleTabSwitch = this.handleTabSwitch.bind(this);
+        this.handleSearchEnterKey = this.handleSearchEnterKey.bind(this);
+        this.handleUserSearch = this.handleUserSearch.bind(this);
     }
 
     async getHtml() {
@@ -43,6 +45,13 @@ export default class Profile extends AbstractView {
         const titleSearch = document.querySelector("#title-friends-search");
         titleFriends.addEventListener("click", this.handleTabSwitch);
         titleSearch.addEventListener("click", this.handleTabSwitch);
+
+        //search events
+        const searchBarInput = document.getElementById('search-input');
+        searchBarInput.addEventListener('keydown', this.handleSearchEnterKey);
+
+        const friendsBarInput = document.getElementById('friends-input');
+        friendsBarInput.addEventListener('keydown', this.handleSearchEnterKey);
     }
     
     removeUIEventHandlers() {
@@ -59,6 +68,79 @@ export default class Profile extends AbstractView {
         titleSearch.removeEventListener("click", this.handleTabSwitch);
     }
 
+    handleSearchEnterKey(event, tab) {
+        if (event.key === 'Enter') {
+            if (event.currentTarget.id === 'friends-input') {
+                this.handleFriendsSearch();
+            } else {
+                this.handleUserSearch();
+            }
+        }
+    }
+
+    handleUserSearch() {
+        const messageInputDom = document.getElementById('search-input');
+
+        if (!messageInputDom) {
+            console.error('Message input field not found.');
+            return;
+        }
+
+        const message = messageInputDom.value;
+
+        console.log('Sending message: ', message);
+
+        if (!message) {
+            return;
+        }
+
+        messageInputDom.value = '';
+
+        this.renderUserSearch(this.searchUsers());
+    }
+
+    handleFriendsSearch() {
+        const messageInputDom = document.getElementById('friends-input');
+
+        if (!messageInputDom) {
+            console.error('Message input field not found.');
+            return;
+        }
+
+        const message = messageInputDom.value;
+
+        console.log('Sending message: ', message);
+
+        if (!message) {
+            return;
+        }
+
+        messageInputDom.value = '';
+
+        this.renderFriendsList(this.getFriendsList());
+    }
+
+    getFriendsList() {
+        //endpoint to get friends list
+        var friends = [];
+        return friends;
+    }
+
+    searchUsers() {
+        //endpoint to get search results
+        var users = [];
+        return users;
+    }
+
+    renderFriendsList(friends) {
+        //render friends list based on friends array
+        console.log("rendering friends list");
+    }
+
+    renderUserSearch(users) {
+        //render search results based on results array
+        console.log("rendering user search results");
+    }
 
     handleTabSwitch(event) {
         const tab = event.target.textContent.trim().toLowerCase();
