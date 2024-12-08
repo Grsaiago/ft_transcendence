@@ -3,17 +3,6 @@ from enum import Enum
 from django.contrib.auth import get_user_model
 from django.db import models
 
-# Cada sala é um jogo?
-#   Não. Cada sala é um espaço onde pode ter um jogo.
-# - Eu posso criar uma sala e esperar alguém entrar ou eu posso entrar em uma sala que já existe.
-# - Eu posso convidar alguém para entrar na minha sala.
-# - Eu posso aceitar ou recusar um convite para entrar em uma sala.
-# - Eu posso sair de uma sala.
-# - Eu posso excluir uma sala.
-# - Eu posso ver quem está na sala.
-# - Eu posso ver o histórico de jogos da sala.
-# - Eu posso ver o placar da sala. Não sei? faz sentido? Será que cada sala deveria ser um jogo?
-
 
 class GameMode(Enum):
     LOCAL = "local"
@@ -29,12 +18,29 @@ class GameMode(Enum):
         return {gameMode.name: gameMode.value for gameMode in cls}
 
 
+class Tournament(models.Model):
+    name = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=True)
+    max_players = models.IntegerField(choices=[(4, "4 Players"), (8, "8 Players")])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Tournament: {self.name}. Max_players: {self.max_players}"
+
+
 class PongRoom(models.Model):
     # limitando o nome da sala para 50 caracteres pois channel_name é limitado a 100 caracteres
     name = models.CharField(max_length=50)
     game_mode = models.CharField(max_length=20, choices=GameMode.choices())
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    tournament = models.ForeignKey(
+        Tournament,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="rooms",
+    )
 
     def __str__(self):
         return f"PongRoom id: {self.id}. Room name: {self.name} - Game_mode: {self.game_mode}"
@@ -56,6 +62,17 @@ class Match(models.Model):
 
     def __str__(self):
         return f"Match id: {self.id}. Room id: {self.room_id} - Player1_id: {self.player1_id} vs Player2_id: {self.player2_id}"
+
+
+class TournamentParticipant(models.Model):
+    tournament = models.ForeignKey(
+        Tournament, on_delete=models.CASCADE, related_name="participants"
+    )
+    player = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    is_eliminated = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.player.username} in {self.tournament.name}"
 
 
 class UserMatchStats(models.Model):

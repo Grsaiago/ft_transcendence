@@ -6,34 +6,73 @@
     <section class="section_enter">
         <div>
             <h2>{{ user.username }}</h2>
-            <form method="post">
-                {% csrf_token %}
-                {% for field in form %}
+            {{ game_mode }}
+            {% if game_mode == GameMode.TOURNAMENT %}
+                <h3>Create a Tournament</h3>
+                <form method="post">
+                    {% csrf_token %}
                     <div>
-                        {{ field.label_tag }}
-                        {{ field }}
-                        {% if field.errors %}
-                            <!-- Exibe mensagens de erro, se houver -->
-                            <div class="text-danger">{{ field.errors.as_text }}</div>
+                        {{ form.name.label_tag }}
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                    <br>
+                                {% endfor %}
+                            </div>
                         {% endif %}
                     </div>
-                {% endfor %}
-                <input type="submit" value="Jogar">
-            </form>
-            <div>
-                <h3>Salas Existentes</h3>
-                {% if rooms %}
+                    <!--Dois botões para definir max_players -->
+                    <div>
+                        <p>Selecione a quantidade de jogadores</p>
+                        <button type="submit" name="max_players" value="4">4 Players</button>
+                        <button type="submit" name="max_players" value="8">8 Players</button>
+                    </div>
+                </form>
+                <h3>Tournaments</h3>
+                {% if tournaments %}
                     <ul>
-                        {% for room in rooms %}
+                        {% for t in tournaments %}
                             <li>
-                                <a href="{% url 'pong:pongroom' room.id %}">{{ room.name }}</a>
+                                <a href="{% url 'pong:pongtournament' t.id %}">{{ t.name }} - max players: {{ t.max_players }}</a>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p>Nenhuma sala foi criada!</p>
+                    <p>No active tournaments available!</p>
                 {% endif %}
-            </div>
+            {% else %}
+                <h3>Create a Room</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div>
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.errors %}
+                                <!-- Exibe mensagens de erro, se houver -->
+                                <div class="text-danger">{{ field.errors.as_text }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <input type="submit" value="Create Room">
+                </form>
+                <div>
+                    <h3>Rooms</h3>
+                    {% if rooms %}
+                        <ul>
+                            {% for room in rooms %}
+                                <li>
+                                    <a href="{% url 'pong:pongroom' room.id %}">{{ room.name }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No active rooms found!</p>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </section>
 {% endblock content %}
