@@ -4,44 +4,52 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'pong/css/pong.css' %}">
     <section class="section_enter">
-        <div>
-            <h2>{{ tournament.name }}</h2>
-            <p>Max Players: {{ tournament.max_players }}</p>
-            <p>
-                Status:
+        <h2>{{ tournament.id }}</h2>
+        <h2>{{ tournament.name }}</h2>
+        <section class="section_tournament"
+                 id="game-data"
+                 data-tournament-id="{{ tournament.id }}"
+                 data-game-mode="tournament">
+            <div>
+                <p>Max Players: {{ tournament.max_players }}</p>
+                <p>
+                    Status:
+                    {% if tournament.is_active %}
+                        Active
+                    {% else %}
+                        Completed
+                    {% endif %}
+                </p>
+                <h3>Participants</h3>
+                <ul>
+                    {% for participant in participants %}
+                        <li>
+                            {{ participant.player.username }}
+                            {% if participant.is_eliminated %}(Eliminated){% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <h3>Matches</h3>
+                <ul>
+                    {% for match in matches %}
+                        <li>
+                            Match {{ match.id }}: {{ match.player1.username }} vs {{ match.player2.username }}
+                            {% if match.finished %}
+                                - Winner: {{ match.winner.username }}
+                            {% else %}
+                                - <a href="{% url 'pong:pongroom' match.room.id %}">Join Match</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
                 {% if tournament.is_active %}
-                    Active
+                    <p>The tournament is ongoing.</p>
                 {% else %}
-                    Completed
+                    <p>The tournament has concluded.</p>
                 {% endif %}
-            </p>
-            <h3>Participants</h3>
-            <ul>
-                {% for participant in participants %}
-                    <li>
-                        {{ participant.player.username }}
-                        {% if participant.is_eliminated %}(Eliminated){% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            <h3>Matches</h3>
-            <ul>
-                {% for match in matches %}
-                    <li>
-                        Match {{ match.id }}: {{ match.player1.username }} vs {{ match.player2.username }}
-                        {% if match.finished %}
-                            - Winner: {{ match.winner.username }}
-                        {% else %}
-                            - <a href="{% url 'pong:pongroom' match.room.id %}">Join Match</a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% if tournament.is_active %}
-                <p>The tournament is ongoing.</p>
-            {% else %}
-                <p>The tournament has concluded.</p>
-            {% endif %}
-        </div>
+            </div>
+        </section>
+        <button id="joinTournament">Join Tournament</button>
     </section>
+    <script type="module" src="{% static 'pong/js/handle-tournament.js' %}"></script>
 {% endblock content %}

@@ -24,7 +24,14 @@ log.info("room_id:", roomId);
 log.info("game_mode:", gameMode);
 
 //Websocket connection
-const socketUrl = `ws://${window.location.host}/ws/pong/${gameMode}/`;
+let socketUrl;
+
+if (gameMode === "tournament") {
+  socketUrl = `ws://${window.location.host}/ws/pong/tournament_match/${roomId}/`;
+} else {
+  socketUrl = `ws://${window.location.host}/ws/pong/${gameMode}/`;
+}
+
 const socket = new WebSocket(socketUrl);
 
 //Websocket
@@ -73,7 +80,7 @@ function handleSocketOpen(event) {
 
 function handleSocketMessage(event) {
   const data = JSON.parse(event.data);
-  log.debug("Message from server:", data);
+  log.info("Message from server:", data);
 
   switch (data.type) {
     case "not_auth":

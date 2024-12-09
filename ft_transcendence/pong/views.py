@@ -75,6 +75,8 @@ class PongEnterView(TemplateView):
             else:
                 context = self.get_context_data(**kwargs)
                 context["form"] = form
+                context["tournament_id"] = tournament.id
+                context["game_mode"] = game_mode
                 return self.render_to_response(context)
         else:
             form = PongRoomForm(request.POST)
@@ -126,6 +128,7 @@ class PongTournamentView(DetailView):
         )
         context["participants"] = participants
         context["matches"] = matches
+        context["game_mode"] = kwargs.get("game_mode")
         logger.info(
             f"Displaying tournament: {tournament.name} with {participants.count()} participants and {matches.count()} matches"
         )
