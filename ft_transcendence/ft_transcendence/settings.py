@@ -120,6 +120,26 @@ CACHES = {
     }
 }
 
+# Setup de log pro ELK
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "logstash": {
+            "level": "DEBUG",
+            "class": "logstash.TCPLogstashHandler",
+            "host": "localhost", # change when django is inside docker network
+            "port": 5044,        # Match the port from the Logstash configuration
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["logstash"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
