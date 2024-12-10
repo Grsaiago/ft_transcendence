@@ -11,42 +11,19 @@
                  data-tournament-id="{{ tournament.id }}"
                  data-game-mode="tournament">
             <div>
-                <p>Max Players: {{ tournament.max_players }}</p>
                 <p>
-                    Status:
-                    {% if tournament.is_active %}
-                        Active
-                    {% else %}
-                        Completed
-                    {% endif %}
+                    Max Players: <span id="maxPlayersValue"></span>
                 </p>
-                <h3>Participants</h3>
-                <ul>
-                    {% for participant in participants %}
-                        <li>
-                            {{ participant.player.username }}
-                            {% if participant.is_eliminated %}(Eliminated){% endif %}
-                        </li>
-                    {% endfor %}
+                <p>
+                    Status: <span id="statusValue"></span>
+                </p>
+                <p>Participants:</p>
+                <ul id="participantsList">
                 </ul>
-                <h3>Matches</h3>
-                <ul>
-                    {% for match in matches %}
-                        <li>
-                            Match {{ match.id }}: {{ match.player1.username }} vs {{ match.player2.username }}
-                            {% if match.finished %}
-                                - Winner: {{ match.winner.username }}
-                            {% else %}
-                                - <a href="{% url 'pong:pongroom' match.room.id %}">Join Match</a>
-                            {% endif %}
-                        </li>
-                    {% endfor %}
+                <p>Matches:</p>
+                <ul id="matchesList">
                 </ul>
-                {% if tournament.is_active %}
-                    <p>The tournament is ongoing.</p>
-                {% else %}
-                    <p>The tournament has concluded.</p>
-                {% endif %}
+                <h3 id="tournamentStatusMsg"></h3>
             </div>
         </section>
         <button id="joinTournament">Join Tournament</button>

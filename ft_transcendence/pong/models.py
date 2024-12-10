@@ -49,10 +49,18 @@ class PongRoom(models.Model):
 class Match(models.Model):
     room = models.ForeignKey(PongRoom, on_delete=models.CASCADE, related_name="matches")
     player1 = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="player1"
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="player1",
+        null=True,
+        blank=True,
     )
     player2 = models.ForeignKey(
-        get_user_model(), on_delete=models.CASCADE, related_name="player2"
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="player2",
+        null=True,
+        blank=True,
     )
     winner = models.ForeignKey(
         get_user_model(), on_delete=models.SET_NULL, null=True, blank=True
