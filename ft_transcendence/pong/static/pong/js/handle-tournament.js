@@ -68,6 +68,10 @@ function handleSocketMessage(event) {
         handleTournamentAdvance(data);
         break;
 
+    case "error":
+        handleErrorMessage(data);
+        break;
+
     default:
         log.error("Invalid message type:", data.type);
   }
@@ -89,10 +93,16 @@ function handleTournamentAdvance(data) {
     updateTournamentUI(data.state);
 }
 
+function handleErrorMessage(data) {
+    log.info("error:", data);
+    displayErrorMessage(data.message);
+}
+
 function handleClickJoinButton() {
   sendMessage({
     type: "join_tournament",
   });
+  joinButton.style.display = "none";
 }
 
 function sendMessage(message) {
@@ -107,7 +117,6 @@ function updateTournamentUI(state) {
   const statusElem = document.getElementById("statusValue");
   const participantsList = document.getElementById("participantsList");
   const matchesList = document.getElementById("matchesList");
-  const tournamentStatusMsg = document.getElementById("tournamentStatusMsg");
 
   // Atualizar o número máximo de jogadores
   if (maxPlayersElem) {
@@ -145,23 +154,24 @@ function updateTournamentUI(state) {
       `;
 
       li.innerHTML = matchInfo;
-  // Atualizar a mensagem de status do torneio
-  if (tournamentStatusMsg) {
-    tournamentStatusMsg.innerText = state.is_active ? "Torneio em andamento" : "Torneio finalizado";
-  }
 
       matchesList.appendChild(li);
     });
-  }
-  // Atualizar a mensagem de status do torneio
-  if (tournamentStatusMsg) {
-    tournamentStatusMsg.innerText = state.is_active ? "Torneio em andamento" : "Torneio finalizado";
   }
 }
 
 //function to display tournament message
 function displayTournamentMessage(message) {
   const tournamentStatusMsg = document.getElementById("tournamentStatusMsg");
+    if (tournamentStatusMsg) {
+      tournamentStatusMsg.innerText = message;
+    }
+}
+
+
+//function to display error message
+function displayErrorMessage(message) {
+  const tournamentStatusMsg = document.getElementById("tournamentErrorMsg");
     if (tournamentStatusMsg) {
       tournamentStatusMsg.innerText = message;
     }

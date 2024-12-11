@@ -113,7 +113,7 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
         match.save()
 
     # tounament logic
-    async def join_tournament_db(self) -> bool:
+    async def join_tournament_db(self) -> str:
         try:
             tournament = await self.get_tournament()
             if tournament:
@@ -126,15 +126,16 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                         logger.info(
                             f"User {self.user.username} joined tournament {tournament.name}"
                         )
-                        return True
+                        return "joined"
+                    else:
+                        return "already_joined"
         except Exception as e:
-            await self.send_error(f"Error joining tournament {self.tournament_id}")
             logger.exception(f"Error joining tournament {self.tournament_id}: {e}")
-        return False
+        return "error"
 
     async def join_tournament(self) -> bool:
         joined = await self.join_tournament_db()
-        if joined:
+        if joined == "joined":
             await self.channel_layer.group_send(
                 self.tournament_group_name,
                 {
@@ -143,6 +144,11 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                 },
             )
             return True
+        elif joined == "already_joined":
+            await self.send_error("You already joined the tournament")
+            return False
+        else:
+            await self.send_error(f"Error joining tournament {self.tournament_id}")
         return False
 
     async def check_start_tournament(self) -> None:
@@ -333,6 +339,7 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                 }
             )
         )
+        logger.info(f"User {self.user.username} sent tournament update: {message}")
 
     async def tournament_advance(self, event):
         match_id = event["match_id"]
