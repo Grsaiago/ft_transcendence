@@ -48,7 +48,7 @@ joinButton.addEventListener("click", () => {
 //Functions
 function handleSocketMessage(event) {
   const data = JSON.parse(event.data);
-  log.info("Received message:", data);
+  log.info("handleSocketMessage:", data);
 
   switch (data.type) {
     case "not_auth":
@@ -57,11 +57,11 @@ function handleSocketMessage(event) {
         break;
 
     case "current_state":
-        handleCurrentState(data);
+        handleCurrentState(data.state);
         break;
 
-    case "tournament_update":
-        handleTournamentUpdate(data);
+    case "tournament_message":
+        handleTournamentMessage(data);
         break;
 
     case "tournament_advance":
@@ -78,13 +78,16 @@ function handleSocketMessage(event) {
 };
 
 function handleCurrentState(data) {
-    log.info ("current_state:", data);
+    log.info ("handleCurrentState:", data);
     updateTournamentUI(data);
 }
 
-function handleTournamentUpdate(data) {
+function handleTournamentMessage(data) {
     log.info("tournament_update:", data);
     displayTournamentMessage(data.message);
+    if (data.message === "Tournament will start in:") {
+
+    }
 
 }
 
@@ -113,20 +116,8 @@ function sendMessage(message) {
 
 function updateTournamentUI(state) {
   // Atualizar elementos do DOM conforme o estado
-  const maxPlayersElem = document.getElementById("maxPlayersValue");
-  const statusElem = document.getElementById("statusValue");
   const participantsList = document.getElementById("participantsList");
   const matchesList = document.getElementById("matchesList");
-
-  // Atualizar o número máximo de jogadores
-  if (maxPlayersElem) {
-    maxPlayersElem.innerText = state.max_players;
-  }
-
-  // Atualizar o status do torneio
-  if (statusElem) {
-    statusElem.innerText = state.is_active ? "Ativo" : "Finalizado";
-  }
 
   // Atualizar a lista de participantes
   if (participantsList) {
@@ -162,7 +153,7 @@ function updateTournamentUI(state) {
 
 //function to display tournament message
 function displayTournamentMessage(message) {
-  const tournamentStatusMsg = document.getElementById("tournamentStatusMsg");
+  const tournamentStatusMsg = document.getElementById("tournamentMessages");
     if (tournamentStatusMsg) {
       tournamentStatusMsg.innerText = message;
     }

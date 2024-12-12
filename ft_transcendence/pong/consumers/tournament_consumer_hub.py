@@ -57,10 +57,9 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
 
         if message_type == "join_tournament":
             async with self.tournament_lock:
-                joined = await self.join_tournament()
-                if joined:
-                    await self.check_start_tournament()
-                    await self.send_current_state_to_group()
+                await self.handle_join_tournament()
+                await self.check_start_tournament()
+                await self.update_and_send_state()
 
     # Database methods
     @sync_to_async
@@ -112,37 +111,31 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
     def save_match(self, match: Match) -> None:
         match.save()
 
-    # tounament logic
+    # handlers
     async def join_tournament_db(self) -> str:
         try:
             tournament = await self.get_tournament()
             if tournament:
+                participants = await self.get_participants(tournament)
+                already_joined = any(p.player == self.user for p in participants)
+                if already_joined:
+                    return "already_joined"
                 count = await self.tournament_participant_count(tournament)
                 if count < tournament.max_players:
-                    participants = await self.get_participants(tournament)
-                    already_joined = any(p.player == self.user for p in participants)
-                    if not already_joined:
-                        await self.create_participant(tournament, self.user)
-                        logger.info(
-                            f"User {self.user.username} joined tournament {tournament.name}"
-                        )
-                        return "joined"
-                    else:
-                        return "already_joined"
+                    await self.create_participant(tournament, self.user)
+                    logger.info(
+                        f"User {self.user.username} joined tournament {tournament.name}"
+                    )
+                    return "joined"
         except Exception as e:
             logger.exception(f"Error joining tournament {self.tournament_id}: {e}")
         return "error"
 
-    async def join_tournament(self) -> bool:
+    async def handle_join_tournament(self) -> bool:
         joined = await self.join_tournament_db()
         if joined == "joined":
-            await self.channel_layer.group_send(
-                self.tournament_group_name,
-                {
-                    "type": "tournament_update",
-                    "message": f"{self.user.username} joined the tournament",
-                },
-            )
+            message = f"{self.user.username} joined the tournament"
+            await self.send_tournament_message_to_group(message)
             return True
         elif joined == "already_joined":
             await self.send_error("You already joined the tournament")
@@ -151,21 +144,15 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
             await self.send_error(f"Error joining tournament {self.tournament_id}")
         return False
 
+    # tounament logic
     async def check_start_tournament(self) -> None:
         tournament = await self.get_tournament()
         count = await self.tournament_participant_count(tournament)
         if count == tournament.max_players:
             # Reached the maximum number, now draw players in matches
             await self.assing_players_to_initial_matches(tournament)
-            await self.start_tournament(tournament)
-
-    async def start_tournament(self, tournament: Tournament) -> None:
-        # send message to all participants informing the tournament has started
-        await self.channel_layer.group_send(
-            self.tournament_group_name,
-            {"type": "tournament_update", "message": "Tournament has started!"},
-        )
-        await self.update_and_send_state()
+            message = "Tournament will start soon!"
+            await self.send_tournament_message_to_group(message)
 
     async def ensure_bracket_structure(self):
         tournament = await self.get_tournament()
@@ -329,18 +316,6 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                 semi_finals[1].id: (final.id, 2),  # Vencedor Semi2 -> Final.player2
             }
 
-    async def tournament_update(self, event):
-        message = event["message"]
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "tournament_update",
-                    "message": message,
-                }
-            )
-        )
-        logger.info(f"User {self.user.username} sent tournament update: {message}")
-
     async def tournament_advance(self, event):
         match_id = event["match_id"]
         async with self.tournament_lock:
@@ -371,10 +346,24 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                 await self.save_match(next_match)
             await self.update_and_send_state()
 
-    # Utility methods
+    # Methods to send messages to the group
+    async def send_tournament_message_to_group(self, message: str):
+        await self.channel_layer.group_send(
+            self.tournament_group_name,
+            {
+                "type": "tournament_message",
+                "message": message,
+            },
+        )
+        logger.info(
+            f"User {self.user.username} sent tournament message to group: {message}"
+        )
+
+    # Methods to send messages to yourself
     async def send_current_state_to_self(self):
         state = await self.get_current_state_data()
-        await self.send(text_data=json.dumps(state))
+        await self.send(text_data=json.dumps({"type": "current_state", "state": state}))
+        logger.info(f"{self.user.username} sent_current_state_to_self: {state}")
 
     async def send_error(self, message: str) -> None:
         """
