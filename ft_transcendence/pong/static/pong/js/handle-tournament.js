@@ -56,8 +56,12 @@ function handleSocketMessage(event) {
         socket.close();
         break;
 
+    case "joined":
+        joinButton.style.display = "none";
+        break;
+
     case "current_state":
-        handleCurrentState(data.state);
+        handleCurrentState(data);
         break;
 
     case "tournament_message":
@@ -79,15 +83,12 @@ function handleSocketMessage(event) {
 
 function handleCurrentState(data) {
     log.info ("handleCurrentState:", data);
-    updateTournamentUI(data);
+    updateTournamentUI(data.state);
 }
 
 function handleTournamentMessage(data) {
-    log.info("tournament_update:", data);
+    log.info("handleTournamentMessage:", data);
     displayTournamentMessage(data.message);
-    if (data.message === "Tournament will start in:") {
-
-    }
 
 }
 
@@ -162,8 +163,8 @@ function displayTournamentMessage(message) {
 
 //function to display error message
 function displayErrorMessage(message) {
-  const tournamentStatusMsg = document.getElementById("tournamentErrorMsg");
-    if (tournamentStatusMsg) {
-      tournamentStatusMsg.innerText = message;
+  const tournamentErrorMsg = document.getElementById("tournamentErrorMsg");
+    if (tournamentErrorMsg) {
+      tournamentErrorMsg.innerText = message;
     }
 }

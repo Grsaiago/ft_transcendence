@@ -57,9 +57,10 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
 
         if message_type == "join_tournament":
             async with self.tournament_lock:
-                await self.handle_join_tournament()
-                await self.check_start_tournament()
-                await self.update_and_send_state()
+                joined: bool = await self.handle_join_tournament()
+                if joined:
+                    await self.check_start_tournament()
+                    await self.update_and_send_state()
 
     # Database methods
     @sync_to_async
@@ -151,6 +152,7 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
         if count == tournament.max_players:
             # Reached the maximum number, now draw players in matches
             await self.assing_players_to_initial_matches(tournament)
+
             message = "Tournament will start soon!"
             await self.send_tournament_message_to_group(message)
 
@@ -185,8 +187,8 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                 )
 
     async def assing_players_to_initial_matches(self, tournament: Tournament):
-        participantes: list = await self.get_participants(tournament)
-        random.shuffle(participantes)
+        participants: list = await self.get_participants(tournament)
+        random.shuffle(participants)
 
         matches = await self.get_matches(tournament)
 
@@ -194,18 +196,24 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
             semi_matchs = matches[0:2]
             index = 0
             for match in semi_matchs:
-                match.player1 = participantes[index].player
-                match.player2 = participantes[index + 1].player
+                match.player1 = participants[index].player
+                match.player2 = participants[index + 1].player
                 await sync_to_async(match.save)()
                 index += 2
+                logger.info(f"Assigned players to match {match.id}")
+                logger.info(f"Player1: {match.player1.username}")
+                logger.info(f"Player2: {match.player2.username}")
         elif tournament.max_players == 8:
             quarter_matchs = matches[0:4]
             index = 0
             for match in quarter_matchs:
-                match.player1 = participantes[index].player
-                match.player2 = participantes[index + 1].player
+                match.player1 = participants[index].player
+                match.player2 = participants[index + 1].player
                 await sync_to_async(match.save)()
                 index += 2
+                logger.info(f"Assigned players to match {match.id}")
+                logger.info(f"Player1: {match.player1.username}")
+                logger.info(f"Player2: {match.player2.username}")
 
         await self.update_state_cache()
 
@@ -228,20 +236,6 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
     async def update_and_send_state(self):
         await self.update_state_cache()
         await self.send_current_state_to_group()
-
-    async def send_current_state_to_group(self):
-        state = await self.get_current_state_from_cache()
-        await self.channel_layer.group_send(
-            self.tournament_group_name,
-            {
-                "type": "tournament_update_state",
-                "state": state,
-            },
-        )
-
-    async def tournament_update_state(self, event):
-        state = event["state"]
-        await self.send(text_data=json.dumps(state))
 
     async def get_current_state_data(self):
         tournament = await self.get_tournament()
@@ -351,7 +345,7 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.tournament_group_name,
             {
-                "type": "tournament_message",
+                "type": "send_tournament_message",
                 "message": message,
             },
         )
@@ -359,11 +353,34 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
             f"User {self.user.username} sent tournament message to group: {message}"
         )
 
-    # Methods to send messages to yourself
+    async def send_current_state_to_group(self):
+        state = await self.get_current_state_from_cache()
+        await self.channel_layer.group_send(
+            self.tournament_group_name,
+            {
+                "type": "send_tournament_current_state",
+                "state": state,
+            },
+        )
+        logger.info(f"User {self.user.username} sent current state to group: {state}")
+
+    # Methods to send messages to the client
+    async def send_tournament_message(self, event):
+        message = event["message"]
+        await self.send(
+            text_data=json.dumps({"type": "tournament_message", "message": message})
+        )
+
     async def send_current_state_to_self(self):
         state = await self.get_current_state_data()
+        if self.user.username in state["participants"]:
+            await self.send(text_data=json.dumps({"type": "joined"}))
         await self.send(text_data=json.dumps({"type": "current_state", "state": state}))
         logger.info(f"{self.user.username} sent_current_state_to_self: {state}")
+
+    async def send_tournament_current_state(self, event):
+        state = event["state"]
+        await self.send(text_data=json.dumps({"type": "current_state", "state": state}))
 
     async def send_error(self, message: str) -> None:
         """
