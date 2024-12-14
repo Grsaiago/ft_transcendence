@@ -1,6 +1,7 @@
 import logging
 
 from asgiref.sync import sync_to_async
+from django.core.cache import cache
 from pong.models import Match, PongRoom, TournamentParticipant
 
 from .online_consumer import OnlinePongConsumer
@@ -9,6 +10,48 @@ logger = logging.getLogger(__name__)
 
 
 class TournamentPongConsumer(OnlinePongConsumer):
+    async def start_game(self) -> bool:
+        """
+        Starts the game when both players are ready.
+        In tournament mode, the game only starts when both players are ready, and the match ID is fetched from the database.
+        """
+        try:
+            if not self.is_spectator and not self.is_ready:
+                async with self.ready_lock:
+                    self.ready_players = cache.get(
+                        f"{self.room_group_name}_ready_players", 0
+                    )
+                    self.ready_players += 1
+                    self.is_ready = True
+                    cache.set(
+                        f"{self.room_group_name}_ready_players", self.ready_players
+                    )
+                    logger.info(
+                        f"Player {self.scope['user'].id} is ready. Total ready players: {self.ready_players}"
+                    )
+
+                    if self.ready_players == 2:
+                        # Buscar match_id no banco de dados com base no ID da sala
+                        room = await sync_to_async(PongRoom.objects.get)(
+                            id=self.room_id
+                        )
+                        # Buscar o primeiro match associado à sala
+                        match = await sync_to_async(
+                            lambda: Match.objects.filter(room=room).first()
+                        )()
+                        if not match:
+                            raise Exception("No match found for the given room.")
+                        self.match_id = match.id
+                        cache.set(f"{self.room_group_name}_match_id", self.match_id)
+                        logger.info(f"Match ID set to {self.match_id}")
+
+                        await self.worker_start_game()
+                        return True
+        except Exception as e:
+            await self.send_error("Failed to start game.")
+            logger.exception(f"Failed to start game: {e}")
+        return False
+
     async def define_winner(self, event):
         await super().define_winner(event)
         # after define de winner, advance the tournament

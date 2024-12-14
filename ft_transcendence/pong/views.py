@@ -129,6 +129,7 @@ class PongTournamentView(DetailView):
         context["participants"] = participants
         context["matches"] = matches
         context["game_mode"] = kwargs.get("game_mode")
+        context["user"] = self.request.user
         logger.info(
             f"Displaying tournament: {tournament.name} with {participants.count()} participants and {matches.count()} matches"
         )

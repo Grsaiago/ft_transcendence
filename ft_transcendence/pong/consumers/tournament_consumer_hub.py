@@ -73,7 +73,11 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
 
     @sync_to_async
     def get_matches(self, tournament: Tournament) -> list:
-        return list(Match.objects.filter(room__tournament=tournament).order_by("id"))
+        return list(
+            Match.objects.filter(room__tournament=tournament)
+            .select_related("player1", "player2", "winner", "room")
+            .order_by("id")
+        )
 
     @sync_to_async
     def tournament_participant_count(self, tournament: Tournament) -> int:
@@ -150,19 +154,16 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
         tournament = await self.get_tournament()
         count = await self.tournament_participant_count(tournament)
         if count == tournament.max_players:
+            await self.create_bracket_structure(tournament)
             # Reached the maximum number, now draw players in matches
-            await self.assing_players_to_initial_matches(tournament)
+            await self.assign_players_to_initial_matches(tournament)
 
             message = "Tournament will start soon!"
             await self.send_tournament_message_to_group(message)
 
-    async def ensure_bracket_structure(self):
-        tournament = await self.get_tournament()
-        await self.create_bracket_structure(tournament)
-
     async def create_bracket_structure(self, tournament: Tournament):
         existing_matches = await self.matches_exist_for_tournament(tournament)
-        if existing_matches.exists():
+        if existing_matches:
             return
 
         max_players = tournament.max_players
@@ -185,8 +186,9 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                 await sync_to_async(Match.objects.create)(
                     room=room, player1=None, player2=None
                 )
+                logger.info(f"Created match in round {round_name}: Room {room_name}")
 
-    async def assing_players_to_initial_matches(self, tournament: Tournament):
+    async def assign_players_to_initial_matches(self, tournament: Tournament):
         participants: list = await self.get_participants(tournament)
         random.shuffle(participants)
 
@@ -248,6 +250,9 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
             p1 = match.player1.username if match.player1 else "TBD"
             p2 = match.player2.username if match.player2 else "TBD"
             winner = match.winner.username if match.winner else None
+            round_name = match.room.name.split("-")[
+                -1
+            ]  # Extrai o round do nome da sala
 
             matches_info.append(
                 {
@@ -257,6 +262,7 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                     "room_id": match.room.id,
                     "finished": match.finished,
                     "winner": winner,
+                    "round": round_name,
                 }
             )
         return {
@@ -338,6 +344,9 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                     next_match.player2 = match.winner
 
                 await self.save_match(next_match)
+                logger.info(
+                    f"Assigned winner {match.winner.username} to match {next_match.id} as player {player_slot}"
+                )
             await self.update_and_send_state()
 
     # Methods to send messages to the group

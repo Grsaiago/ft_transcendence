@@ -9,7 +9,8 @@
         <section class="section_tournament"
                  id="game-data"
                  data-tournament-id="{{ tournament.id }}"
-                 data-game-mode="tournament">
+                 data-game-mode="tournament"
+                 data-username="{{ user.username }}">
             <div>
                 <p>
                     Max Players: <span id="maxPlayersValue">{{ tournament.max_players }}</span>
@@ -18,13 +19,15 @@
                 <ul id="participantsList">
                 </ul>
                 <p>Matches:</p>
-                <ul id="matchesList">
-                </ul>
-                <h3 id="tournamentMessages"></h3>
-                <h4 id="tournamentErrorMsg"></h4>
-            </div>
-        </section>
-        <button id="joinTournament">Join Tournament</button>
+                <div id="bracket-container" class="bracket-container">
+                    <!-- matchs here -->
+                </div>
+            </ul>
+            <h3 id="tournamentMessages"></h3>
+            <h4 id="tournamentErrorMsg"></h4>
+        </div>
     </section>
-    <script type="module" src="{% static 'pong/js/handle-tournament.js' %}"></script>
+    <button id="joinTournament">Join Tournament</button>
+</section>
+<script type="module" src="{% static 'pong/js/handle-tournament.js' %}"></script>
 {% endblock content %}

@@ -10,6 +10,7 @@ if (hostname === "www.transcendence.com") {
 const gameData = document.getElementById("game-data");
 const tournamentId = gameData.dataset.tournamentId;
 const gameMode = gameData.dataset.gameMode;
+const username = gameData.dataset.username
 
 log.info("tournament_id:", tournamentId);
 log.info("game_mode:", gameMode);
@@ -118,7 +119,7 @@ function sendMessage(message) {
 function updateTournamentUI(state) {
   // Atualizar elementos do DOM conforme o estado
   const participantsList = document.getElementById("participantsList");
-  const matchesList = document.getElementById("matchesList");
+  const bracketContainer = document.getElementById("bracket-container");
 
   // Atualizar a lista de participantes
   if (participantsList) {
@@ -130,27 +131,108 @@ function updateTournamentUI(state) {
     });
   }
 
-  // Atualizar a lista de partidas
-  if (matchesList) {
-    matchesList.innerHTML = ""; // Limpar lista anterior
+  // // Atualizar a lista de partidas
+  // if (matchesList) {
+  //   matchesList.innerHTML = ""; // Limpar lista anterior
+  //   state.matches.forEach((match) => {
+  //     const li = document.createElement("li");
+  //     li.classList.add("match-item");
+
+  //     const matchInfo = `
+  //       <strong>Match ID:</strong> ${match.id}<br>
+  //       <strong>Player 1:</strong> ${match.player1}<br>
+  //       <strong>Player 2:</strong> ${match.player2}<br>
+  //       <strong>Status:</strong> ${match.finished ? "Finalizada" : "Em andamento"}<br>
+  //       ${match.finished ? `<strong>Winner:</strong> ${match.winner}<br>` : ""}
+  //     `;
+
+  //     li.innerHTML = matchInfo;
+
+  //     matchesList.appendChild(li);
+  //   });
+  // }
+
+
+  // Atualizar o bracket
+  if (bracketContainer) {
+    bracketContainer.innerHTML = "";
+
+    const maxPlayers = state.max_players;
+    let rounds;
+
+    if (maxPlayers === 8) {
+      rounds = {
+        "Quarter1": "Quartas de Final",
+        "Quarter2": "Quartas de Final",
+        "Quarter3": "Quartas de Final",
+        "Quarter4": "Quartas de Final",
+        "Semi1": "Semifinais",
+        "Semi2": "Semifinais",
+        "Final": "Final",
+      };
+    } else {
+      rounds = {
+        "Semi1": "Semifinais",
+        "Semi2": "Semifinais",
+        "Final": "Final",
+      };
+    }
+    // Preencher os rounds com as partidas
+    const organizedRounds = {};
+
     state.matches.forEach((match) => {
-      const li = document.createElement("li");
-      li.classList.add("match-item");
+      const roundName = rounds[match.round];
+      if (!organizedRounds[roundName]) {
+        organizedRounds[roundName] = [];
+      }
+      organizedRounds[roundName].push(match);
+    });
 
-      const matchInfo = `
-        <strong>Match ID:</strong> ${match.id}<br>
-        <strong>Player 1:</strong> ${match.player1}<br>
-        <strong>Player 2:</strong> ${match.player2}<br>
-        <strong>Status:</strong> ${match.finished ? "Finalizada" : "Em andamento"}<br>
-        ${match.finished ? `<strong>Winner:</strong> ${match.winner}<br>` : ""}
-      `;
+    // Renderizar os rounds em colunar
+    const roundOrder = ["Quartas de Final", "Semifinais", "Final"];
 
-      li.innerHTML = matchInfo;
+    roundOrder.forEach((roundName) => {
+      if (organizedRounds[roundName]) {
+        const roundDiv = document.createElement("div");
+        roundDiv.classList.add("round");
 
-      matchesList.appendChild(li);
+        const roundTitle = document.createElement("h3");
+        roundTitle.innerText = roundName;
+        roundDiv.appendChild(roundTitle);
+
+        organizedRounds[roundName].forEach((match) => {
+          const matchDiv = document.createElement("div");
+          matchDiv.classList.add("match");
+
+          matchDiv.innerHTML = `
+            <div class="player">${match.player1 !== "TBD" ? match.player1 : "Aguardando..."}</div>
+            <div class="player">${match.player2 !== "TBD" ? match.player2 : "Aguardando..."}</div>
+          `;
+
+          // Adicionar botão para redirecionar para a partida apenas se o username for um dos jogadores
+          if ((match.player1 === username || match.player2 === username) &&
+              !match.finished && match.player1 !== "Aguardando..." &&
+              match.player2 !== "Aguardando...") {
+            const playButton = document.createElement("button");
+            playButton.innerText = "Ir para a Partida";
+            playButton.onclick = () => redirectToMatch(match.room_id);
+            matchDiv.appendChild(playButton);
+        }
+
+          roundDiv.appendChild(matchDiv);
+        });
+
+        bracketContainer.appendChild(roundDiv);
+      }
     });
   }
 }
+
+// Função para redirecionar para a partida
+function redirectToMatch(roomId) {
+  window.location.href = `/room/${roomId}/`;
+}
+
 
 //function to display tournament message
 function displayTournamentMessage(message) {
