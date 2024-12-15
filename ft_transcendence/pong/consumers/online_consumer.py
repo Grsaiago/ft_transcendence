@@ -41,6 +41,69 @@ class OnlinePongConsumer(BasePongConsumer):
 
         self.ready_lock = asyncio.Lock()
 
+    # Methods to interact with the database
+    async def create_match(self) -> None:
+        """
+        Creates a new match record in the database.
+        """
+        try:
+            players_data = cache.get(f"{self.room_group_name}_players", [])
+            if players_data:
+                player1 = await self.get_player_by_id(players_data[0])
+                player2 = await self.get_player_by_id(players_data[1])
+                pongroom = await self.get_room_by_id(self.room_id)
+
+                match = await self.create_match_bd(player1, player2, pongroom)
+                cache.set(f"{self.room_group_name}_match_id", match.id)
+                logger.info(f"Match created: {match}")
+        except Exception as e:
+            await self.send_error("Failed to create match.")
+            logger.exception(f"Failed to create match: {e}")
+
+    @sync_to_async
+    def get_player_by_id(self, player_id: int) -> TrUser:
+        """
+        Retrieves a player (User) by ID.
+
+        Args:
+            player_id (int): The ID of the player.
+
+        Returns:
+            User (TrUser): The User object corresponding to the player ID.
+        """
+        return get_user_model().objects.get(id=player_id)
+
+    @sync_to_async
+    def create_match_bd(self, player1, player2, room):
+        return Match.objects.create(room=room, player1=player1, player2=player2)
+
+    @sync_to_async
+    def get_match_by_id(self, match_id: int) -> Match:
+        """
+        Retrieves a Match by ID, selecting related player1 and player2.
+
+        Args:
+            match_id (int): The ID of the Match.
+
+        Returns:
+            Match: The Match object corresponding to the match ID.
+        """
+        return Match.objects.select_related("player1", "player2").get(id=match_id)
+
+    @sync_to_async
+    def set_match_winner(self, match, winner) -> None:
+        """
+        Sets the winner of a match.
+
+        Args:
+            match (Match): The Match object.
+            winner (TrUser): The User object representing the winner.
+        """
+        match.winner = winner
+        match.finished = True
+        match.save()
+
+    # abstract methods
     async def handle_join_room(self, data: ClientMessage) -> None:
         """
         Handles the 'join_room' message from the client.
@@ -219,8 +282,7 @@ class OnlinePongConsumer(BasePongConsumer):
                         else:
                             match.winner = match.player2
                         self.winner = match.winner.username
-                        match.finished = True
-                        await sync_to_async(match.save)()
+                        await self.set_match_winner(match, match.winner)
                         self.ready_players = 0
                         self.is_ready = False
                         self.match_id = None
@@ -236,50 +298,3 @@ class OnlinePongConsumer(BasePongConsumer):
             logger.exception(f"Failed to define winner: {e}")
 
     # Online mode helper methods
-    async def create_match(self) -> None:
-        """
-        Creates a new match record in the database.
-        """
-        try:
-            players_data = cache.get(f"{self.room_group_name}_players", [])
-            if players_data:
-                player1 = await self.get_player_by_id(players_data[0])
-                player2 = await self.get_player_by_id(players_data[1])
-                pongroom = await self.get_pongroom_by_id(self.room_id)
-
-                match = await sync_to_async(Match.objects.create)(
-                    room=pongroom,
-                    player1=player1,
-                    player2=player2,
-                )
-                cache.set(f"{self.room_group_name}_match_id", match.id)
-                logger.info(f"Match created: {match}")
-        except Exception as e:
-            await self.send_error("Failed to create match.")
-            logger.exception(f"Failed to create match: {e}")
-
-    async def get_player_by_id(self, player_id: int) -> TrUser:
-        """
-        Retrieves a player (User) by ID.
-
-        Args:
-            player_id (int): The ID of the player.
-
-        Returns:
-            User (TrUser): The User object corresponding to the player ID.
-        """
-        return await sync_to_async(get_user_model().objects.get)(id=player_id)
-
-    async def get_match_by_id(self, match_id: int) -> Match:
-        """
-        Retrieves a Match by ID, selecting related player1 and player2.
-
-        Args:
-            match_id (int): The ID of the Match.
-
-        Returns:
-            Match: The Match object corresponding to the match ID.
-        """
-        return await sync_to_async(
-            lambda: Match.objects.select_related("player1", "player2").get(id=match_id)
-        )()

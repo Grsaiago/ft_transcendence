@@ -93,24 +93,24 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
     def matches_exist_for_tournament(self, tournament: Tournament) -> bool:
         return Match.objects.filter(room__tournament=tournament).exists()
 
-    @sync_to_async
-    def get_match_with_related(self, match_id: int) -> Match:
-        return Match.objects.select_related(
-            "room__tournament", "player1", "player2"
-        ).get(id=match_id)
+    # @sync_to_async
+    # def get_match_with_related(self, match_id: int) -> Match:
+    #     return Match.objects.select_related(
+    #         "room__tournament", "player1", "player2"
+    #     ).get(id=match_id)
 
-    @sync_to_async
-    def eliminate_player(self, tournament: Tournament, user: TrUser) -> None:
-        return tournament.participants.filter(player=user).update(is_eliminated=True)
+    # @sync_to_async
+    # def eliminate_player(self, tournament: Tournament, user: TrUser) -> None:
+    #     return tournament.participants.filter(player=user).update(is_eliminated=True)
 
-    @sync_to_async
-    def get_alive_count(self, tournament: Tournament) -> int:
-        return tournament.participants.filter(is_eliminated=False).count()
+    # @sync_to_async
+    # def get_alive_count(self, tournament: Tournament) -> int:
+    #     return tournament.participants.filter(is_eliminated=False).count()
 
-    @sync_to_async
-    def finalize_tournament(self, tournament: Tournament) -> None:
-        tournament.is_active = False
-        tournament.save()
+    # @sync_to_async
+    # def finalize_tournament(self, tournament: Tournament) -> None:
+    #     tournament.is_active = False
+    #     tournament.save()
 
     @sync_to_async
     def save_match(self, match: Match) -> None:
@@ -276,78 +276,73 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
         }
 
     # tournament advance
-    def get_bracket_mapping(self, tournament: Tournament):
+    # def get_bracket_mapping(self, tournament: Tournament):
 
-        # Retorna um dicionário indicando para onde vai o vencedor de cada partida.
-        # Formato: {match_id: (next_match_id, player_slot)}
-        # player_slot = 1 ou 2, indicando se o vencedor vai em player1 ou player2 da próxima match.
+    #     # Retorna um dicionário indicando para onde vai o vencedor de cada partida.
+    #     # Formato: {match_id: (next_match_id, player_slot)}
+    #     # player_slot = 1 ou 2, indicando se o vencedor vai em player1 ou player2 da próxima match.
 
-        if tournament.max_players == 4:
-            # Supondo que as partidas são criadas na ordem: Semi1, Semi2, Final
-            # Recupera os IDs após criação do bracket
-            semi1, semi2, final = tournament.matches.order_by("id")[:3]
-            return {
-                semi1.id: (final.id, 1),  # Vencedor Semi1 -> Final.player1
-                semi2.id: (final.id, 2),  # Vencedor Semi2 -> Final.player2
-            }
-        elif tournament.max_players == 8:
-            # Supondo que as partidas são criadas na ordem: QF1-4, Semi1-2, Final
-            quarter_finals = tournament.matches.order_by("id")[:4]
-            semi_finals = tournament.matches.order_by("id")[4:6]
-            final = tournament.matches.order_by("id")[6]
-            return {
-                quarter_finals[0].id: (
-                    semi_finals[0].id,
-                    1,
-                ),  # Vencedor QF1 -> Semi1.player1
-                quarter_finals[1].id: (
-                    semi_finals[0].id,
-                    2,
-                ),  # Vencedor QF2 -> Semi1.player2
-                quarter_finals[2].id: (
-                    semi_finals[1].id,
-                    1,
-                ),  # Vencedor QF3 -> Semi2.player1
-                quarter_finals[3].id: (
-                    semi_finals[1].id,
-                    2,
-                ),  # Vencedor QF4 -> Semi2.player2
-                semi_finals[0].id: (final.id, 1),  # Vencedor Semi1 -> Final.player1
-                semi_finals[1].id: (final.id, 2),  # Vencedor Semi2 -> Final.player2
-            }
+    #     if tournament.max_players == 4:
+    #         # Supondo que as partidas são criadas na ordem: Semi1, Semi2, Final
+    #         # Recupera os IDs após criação do bracket
+    #         semi1, semi2, final = tournament.matches.order_by("id")[:3]
+    #         return {
+    #             semi1.id: (final.id, 1),  # Vencedor Semi1 -> Final.player1
+    #             semi2.id: (final.id, 2),  # Vencedor Semi2 -> Final.player2
+    #         }
+    #     elif tournament.max_players == 8:
+    #         # Supondo que as partidas são criadas na ordem: QF1-4, Semi1-2, Final
+    #         quarter_finals = tournament.matches.order_by("id")[:4]
+    #         semi_finals = tournament.matches.order_by("id")[4:6]
+    #         final = tournament.matches.order_by("id")[6]
+    #         return {
+    #             quarter_finals[0].id: (
+    #                 semi_finals[0].id,
+    #                 1,
+    #             ),  # Vencedor QF1 -> Semi1.player1
+    #             quarter_finals[1].id: (
+    #                 semi_finals[0].id,
+    #                 2,
+    #             ),  # Vencedor QF2 -> Semi1.player2
+    #             quarter_finals[2].id: (
+    #                 semi_finals[1].id,
+    #                 1,
+    #             ),  # Vencedor QF3 -> Semi2.player1
+    #             quarter_finals[3].id: (
+    #                 semi_finals[1].id,
+    #                 2,
+    #             ),  # Vencedor QF4 -> Semi2.player2
+    #             semi_finals[0].id: (final.id, 1),  # Vencedor Semi1 -> Final.player1
+    #             semi_finals[1].id: (final.id, 2),  # Vencedor Semi2 -> Final.player2
+    #         }
 
-    async def tournament_advance(self, event):
-        match_id = event["match_id"]
-        async with self.tournament_lock:
-            await self.advance_tournament(match_id)
+    # async def advance_tournament(self, match_id: int):
+    #     match = await self.get_match_with_related(match_id)
+    #     tournament = match.room.tournament
 
-    async def advance_tournament(self, match_id: int):
-        match = await self.get_match_with_related(match_id)
-        tournament = match.room.tournament
+    #     loser = match.player1 if match.player1 != match.winner else match.player2
+    #     await self.eliminate_player(tournament, loser)
 
-        loser = match.player1 if match.player1 != match.winner else match.player2
-        await self.eliminate_player(tournament, loser)
+    #     alive_count = await self.get_alive_count(tournament)
+    #     if alive_count == 1:
+    #         await self.finalize_tournament(tournament)
+    #         await self.update_and_send_state()
+    #     else:
+    #         bracket_mapping = self.get_bracket_mapping(tournament.max_players)
 
-        alive_count = await self.get_alive_count(tournament)
-        if alive_count == 1:
-            await self.finalize_tournament(tournament)
-            await self.update_and_send_state()
-        else:
-            bracket_mapping = self.get_bracket_mapping(tournament.max_players)
+    #         if match.id in bracket_mapping:
+    #             next_match_index, player_slot = bracket_mapping[match.id]
+    #             next_match = await self.get_match_with_related(next_match_index)
+    #             if player_slot == 1:
+    #                 next_match.player1 = match.winner
+    #             else:
+    #                 next_match.player2 = match.winner
 
-            if match.id in bracket_mapping:
-                next_match_index, player_slot = bracket_mapping[match.id]
-                next_match = await self.get_match_with_related(next_match_index)
-                if player_slot == 1:
-                    next_match.player1 = match.winner
-                else:
-                    next_match.player2 = match.winner
-
-                await self.save_match(next_match)
-                logger.info(
-                    f"Assigned winner {match.winner.username} to match {next_match.id} as player {player_slot}"
-                )
-            await self.update_and_send_state()
+    #             await self.save_match(next_match)
+    #             logger.info(
+    #                 f"Assigned winner {match.winner.username} to match {next_match.id} as player {player_slot}"
+    #             )
+    #         await self.update_and_send_state()
 
     # Methods to send messages to the group
     async def send_tournament_message_to_group(self, message: str):

@@ -119,67 +119,40 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             await self.send_error("An unexpected error occurred.")
             logger.exception(f"An error occurred: {e}")
 
-    async def handle_join_room(self, data: ClientMessage) -> None:
+    # Methods to interact with the database
+    @sync_to_async
+    def get_room_by_id(self, room_id: int) -> PongRoom:
         """
-        Handles the `join_room` message from the client.
-        Should be implemented by subclasses.
+        Retrieves a PongRoom by ID.
 
         Args:
-            data (ClientMessage): The data received from the client.
-        """
-        pass
+            room_id (int): The ID of the PongRoom.
 
-    async def start_game(self) -> bool:
+        Returns:
+            PongRoom: The PongRoom object corresponding to the room ID.
         """
-        Should be implemented by subclasses.
-        """
-        pass
+        return PongRoom.objects.select_related("tournament").get(id=self.room_id)
 
-    async def handle_start_game(self) -> None:
+    @sync_to_async
+    def mark_room_as_inactive(self, room):
         """
-        Handles the `start_game` message from the client.
-        Calls the `start_game` method and sends a message to the group indicate that game has started!
+        Marks the room as inactive in the database.
         """
-        start_game = await self.start_game()
-        if start_game:
-            logger.info("Game started")
-            if self.room_group_name:
-                try:
-                    await self.channel_layer.group_send(
-                        self.room_group_name,
-                        {
-                            "type": "send_game_has_started_message",
-                            "message": "Game started",
-                        },
-                    )
-                except Exception as e:
-                    await self.send_error("Failed to send start game message to group.")
-                    logger.exception(f"Failed to send start game message: {e}")
-            else:
-                await self.send_error("Room group name not set")
-                logger.warning(
-                    "Room group name is not set when trying to start the game."
-                )
+        room.is_active = False
+        room.save()
 
-    async def handle_key_paddle_event(self, key: str, state: bool) -> None:
+    async def set_room_inactive(self) -> None:
         """
-        Handles key events from the client for moving paddles.
-        Should be implemented by subclasses.
+        Get and sets the room as inactive in the database.
+        """
+        try:
+            pongroom = await self.get_room_by_id(self.room_id)
+            await self.mark_room_as_inactive(pongroom)
+            logger.info(f"Room {self.room_id} set to inactive")
+        except Exception as e:
+            logger.exception(f"Failed to set room inactive: {e}")
 
-        Args:
-            key (str): The key that was pressed or released.
-            state (bool): True if the key is pressed, False if it is released.
-        """
-        pass
-
-    async def finish_game(self) -> None:
-        """
-        Performs any necessary cleanup when the game ends.
-        Should be implemented by subclasses.
-        """
-        pass
-
-    # Initialization methods
+    # main methods - game state
     async def add_to_group(self, room_id: int) -> None:
         """
         Adds the consumer to the appropriate group based on the room ID.
@@ -216,6 +189,32 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             await self.send_error("Failed to initialize game data.")
             logger.exception(f"Failed to initialize game data: {e}")
+
+    async def handle_start_game(self) -> None:
+        """
+        Handles the `start_game` message from the client.
+        Calls the `start_game` method and sends a message to the group indicate that game has started!
+        """
+        start_game = await self.start_game()
+        if start_game:
+            logger.info("Game started")
+            if self.room_group_name:
+                try:
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_game_has_started_message",
+                            "message": "Game started",
+                        },
+                    )
+                except Exception as e:
+                    await self.send_error("Failed to send start game message to group.")
+                    logger.exception(f"Failed to send start game message: {e}")
+            else:
+                await self.send_error("Room group name not set")
+                logger.warning(
+                    "Room group name is not set when trying to start the game."
+                )
 
     # Methods to send messages to the worker
     async def worker_initialize_game(self) -> None:
@@ -316,13 +315,6 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             await self.send_error("Failed to send game state to client.")
             logger.exception(f"Failed to send game state to client: {e}")
 
-    async def define_winner(self, event: GameStateEvent) -> None:
-        """
-        Defines the winner.
-        Should be implemented by subclasses.
-        """
-        pass
-
     async def send_winner(self, event: GameStateEvent) -> None:
         """
         Receives the game state from the worker and sends the winner to the client.
@@ -341,7 +333,6 @@ class BasePongConsumer(AsyncWebsocketConsumer):
                 await self.send_error("Failed to send winner to client.")
                 logger.exception(f"Failed to send winner to client: {e}")
 
-    # Utility methods
     async def send_error(self, message: str) -> None:
         """
         Sends an error message to the client.
@@ -351,28 +342,44 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         """
         await self.send(text_data=json.dumps({"type": "error", "message": message}))
 
-    # Methods to interact with the database
-    async def get_pongroom_by_id(self, room_id: int) -> PongRoom:
+    # abstract methods
+    async def handle_join_room(self, data: ClientMessage) -> None:
         """
-        Retrieves a PongRoom by ID.
+        Handles the `join_room` message from the client.
+        Should be implemented by subclasses.
 
         Args:
-            room_id (int): The ID of the PongRoom.
-
-        Returns:
-            PongRoom: The PongRoom object corresponding to the room ID.
+            data (ClientMessage): The data received from the client.
         """
+        pass
 
-        return await sync_to_async(PongRoom.objects.get)(id=room_id)
+    async def start_game(self) -> bool:
+        """
+        Should be implemented by subclasses.
+        """
+        pass
 
-    async def set_room_inactive(self) -> None:
+    async def handle_key_paddle_event(self, key: str, state: bool) -> None:
         """
-        Sets the room as inactive in the database.
+        Handles key events from the client for moving paddles.
+        Should be implemented by subclasses.
+
+        Args:
+            key (str): The key that was pressed or released.
+            state (bool): True if the key is pressed, False if it is released.
         """
-        try:
-            pongroom = await self.get_pongroom_by_id(self.room_id)
-            pongroom.is_active = False
-            await sync_to_async(pongroom.save)()
-            logger.info(f"Room {self.room_id} set to inactive")
-        except Exception as e:
-            logger.exception(f"Failed to set room inactive: {e}")
+        pass
+
+    async def finish_game(self) -> None:
+        """
+        Performs any necessary cleanup when the game ends.
+        Should be implemented by subclasses.
+        """
+        pass
+
+    async def define_winner(self, event: GameStateEvent) -> None:
+        """
+        Defines the winner.
+        Should be implemented by subclasses.
+        """
+        pass

@@ -104,6 +104,10 @@ function handleSocketMessage(event) {
       handleWinner(data.winner);
       break;
 
+    case "redirect_tournament":
+      handleRedirectTournament(data.redirect);
+      break
+
     default:
       log.error("Unknown message type:", data.type);
   }
@@ -140,6 +144,10 @@ function handleWinner(winner) {
   messageContainer.textContent = `${winner} wins!`;
   startButton.textContent = "Play Again!";
   startButton.style.display = "block";
+}
+
+function handleRedirectTournament(redirect) {
+  window.location.href = redirect;
 }
 
 function sendMessage(message) {
