@@ -72,7 +72,6 @@ services:
       - ELASTIC_PASSWORD=senha123
       - "xpack.security.enabled=false"
       - "xpack.security.enrollment.enabled=false"
-
     ulimits:
       memlock:
         soft: -1
