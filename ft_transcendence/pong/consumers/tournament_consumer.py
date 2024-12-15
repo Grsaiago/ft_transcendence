@@ -124,13 +124,15 @@ class TournamentPongConsumer(OnlinePongConsumer):
         """
         await super().finish_game()
 
-    def get_bracket_mapping(self, tournament: Tournament):
+    async def get_bracket_mapping(self, tournament: Tournament):
 
         # Retorna um dicionário indicando para onde vai o vencedor de cada partida.
         # Formato: {match_id: (next_match_id, player_slot)}
         # player_slot = 1 ou 2, indicando se o vencedor vai em player1 ou player2 da próxima match.
 
-        matches = list(Match.objects.filter(room__tournament=tournament).order_by("id"))
+        matches = await sync_to_async(list)(
+            Match.objects.filter(room__tournament=tournament).order_by("id")
+        )
 
         if tournament.max_players == 4:
             # Supondo que as partidas são criadas na ordem: Semi1, Semi2, Final
@@ -179,7 +181,7 @@ class TournamentPongConsumer(OnlinePongConsumer):
         if alive_count == 1:
             await self.finalize_tournament(tournament)
         else:
-            bracket_mapping = self.get_bracket_mapping(tournament)
+            bracket_mapping = await self.get_bracket_mapping(tournament)
 
             if match.id in bracket_mapping:
                 next_match_index, player_slot = bracket_mapping[match.id]
