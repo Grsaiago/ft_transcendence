@@ -276,3 +276,17 @@ class BlockUserForm(forms.ModelForm):
             )
         ).delete()
         return super().save(commit)
+
+class UnblockUserForm(forms.ModelForm):
+    class Meta:
+        model = BlockedUsers
+        fields = ["blocker","blocked"]
+
+    def save(self, commit=True):
+        BlockedUsers.objects.filter(
+            Q(
+                blocker=self.cleaned_data.get("blocker"),
+                blocked=self.cleaned_data.get("blocked")
+            )
+        ).delete()
+        return 
