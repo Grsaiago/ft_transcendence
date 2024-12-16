@@ -56,8 +56,8 @@ services:
       - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
     ports:
       - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin # strong passowrd xD
+    env_file:
+      - .env
     depends_on:
       - db
       - prometheus
@@ -65,13 +65,8 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
     container_name: elasticsearch
-    environment:
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - ELASTIC_PASSWORD=senha123
-      - "xpack.security.enabled=false"
-      - "xpack.security.enrollment.enabled=false"
+    env_file:
+      - .env
     ulimits:
       memlock:
         soft: -1
@@ -89,10 +84,8 @@ services:
     ports:
       - "5044:5044"
       - "9600:9600"
-    environment:
-      - ELASTIC_USER=elastic
-      - ELASTIC_PASSWORD=senha123
-      - ELASTIC_HOSTS=http://elasticsearch:9200
+    env_file:
+      - .env
     depends_on:
       - elasticsearch
 
@@ -101,12 +94,8 @@ services:
     container_name: kibana
     ports:
       - "5601:5601"
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=kibana_system
-      - ELASTICSEARCH_PASSWORD=senha123 # a mesma do elastic
-      - XPACK_SECURITY_ENABLED=false
-      - XPACK_SECURITY_ENROLLMENT_ENABLED=false
+    env_file:
+      - .env
     depends_on:
       - elasticsearch
 
