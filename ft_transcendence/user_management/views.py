@@ -147,7 +147,7 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
         ]
 
         blocked_users = BlockedUsers.objects.filter(
-            Q
+            Q(blocker=request.user.id)
         )
 
         context = {

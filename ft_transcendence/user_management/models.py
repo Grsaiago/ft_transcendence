@@ -100,19 +100,3 @@ class BlockedUsers(models.Model):
 
     # Pra facilitar a vida dos LSPs
     objects = models.Manager()
-
-    def clean(self):
-        super().clean()
-        if self.blocker == self.blocked:
-            raise ValidationError("Cannot block yourself")
-        # Usuário já foi bloqueado
-        if BlockedUsers.objects.filter(
-            Q(blocker=self.blocker, blocked=self.blocked)
-        ).exists():
-            raise ValidationError("User already blocked")
-        # Usuário já te bloqueou
-        if BlockedUsers.objects.filter(
-            Q(blocker=self.blocked, blocked=self.blocker)
-        ).exists():
-            raise ValidationError("User already blocked you")
-        return
