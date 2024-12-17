@@ -34,8 +34,13 @@ export default class Profile extends AbstractView {
 
         //select first friend and set eventlistener for change friends
         const friendList = document.querySelectorAll("[data-friend]");
-        this.selectFirstFriend(friendList[0]);
-        console.log(friendList[0]);
+        if (friendList.length > 0) {
+            this.selectFirstFriend(friendList[0]);
+            console.log(friendList[0]);
+        } else {
+            console.warn("No friends found")
+        }
+
         friendList.forEach(friend => {
             friend.addEventListener("click", this.handleFriendChange);
         });

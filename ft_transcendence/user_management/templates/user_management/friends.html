@@ -37,7 +37,7 @@
                 {% if pending_friend_requests %}
                 <div style="display: flex; align-items: center; gap: 5px;">
                     <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
-                    <p class="text-profile m-0 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests received</p>
+                    <p class="text-profile m-0  px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests received</p>
                 </div>
                         {% for request in pending_friend_requests %}
                                 <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
@@ -51,21 +51,23 @@
                                     </div>
                                     <div>
                                         <form action="{% url 'db-user_management:accept_friend_request' %}"
+                                        id="accept-friend-request"
                                         method="post"
                                         style="display:inline">
                                         {% csrf_token %}
                                         <input type="hidden" name="sender" value="{{ request.sender.id }}">
                                         <button type="submit" class="p-0 cursor-pointer">
-                                            <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
+                                            <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;" form-link></i>
                                         </button>
                                         </form>
                                         <form action="{% url 'db-user_management:refuse_friend_request' %}"
+                                        id="refuse-friend-request"
                                         method="post"
                                         style="display:inline">
                                         {% csrf_token %}
                                         <input type="hidden" name="sender" value="{{ request.sender.id }}">
                                         <button type="submit" class="p-0 cursor-pointer">
-                                            <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
+                                            <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;" ></i>
                                         </button>
                                         </form>
                                     </div>
@@ -91,10 +93,11 @@
                                 </div>
                                 <div>
                                     <form action="{% url 'db-user_management:cancel_friend_request' %}"
+                                    id="cancel-friend-request"
                                     method="post"
                                     style="display:inline">
                                     {% csrf_token %}
-                                    <input type="hidden" name="sender" value="{{ pending_sent_request.sender.id }}">
+                                    <input type="hidden" name="receiver" value="{{ pending_sent_request.receiver.id }}">
                                     <button type="submit" class="p-0 cursor-pointer">
                                         <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
                                     </button>
@@ -124,7 +127,7 @@
                             <i class="block-icon bi bi-ban"></i>
                         </div>
                         <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" data-link>Send message</a>
+                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap">Send message</a>
                             <i class="bi bi-send-fill"></i>
                         </div>
                     </div>

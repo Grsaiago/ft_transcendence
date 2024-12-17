@@ -53,6 +53,7 @@ const router = async () => {
 window.addEventListener("popstate", router);
 
 document.addEventListener("DOMContentLoaded", () => {
+   
     console.log("Página carregada, chamando router()");
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
@@ -61,5 +62,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    router();
+    
+    document.body.addEventListener("submit", e => {
+        const form = e.target;
+        const allowedFormIds = ["accept-friend-request", "refuse-friend-request", "cancel-friend-request"];
+        const friendsView = new Friends();        
+        
+        if (form.tagName === "FORM" && allowedFormIds.includes(form.id)) {
+            e.preventDefault();
+            console.log(e.target);
+            
+            const formData = new FormData(form);
+            const data = new URLSearchParams(formData);
+            
+            fetch(form.action, {
+                method: form.method,
+                body: data,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Success:", data);
+                        navigateTo("/friends/");
+                        friendsView.toggleTabs("search"); //nao esta funcionando. tem que refatorar a classe friends depois!
+                    } else {
+                        console.error("Failed to submit form:", response.statusText);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            }
+        });
+        
+        router();
+
 });
