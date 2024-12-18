@@ -9,7 +9,7 @@ from django.views import generic as generic_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm
-from .models import FriendRequest, Friendship
+from .models import BlockedUsers, FriendRequest, Friendship
 
 class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/base_app.html"
@@ -147,12 +147,17 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
             for entry in friends
         ]
 
+        blocked_users = BlockedUsers.objects.filter(
+            Q(blocker=request.user.id)
+        )
+
         context = {
             "block_user_form": block_user_form,
             "friend_request_form": friend_request_form,
             "pending_friend_requests": pending_friend_requests,
             "sent_friend_requests": sent_friend_requests,
             "current_friends": current_friends,
+            "blocked_users": blocked_users,
         }
         return render(request, self.template_name, context)
 

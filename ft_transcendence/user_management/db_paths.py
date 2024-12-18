@@ -1,6 +1,8 @@
+from logging import log
+from django import http
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 
@@ -11,6 +13,7 @@ from .forms import (
     FriendRequestForm,
     RefuseFriendRequestForm,
     RemoveFriendshipForm,
+    UnblockUserForm,
 )
 
 
@@ -27,7 +30,7 @@ def send_friend_request(request: HttpRequest):
         for _, errors in form.errors.items():
             for error in errors:
                 messages.error(request, f"Error: {error}")
-    return redirect("user_management:friend_list")
+    return HttpResponse("Created successfully")
 
 
 @require_POST
@@ -118,3 +121,19 @@ def block_user(request: HttpRequest):
             for error in errors:
                 messages.error(request, f"error: {error}")
     return redirect("user_management:friend_list")
+
+@require_POST
+@login_required
+def unblock_user(request: HttpRequest):
+    post_data = request.POST.copy()
+    post_data["blocker"] = request.user
+
+    unblock_user_form = UnblockUserForm(post_data)
+    if unblock_user_form.is_valid():
+        unblock_user_form.save()
+    else:
+        for _, errors in unblock_user_form.errors.items():
+            for error in errors:
+                messages.error(request, f"error: {error}")
+    return redirect("user_management:friend_list")
+

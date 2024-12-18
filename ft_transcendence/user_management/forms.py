@@ -251,6 +251,21 @@ class BlockUserForm(forms.ModelForm):
         model = BlockedUsers
         fields = ["blocker", "blocked"]
 
+    def clean(self):
+        if self.cleaned_data.get("blocker") == self.cleaned_data.get("blocked"):
+            raise ValidationError("Cannot block yourself")
+        # Usuário já foi bloqueado
+        if BlockedUsers.objects.filter(
+            Q(blocker=self.cleaned_data.get("blocker"), blocked=self.cleaned_data.get("blocked"))
+        ).exists():
+            raise ValidationError("User already blocked")
+        # Usuário já te bloqueou
+        if BlockedUsers.objects.filter(
+            Q(blocker=self.cleaned_data.get("blocked"), blocked=self.cleaned_data.get("blocker"))
+        ).exists():
+            raise ValidationError("User already blocked you")
+        return super().clean()
+
     def save(self, commit=True):
         # TODO: Apagar as entradas das tabelas de Friendship e FriendRequest caso existam
 
@@ -276,3 +291,17 @@ class BlockUserForm(forms.ModelForm):
             )
         ).delete()
         return super().save(commit)
+
+class UnblockUserForm(forms.ModelForm):
+    class Meta:
+        model = BlockedUsers
+        fields = ["blocker","blocked"]
+
+    def save(self, commit=True):
+        BlockedUsers.objects.filter(
+            Q(
+                blocker=self.cleaned_data.get("blocker"),
+                blocked=self.cleaned_data.get("blocked")
+            )
+        ).delete()
+        return 
