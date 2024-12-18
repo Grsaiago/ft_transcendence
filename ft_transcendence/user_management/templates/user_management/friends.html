@@ -53,21 +53,23 @@
                                         <form action="{% url 'db-user_management:accept_friend_request' %}"
                                         id="accept-friend-request"
                                         method="post"
-                                        style="display:inline">
+                                        style="display:inline"
+                                        api-link>
                                         {% csrf_token %}
                                         <input type="hidden" name="sender" value="{{ request.sender.id }}">
                                         <button type="submit" class="p-0 cursor-pointer">
-                                            <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;" form-link></i>
+                                            <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
                                         </button>
                                         </form>
                                         <form action="{% url 'db-user_management:refuse_friend_request' %}"
                                         id="refuse-friend-request"
                                         method="post"
-                                        style="display:inline">
+                                        style="display:inline"
+                                        api-link>
                                         {% csrf_token %}
                                         <input type="hidden" name="sender" value="{{ request.sender.id }}">
                                         <button type="submit" class="p-0 cursor-pointer">
-                                            <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;" ></i>
+                                            <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
                                         </button>
                                         </form>
                                     </div>
@@ -95,7 +97,8 @@
                                     <form action="{% url 'db-user_management:cancel_friend_request' %}"
                                     id="cancel-friend-request"
                                     method="post"
-                                    style="display:inline">
+                                    style="display:inline"
+                                    api-link>
                                     {% csrf_token %}
                                     <input type="hidden" name="receiver" value="{{ pending_sent_request.receiver.id }}">
                                     <button type="submit" class="p-0 cursor-pointer">

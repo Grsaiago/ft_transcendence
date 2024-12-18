@@ -15,10 +15,10 @@ chatManager.loadEventHandlers();
 
 const navigateTo = url => {
     history.pushState(null, null, url);
-    router();
+    viewsRouter();
 };
 
-const router = async () => {
+const viewsRouter = async () => {
     const routes = [
         {path: "/profile/", view: Profile },
         {path: "/chat/", view: Chat },
@@ -52,21 +52,36 @@ const router = async () => {
 
 };
 
-window.addEventListener("popstate", router);
+const handlersRouter = async (form) => {
+    const routes = [
+        {formId: "accept-friend-request", handler: AcceptFriendRequestHandler },
+        {formId: "refuse-friend-request", handler: RefuseFriendRequestHandler },
+        {formId: "cancel-friend-request", handler: CancelFriendRequestHandler },
+    ];
 
-function submitForm(form) {
+    const potentialMatches = routes.map(route => {
+        return {
+            route: route,
+            isMatch: form.id === route.formId,
+        };
+    });
 
-    var handler;
+    let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
 
-    if (form.id === "accept-friend-request")
-        handler = new AcceptFriendRequestHandler();
-    else if (form.id === "refuse-friend-request")
-        handler = new RefuseFriendRequestHandler();
-    else if (form.id === "cancel-friend-request")
-        handler = new CancelFriendRequestHandler();
-
+    if (!match) {
+        return ;
+    }
+    
+    var handler = new match.route.handler();
     handler.postForm(form);
     handler.updateUI();
+    
+};
+
+window.addEventListener("popstate", viewsRouter);
+
+function submitForm(form) {
+    handlersRouter(form);
 }
 
 
@@ -78,19 +93,19 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
             navigateTo(e.target.href);
         }
+
     });
     
     document.body.addEventListener("submit", e => {
         const form = e.target;
-        const allowedFormIds = ["accept-friend-request", "refuse-friend-request", "cancel-friend-request"];
         
-        if (form.tagName === "FORM" && allowedFormIds.includes(form.id)) {
-            e.preventDefault();
+        if (form.tagName === "FORM" && form.matches("[api-link]")) {
             console.log(e.target);
+            e.preventDefault();
             submitForm(form);
         }
     });
 
-    router();
+    viewsRouter();
 
 });
