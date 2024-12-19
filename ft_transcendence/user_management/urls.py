@@ -24,4 +24,5 @@ urlpatterns = [
     path("profile/", UserProfileView.as_view(), name="profile"),
     path("chat/", UserChatView.as_view(), name="chat"),
     path("friends/", UserFriendsView.as_view(), name="friends"),
+
 ]
