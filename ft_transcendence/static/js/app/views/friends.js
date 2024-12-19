@@ -10,6 +10,7 @@ export default class Profile extends AbstractView {
         this.handleTabSwitch = this.handleTabSwitch.bind(this);
         this.handleSearchEnterKey = this.handleSearchEnterKey.bind(this);
         this.handleUserSearch = this.handleUserSearch.bind(this);
+        this.loadComponents = this.loadComponents.bind(this);
     }
 
     async getHtml() {
@@ -26,6 +27,81 @@ export default class Profile extends AbstractView {
         catch(error) {
             console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
+        }
+    }
+
+    loadComponents() {
+        this.loadFriendsList();
+        // this.loadFriendProfile(); //fazer rota para pegar dados do amigo pelo id, chamar só no evento do click
+    }
+
+    async loadFriendsList() {
+
+        let jsonData = {};
+
+        try {
+            const response = await fetch('/api/user/friends/', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            jsonData = await response.json();
+            console.log('Friends list fetched: ', jsonData);
+        }
+        catch (error) {
+            console.error('Failed to fetch friends list: ', error);
+        }
+
+        const friendsBox = document.querySelector('.friends-box');
+
+        // Clear any existing content
+        friendsBox.innerHTML = '';
+    
+        if (jsonData.friends && jsonData.friends.length > 0) {
+            jsonData.friends.forEach(friend => {
+                // Create the friend container div
+                const friendDiv = document.createElement('div');
+                friendDiv.className = 'friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5';
+    
+                // Create the inner left content (status icon + name)
+                const leftContentDiv = document.createElement('div');
+                leftContentDiv.className = 'd-flex flex-row align-items-center gap-3';
+    
+                const statusIconDiv = document.createElement('div');
+                statusIconDiv.className = 'status-icon';
+    
+                const imgElement = document.createElement('img');
+                imgElement.className = 'friend-img rounded-circle border-0';
+                imgElement.src = '/static/assets/foto-perfil.png'; // Ensure the path matches your Django static setup
+    
+                statusIconDiv.appendChild(imgElement);
+    
+                const friendNameP = document.createElement('p');
+                friendNameP.className = 'friend-name m-0 mt-1';
+                friendNameP.dataset.friend = friend.username; //desnecessario??
+                friendNameP.textContent = friend.username;
+    
+                leftContentDiv.appendChild(statusIconDiv);
+                leftContentDiv.appendChild(friendNameP);
+    
+                // Create the info icon
+                const infoIcon = document.createElement('i');
+                infoIcon.className = 'info-icon mt-1 bi bi-info-circle';
+    
+                // Assemble the friend container
+                friendDiv.appendChild(leftContentDiv);
+                friendDiv.appendChild(infoIcon);
+    
+                // Append the friend div to the friends box
+                friendsBox.appendChild(friendDiv);
+            });
+        } else {
+            // If no friends, display a message
+            const noFriendsMessage = document.createElement('p');
+            noFriendsMessage.className = 'no-friend-msg my-4 text-nowrap d-flex justify-content-center';
+            noFriendsMessage.textContent = 'You have no friends!';
+            friendsBox.appendChild(noFriendsMessage);
         }
     }
 
