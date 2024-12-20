@@ -11,7 +11,7 @@
                 <i class="search-icon mx-2 mb-1 bi bi-search"></i>
             </div>
             <div class="friends-box friends d-flex flex-column justify-content-start overflow-y-auto">
-            {% for friend in current_friends %}
+            {% comment %} {% for friend in current_friends %}
                 <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5">
                     <div class="d-flex flex-row align-items-center gap-3">
                         <div class="status-icon">
@@ -25,7 +25,7 @@
                 </div>
                 {% empty %}
                 <p class="no-friend-msg my-4 text-nowrap d-flex justify-content-center">You have no friends!</p>
-                {% endfor %}
+                {% endfor %} {% endcomment %}
             </div>
         </div>
         <div class="div-search p-2 p-lg-3">
@@ -113,7 +113,7 @@
         </div>
     </div>
 
-    <!-- <div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4">
+    <div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4">
         <img class="profile-img friends rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
             <div class="profile-div shadow-sm rounded-4 w-100">
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap" friend-id>None</p>
@@ -158,5 +158,5 @@
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
 </div>

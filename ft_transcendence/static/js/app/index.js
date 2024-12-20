@@ -48,7 +48,7 @@ const viewsRouter = async () => {
 
     view = new match.route.view();
     document.querySelector("#app").innerHTML = await view.getHtml();
-    view.loadComponents();
+    await view.loadComponents();
     view.bindUIEventHandlers();
 
 };

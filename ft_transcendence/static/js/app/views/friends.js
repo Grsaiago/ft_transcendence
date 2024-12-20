@@ -5,7 +5,7 @@ export default class Profile extends AbstractView {
         super();
         this.setTitle("Profile");
 
-        this.handleFriendChange = this.handleFriendChange.bind(this);
+        this.handleFriendClick = this.handleFriendClick.bind(this);
         this.updateFriend = this.updateFriend.bind(this);
         this.handleTabSwitch = this.handleTabSwitch.bind(this);
         this.handleSearchEnterKey = this.handleSearchEnterKey.bind(this);
@@ -96,10 +96,7 @@ export default class Profile extends AbstractView {
     bindUIEventHandlers() {
         console.log('Loading friends event handlers...');
 
-        const friendsBox = document.querySelector(".friends-box");
-        if (friendsBox) {
-            friendsBox.addEventListener("click", this.handleFriendChange);
-        }
+        this.bindFriendListClickEvent();
 
         //add click event for switch tabs between friends and search
         const titleFriends = document.querySelector("#title-friends-friend");
@@ -118,7 +115,7 @@ export default class Profile extends AbstractView {
         console.log('Removing friends event handlers...');
 
         const friendsBox = document.querySelector(".friends-box");
-        friendsBox.removeEventListener("click", this.handleFriendChange);
+        friendsBox.removeEventListener("click", this.handleFriendClick);
 
         const titleFriends = document.querySelector("#title-friends-friend");
         const titleSearch = document.querySelector("#title-friends-search");
@@ -126,8 +123,16 @@ export default class Profile extends AbstractView {
         titleSearch.removeEventListener("click", this.handleTabSwitch);
     }
 
-    handleFriendChange(event) {
-        console.log("handleFriendChange() called");
+    bindFriendListClickEvent() {
+        const friendElements = document.querySelectorAll('[data-friend]');
+       
+        friendElements.forEach(friendElement => {
+            friendElement.addEventListener('click', this.handleFriendClick);
+        });
+    }
+
+    handleFriendClick(event) {
+        console.log("handleFriendClick() called");
 
         const friendElement = event.target.closest("[data-friend]");
         if (!friendElement) {
