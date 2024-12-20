@@ -1,5 +1,6 @@
 from logging import log
 from django import http
+from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -222,3 +223,64 @@ def get_all_users(request: HttpRequest):
     
     response = JsonResponse({"users": users_list})
     return response
+
+@require_GET
+@login_required
+def get_user_details(request, user_id):
+    try:
+        # Obtenha as informações detalhadas do usuário solicitado
+        user = TrUser.objects.filter(id=user_id).values(
+            'id', 'username', 'first_name', 'last_login'
+        ).first()
+
+        if not user:
+            return JsonResponse({"error": "User not found."}, status=404)
+
+        # Verifica se o usuário está bloqueado
+        is_blocked = BlockedUsers.objects.filter(
+            blocker=request.user.id, blocked=user_id
+        ).exists()
+
+        # Verifica se há um pedido de amizade relacionado
+        friend_request = FriendRequest.objects.filter(
+            sender_id=request.user.id, receiver_id=user_id
+        ).first()
+
+        if not friend_request:
+            friend_request = FriendRequest.objects.filter(
+                sender_id=user_id, receiver_id=request.user.id
+            ).first()
+
+        # Determina o estado do pedido de amizade
+        if friend_request:
+            friendship_status = (
+                "sender" if friend_request.sender_id == request.user.id else "receiver"
+            )
+        else:
+            friendship_status = None
+
+        # Verifica se os usuários já são amigos
+        is_friend = Friendship.objects.filter(
+            Q(first_user=request.user.id, second_user=user_id) |
+            Q(first_user=user_id, second_user=request.user.id)
+        ).exists()
+
+        block_route = reverse("user_management:block_user") if not is_blocked else reverse("user_management:unblock_user")
+
+        # friendShipManagementRoutes
+
+        # Cria a resposta com os detalhes do usuário
+        user_details = {
+            "id": user['id'],
+            "username": user['username'],
+            "first_name": user['first_name'],
+            "last_login": user['last_login'],
+            "is_blocked": is_blocked,
+            "friend_status": is_friend,
+            "friend_request_status": friendship_status,
+        }
+
+        return JsonResponse(user_details)
+
+    except Exception as e:
+        return JsonResponse({"error": "An error occurred.", "details": str(e)}, status=500)
