@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from .views import (
     UserChangePasswordView,
@@ -26,4 +28,4 @@ urlpatterns = [
     path("friend/", UserFriendsView.as_view(), name="friends"),
     path("user/<int:user_id>", UserDetailView.as_view(), name="friends"),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
