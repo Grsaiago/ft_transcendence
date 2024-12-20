@@ -12,4 +12,6 @@ urlpatterns = [
         views.PongTournamentView.as_view(),
         name="pongtournament",
     ),
+    path("user/stats/", views.UserStatsView.as_view(), name="user_stats"),
+    path("user/history/", views.UserHistoryView.as_view(), name="user_history"),
 ]

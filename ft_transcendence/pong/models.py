@@ -81,20 +81,3 @@ class TournamentParticipant(models.Model):
 
     def __str__(self):
         return f"{self.player.username} in {self.tournament.name}"
-
-
-class UserMatchStats(models.Model):
-    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
-    total_matches = models.PositiveIntegerField(default=0)
-    total_wins = models.PositiveIntegerField(default=0)
-
-    def increment_matches(self):
-        self.total_matches += 1
-        self.save()
-
-    def increment_wins(self):
-        self.total_wins += 1
-        self.save()
-
-    def __str__(self):
-        return f"{self.id}:{self.user.username} - Matches: {self.total_matches}, Wins: {self.total_wins}"
