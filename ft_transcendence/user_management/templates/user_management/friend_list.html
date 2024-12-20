@@ -20,6 +20,9 @@
         {{ user_update_form.as_p }}
         <button type="submit">Update</button>
     </form>
+    {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="Profile Image">
+    {% endif %}
     <h1> {% trans "ManageFriendsHeader" %} </h1>
     <!-- Form to send a friend request -->
     <h2> {% trans "SendFriendRequestHeader" %} </h2>
