@@ -191,3 +191,33 @@ class UserFriendsView(auth_mixins.LoginRequiredMixin, generic_views.View):
             return render(request, "user_management/friends.html", context)
         return render(request, self.template_name, context)
 
+class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
+    template_name = "user_management/friend_list.html"
+
+    def get(self, request, *args, **kwargs):
+        # O form pra mandar um invite pra um usuário
+        friend_request_form = FriendRequestForm()
+        block_user_form = BlockUserForm()
+        pending_friend_requests = FriendRequest.objects.filter(receiver=request.user)
+        sent_friend_requests = FriendRequest.objects.filter(sender=request.user)
+        # essas duas variáveis abaixo são pra filtrar o resultado da query
+        # de entradas na tabela de amizade
+        friends = Friendship.objects.filter(
+            Q(first_user=request.user.id) | Q(second_user=request.user.id)
+        )
+        current_friends = [
+            entry.first_user if entry.first_user != request.user else entry.second_user
+            for entry in friends
+        ]
+
+        blocked_users = BlockedUsers.objects.filter(
+            Q(blocker=request.user.id)
+        )
+
+        context = {
+            "pending_friend_requests": pending_friend_requests,
+            "sent_friend_requests": sent_friend_requests,
+            "current_friends": current_friends,
+            "blocked_users": blocked_users,
+        }
+        return render(request, self.template_name, context)
