@@ -12,6 +12,9 @@
         <button type="submit">Logout</button>
     </form>
     <h1>Hello {{ user.username }}</h1>
+    {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="Profile Image">
+    {% endif %}
     <h1> {% trans "ManageFriendsHeader" %} </h1>
     <!-- Form to send a friend request -->
     <h2> {% trans "SendFriendRequestHeader" %} </h2>
