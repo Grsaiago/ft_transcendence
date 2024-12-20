@@ -58,6 +58,9 @@ class TranscendenceUserCreationForm(UserCreationForm):
 class TranscendenceUserUpdateForm(UserChangeForm):
     password = None
 
+    # # tem que fazer assim pra dar override no widget padrão que tem uma checkbox
+    profile_picture = forms.ImageField(widget=forms.FileInput(), required=False)
+
     class Meta(UserChangeForm.Meta):
         model = TrUser
         fields = ("username", "first_name", "last_name", "profile_picture",)

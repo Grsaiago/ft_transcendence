@@ -142,6 +142,7 @@ def unblock_user(request: HttpRequest):
 @login_required
 def update_user(request: HttpRequest):
     post_data = request.POST.copy()
+    print(post_data)
     update_user_form =  TranscendenceUserUpdateForm(post_data, request.FILES, instance=request.user)
     if update_user_form.is_valid():
         update_user_form.save()
