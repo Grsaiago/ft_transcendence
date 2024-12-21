@@ -34,7 +34,8 @@ class PongSelectGameMode(TemplateView):
 
 
 class PongEnterView(TemplateView):
-    template_name = "pong/enter.html"
+    template_name = "../../user_management/templates/user_management/base_app.html"
+    # template_name = "pong/enter.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -59,6 +60,8 @@ class PongEnterView(TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/enter.html", self.get_context_data(**kwargs))
         return self.render_to_response(self.get_context_data(**kwargs))
 
     def post(self, request, *args, **kwargs):

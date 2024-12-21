@@ -1,5 +1,7 @@
 import Profile from "./views/profile.js";
 import Play from "./views/play.js";
+import EnterOnline from "./views/enter_online.js";
+import EnterTournament from "./views/enter_tournament.js";
 import Chat from "./views/chat.js";
 import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
@@ -19,6 +21,8 @@ const router = async () => {
     const routes = [
         {path: "/profile/", view: Profile },
         {path: "/play/", view: Play },
+        {path: "/enter/online/", view: EnterOnline },
+        {path: "/enter/tournament/", view: EnterTournament },
         {path: "/chat/", view: Chat },
         {path: "/change_password/", view: Change_password },
     ];
