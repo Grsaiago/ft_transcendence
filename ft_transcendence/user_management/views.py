@@ -168,9 +168,13 @@ class UserFriendsView(auth_mixins.LoginRequiredMixin, generic_views.View):
     def get(self, request, *args, **kwargs):
         friend_request_form = FriendRequestForm()
         block_user_form = BlockUserForm()
-        pending_friend_requests = FriendRequest.objects.filter(receiver=request.user)
+        all_users = TrUser.objects.all().exclude(id=request.user.id)
+        received_friend_requests = FriendRequest.objects.filter(receiver=request.user)
         sent_friend_requests = FriendRequest.objects.filter(sender=request.user)
-
+        pending_friend_requests = FriendRequest.objects.filter(
+            Q(receiver=request.user) | Q(sender=request.user)
+        )
+        
         friends = Friendship.objects.filter(
             Q(first_user=request.user.id) | Q(second_user=request.user.id)
         )
@@ -181,10 +185,12 @@ class UserFriendsView(auth_mixins.LoginRequiredMixin, generic_views.View):
         }
 
         context = {
+            "all_users": all_users,
             "block_user_form": block_user_form,
             "friend_request_form": friend_request_form,
-            "pending_friend_requests": pending_friend_requests,
+            "received_friend_requests": received_friend_requests,
             "sent_friend_requests": sent_friend_requests,
+            "pending_friend_requests": pending_friend_requests,
             "current_friends": current_friends,
         }
 

@@ -29,57 +29,81 @@
                 {% endfor %} {% endcomment %}
             </div>
         </div>
+
+
         <div class="div-search p-2 p-lg-3">
             <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
                 <input type="text" class="form-control rounded-5 border-0" placeholder="search user" id="search-input">
                 <i class="search-icon mx-2 mb-1 bi bi-search"></i>
             </div>
             <div class="friends-box friends d-flex flex-column justify-content-start overflow-y-auto">
+
+
                 {% if pending_friend_requests %}
                 <div style="display: flex; align-items: center; gap: 5px;">
                     <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
-                    <p class="text-profile m-0  px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests received</p>
+                    <p class="text-profile m-0  px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests</p>
                 </div>
-                        {% for request in pending_friend_requests %}
+                        {% for pending_request in pending_friend_requests %}
                                 <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
                                     <div class="d-flex flex-row align-items-center gap-3">
                                         <div class="status-icon">
                                             <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
                                         </div>
-                                        <p class="friend-name m-0 mt-1" data-friend="{{ request.sender.username }}">
-                                            {{ request.sender.username }}
+                                        <p class="friend-name m-0 mt-1" data-friend="{{ pending_request.sender.username }}">
+                                            {{ pending_request.sender.username }} | {{ pending_request.receiver.username }}
                                         </p>
                                     </div>
-                                    <div>
-                                        <form action="{% url 'db-user_management:accept_friend_request' %}"
-                                        id="accept-friend-request"
+                                    {% comment %} <div>
+                                        {% comment %} <form action="{% url 'db-user_management:accept_friend_request' %}"
+                                        id="accept-friend-pending_request"
                                         method="post"
                                         style="display:inline"
                                         api-link>
                                         {% csrf_token %}
-                                        <input type="hidden" name="sender" value="{{ request.sender.id }}">
+                                        <input type="hidden" name="sender" value="{{ pending_request.sender.id }}">
                                         <button type="submit" class="p-0 cursor-pointer">
                                             <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
                                         </button>
                                         </form>
                                         <form action="{% url 'db-user_management:refuse_friend_request' %}"
-                                        id="refuse-friend-request"
+                                        id="refuse-friend-pending_request"
                                         method="post"
                                         style="display:inline"
                                         api-link>
                                         {% csrf_token %}
-                                        <input type="hidden" name="sender" value="{{ request.sender.id }}">
+                                        <input type="hidden" name="sender" value="{{ pending_request.sender.id }}">
                                         <button type="submit" class="p-0 cursor-pointer">
                                             <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
                                         </button>
                                         </form>
-                                    </div>
+                                    </div> {% endcomment %}
                                 </div>
                         {% empty %}
                             <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No pending requests</p>
                         {% endfor %}
                 {% endif %}
-                {% if sent_friend_requests %}
+                {% if all_users %}
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
+                    <p class="text-profile m-0  px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">All Users</p>
+                </div>
+                    {% for user in all_users %}
+                        <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
+                            <div class="d-flex flex-row align-items-center gap-3">
+                                <div class="status-icon">
+                                    <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
+                                </div>
+                                <p class="friend-name m-0 mt-1" data-friend="{{ user.id }}">
+                                    {{ user.username }}
+                                </p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No other user. What a shit game site.</p>
+                    {% endfor %}
+                {% endif %}
+                {% comment %} {% if sent_friend_requests %}
                     <div style="display: flex; align-items: center; gap: 5px;">
                         <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
                         <p class="text-profile m-0 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests sent</p>
@@ -95,7 +119,7 @@
                                     </p>
                                 </div>
                                 <div>
-                                    <form action="{% url 'db-user_management:cancel_friend_request' %}"
+                                    {% comment %} <form action="{% url 'db-user_management:cancel_friend_request' %}"
                                     id="cancel-friend-request"
                                     method="post"
                                     style="display:inline"
@@ -109,7 +133,7 @@
                                 </div>
                             </div>
                     {% endfor %}
-                {% endif %}
+                {% endif %} {% endcomment %}
             </div> 
         </div>
     </div>
