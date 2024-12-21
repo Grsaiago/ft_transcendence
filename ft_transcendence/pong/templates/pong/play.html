@@ -1,15 +1,19 @@
-{% extends "pong/base.html" %}
-{% block title %}PongGame{% endblock %}
-{% block content %}
     {% load static %}
-    <link rel="stylesheet" href="{% static 'pong/css/pong.css' %}">
-    <section class="section_enter">
-        <h1>How do you want to play?</h1>
-        <form id="gameModeForm" method="post">
-            {% csrf_token %}
-            <button type="submit" name="game_mode" value="{{ GameMode.LOCAL }}">Local</button>
-            <button type="submit" name="game_mode" value="{{ GameMode.ONLINE }}">Online</button>
-            <button type="submit" name="game_mode" value="{{ GameMode.TOURNAMENT }}">Tournament</button>
-        </form>
-    </section>
-{% endblock content %}
+    <!-- <link rel="stylesheet" href="{% static 'pong/css/pong.css' %}"> -->
+    <div class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-5">
+        <div class="col-play-mode col col-12 col-md-11 col-lg-9 p-0 mx-2 d-flex flex-column rounded-4">
+            <p class="title title-play-mode rounded-top-4 text-center m-0 p-2 py-3">Select a game mode</p>
+            <form class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 px-2 py-4" id="gameModeForm" method="post">
+                {% csrf_token %}
+                    <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" name="game_mode" value="{{ GameMode.LOCAL }}">
+                        <p class="d-flex justify-content-center m-0">Local</p>
+                    </button>
+                    <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" name="game_mode" value="{{ GameMode.ONLINE }}">
+                        <p class="d-flex justify-content-center m-0">Online</p>
+                    </button>
+                    <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" name="game_mode" value="{{ GameMode.TOURNAMENT }}">
+                        <p class="d-flex justify-content-center m-0">Tournament</p>
+                    </button>
+                </form>
+        </div>
+    </div>

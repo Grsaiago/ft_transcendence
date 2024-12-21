@@ -1,4 +1,5 @@
 import Profile from "./views/profile.js";
+import Play from "./views/play.js";
 import Chat from "./views/chat.js";
 import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
@@ -17,6 +18,7 @@ const navigateTo = url => {
 const router = async () => {
     const routes = [
         {path: "/profile/", view: Profile },
+        {path: "/play/", view: Play },
         {path: "/chat/", view: Chat },
         {path: "/change_password/", view: Change_password },
     ];

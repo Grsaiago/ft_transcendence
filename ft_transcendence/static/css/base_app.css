@@ -386,10 +386,44 @@ button {
     font-size: 16px;
 }
 
+
+/* jogar */
+
+.col-play-mode {
+    background-color: var(--cor-2);
+}
+
+.title-play-mode {
+    font-size: 17px;
+}
+
+.play-mode-btn {
+    background-color: var(--cor-6);
+    color: var(--cor-4);
+    font-size: 15px;
+    font-weight: 900;
+    height: 60px;
+    min-width: 176px;
+    border: 2px solid transparent;
+    padding: 0 16px;
+}
+
+.play-mode-btn:hover {
+    background-color: #ececec;
+    color: #156181;
+    border: 2px solid #ececec; /* Adiciona borda sólida */
+    box-shadow: 
+        -0.3px -0.3px 0.2em #ececec,
+        0.3px -0.3px 0.2em #ececec,
+        -0.3px 0.3px 0.2em #ececec,
+        0.3px 0.3px 0.2em #ececec; /* Efeito borrado */
+}
+
 @media (min-width: 574px) {
     .app-container {
         min-height: calc(100vh - 126px);
     }
+
 }
 
 @media (min-width: 768px) {
@@ -492,6 +526,17 @@ button {
     .btn-custom {
         font-size: 16px;
     }
+
+    .title-play-mode {
+        font-size: 18px;
+    }
+    
+    .play-mode-btn {
+        font-size: 16px;
+        /* width: 200px; */
+        height: 80px;
+    }
+
 }
 
 @media (min-width: 1200px) {
@@ -506,6 +551,16 @@ button {
 
     .history-box {
         height: 200px;
+    }
+
+    .title-play-mode {
+        font-size: 20px;
+    }
+    
+    .play-mode-btn {
+        font-size: 18px;
+        /* width: 250px; */
+        height: 80px;
     }
 
 }

@@ -1,0 +1,15 @@
+{% extends "pong/base.html" %}
+{% block title %}PongGame{% endblock %}
+{% block content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'pong/css/pong.css' %}">
+    <section class="section_enter">
+        <h1>How do you want to play?</h1>
+        <form id="gameModeForm" method="post">
+            {% csrf_token %}
+            <button type="submit" name="game_mode" value="{{ GameMode.LOCAL }}">Local</button>
+            <button type="submit" name="game_mode" value="{{ GameMode.ONLINE }}">Online</button>
+            <button type="submit" name="game_mode" value="{{ GameMode.TOURNAMENT }}">Tournament</button>
+        </form>
+    </section>
+{% endblock content %}

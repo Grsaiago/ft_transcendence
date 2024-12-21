@@ -11,10 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 class PongSelectGameMode(TemplateView):
-    template_name = "pong/play.html"
+    template_name = "../../user_management/templates/user_management/base_app.html"
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, {"GameMode": GameMode.as_dict()})
+        context = {"GameMode": GameMode.as_dict()}
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/play.html", context)
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
         game_mode = request.POST.get("game_mode")
