@@ -1,5 +1,5 @@
 {% load static %}
-<div class="row app-row justify-content-center px-3 px-md-4 px-lg-4 gap-3 gap-md-4 gap-lg-5">
+<div class="row app-row justify-content-center px-3 px-md-4 px-lg-4 gap-3 gap-md-4 gap-lg-5" id="friends-page">
     <div class="col-friends friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 rounded-4">
         <div class=" rounded-top-4 d-flex flex-row align-items-center justify-content-center gap-0">
             <p id="title-friends-friend" class="title-friends selected col col-6 rounded-top-start-4 text-center m-0 p-2 text-nowrap cursor-pointer selected">Friends</p>
@@ -114,7 +114,8 @@
         </div>
     </div>
 
-    <div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4">
+    {% comment %} Friends Detail View {% endcomment %}
+    {% comment %} <div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4" id="profile-pic">
         <img class="profile-img friends rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
             <div class="profile-div shadow-sm rounded-4 w-100">
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap" friend-id>None</p>
@@ -139,7 +140,7 @@
             </div>
     </div>
     
-    <div class="col-history col col-10 col-md-4 col-lg-4 p-0 d-flex flex-column justify-content-center gap-3 gap-md-4">
+    <div class="col-history col col-10 col-md-4 col-lg-4 p-0 d-flex flex-column justify-content-center gap-3 gap-md-4" id="profile-stats">
         <div class="history-info shadow-sm rounded-4">
             <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game information</p>
             <div class="p-3 px-lg-4">
@@ -159,5 +160,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
 </div>

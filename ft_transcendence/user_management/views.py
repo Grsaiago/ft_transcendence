@@ -3,13 +3,14 @@ from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.auth import views as auth_views
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm
-from .models import BlockedUsers, FriendRequest, Friendship
+from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
 class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/base_app.html"
@@ -192,32 +193,50 @@ class UserFriendsView(auth_mixins.LoginRequiredMixin, generic_views.View):
         return render(request, self.template_name, context)
 
 class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
-    template_name = "user_management/friend_list.html"
+    template_name = "user_management/user_detail.html"
 
     def get(self, request, *args, **kwargs):
-        # O form pra mandar um invite pra um usuário
-        friend_request_form = FriendRequestForm()
-        block_user_form = BlockUserForm()
-        pending_friend_requests = FriendRequest.objects.filter(receiver=request.user)
-        sent_friend_requests = FriendRequest.objects.filter(sender=request.user)
-        # essas duas variáveis abaixo são pra filtrar o resultado da query
-        # de entradas na tabela de amizade
-        friends = Friendship.objects.filter(
-            Q(first_user=request.user.id) | Q(second_user=request.user.id)
-        )
-        current_friends = [
-            entry.first_user if entry.first_user != request.user else entry.second_user
-            for entry in friends
-        ]
+        user_id = kwargs.get("user_id")
+        
+        if not user_id:
+            raise Http404("User ID not provided")
+        
+        user = TrUser.objects.filter(id=user_id).values(
+            'id', 'username', 'first_name', 'last_login'
+        ).first()
+        
+        if not user:
+            raise Http404("User not found")
 
-        blocked_users = BlockedUsers.objects.filter(
-            Q(blocker=request.user.id)
-        )
+        is_blocked = BlockedUsers.objects.filter(
+            blocker=request.user.id, blocked=user_id
+        ).exists()
+
+        is_friend = Friendship.objects.filter(
+            Q(first_user=request.user.id, second_user=user_id) |
+            Q(first_user=user_id, second_user=request.user.id)
+        ).exists()
+
+        friendship_status = None
+
+        if not is_friend:
+            friend_request = FriendRequest.objects.filter(
+                Q(sender_id=request.user.id, receiver_id=user_id) |
+                Q(sender_id=user_id, receiver_id=request.user.id)
+            ).first()
+
+            if friend_request:
+                friendship_status = (
+                    "sent" if friend_request.sender_id == request.user.id else "received"
+                )
 
         context = {
-            "pending_friend_requests": pending_friend_requests,
-            "sent_friend_requests": sent_friend_requests,
-            "current_friends": current_friends,
-            "blocked_users": blocked_users,
+            "user_id": user['id'],
+            "username": user['username'],
+            "first_name": user['first_name'],
+            "last_login": user['last_login'],
+            "is_blocked": is_blocked,
+            "is_friend": is_friend,
+            "friend_request": friendship_status,
         }
         return render(request, self.template_name, context)

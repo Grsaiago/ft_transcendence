@@ -35,6 +35,37 @@ export default class Profile extends AbstractView {
         // this.loadFriendProfile(); //fazer rota para pegar dados do amigo pelo id, chamar só no evento do click
     }
 
+    async getUserDetailHtml(user_id) {
+        try {
+            const response = await fetch('/user/' + user_id + '/', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const html = await response.text();
+            console.log('Friends html fetched. Returning...');
+            return html;
+        }
+        catch(error) {
+            console.error('Failed to fetch page: ', error);
+            return "<p>Error loading login page</p>";
+        }
+    }
+
+    async loadUserDetail(user_id) {
+        var detailHtml = await this.getUserDetailHtml(user_id);
+
+        var picDiv = document.getElementById('profile-pic');
+        var statsDiv = document.getElementById('profile-stats');
+
+        if (picDiv) picDiv.remove();
+        if (statsDiv) statsDiv.remove();
+
+        var friendsPageDiv = document.getElementById('friends-page');
+        friendsPageDiv.insertAdjacentHTML('beforeend', detailHtml);
+
+    }
+
     async loadFriendsList() {
         let jsonData = {};
         try {
@@ -72,7 +103,7 @@ export default class Profile extends AbstractView {
                 statusIconDiv.appendChild(imgElement);
                 const friendNameP = document.createElement('p');
                 friendNameP.className = 'friend-name m-0 mt-1';
-                friendNameP.dataset.friend = friend.username; //desnecessario??
+                friendNameP.dataset.friend = friend.id; //desnecessario??
                 friendNameP.textContent = friend.username;
                 leftContentDiv.appendChild(statusIconDiv);
                 leftContentDiv.appendChild(friendNameP);
@@ -146,8 +177,9 @@ export default class Profile extends AbstractView {
             console.error("Friend ID is missing in dataset");
             return;
         }
+        console.log("Friend ID: ", friendId);
         this.highlightSelectedFriend(friendElement);
-        //updateFriend(friendElement);
+        this.loadUserDetail(friendId);
     }
     
     handleTabSwitch(event) {
@@ -260,30 +292,3 @@ export default class Profile extends AbstractView {
         }
     }
 }
-
-
-
-    
-//     selectFirstFriend(friendDiv) {
-//         this.currentFriend = friendDiv.getAttribute('data-friend');
-//         this.highlightSelectedFriend(friendDiv);
-//         //this.updateFriend(friendDiv);
-//     }
-    
-//     //updateFriend(friendElement) {
-//         // const friendId = friendElement.dataset.friend;
-//         // const friendName = friendElement.dataset.friend;
-//         // const profileIdElement = document.querySelector("[friend-id]");
-//         // const profileNameElement = document.querySelector("[friend-name]");
-//         // console.log(profileIdElement, profileNameElement);
-//         // if (profileIdElement) {
-//         //     profileIdElement.textContent = friendName;
-//         // } else {
-//         //     console.error("Profile ID element not found")
-//         // }
-//         // if (profileNameElement) {
-//         //     profileNameElement.textContent = friendName;
-//         // } else {
-//         //     console.error("Profile name element not found")
-//         // }
-//     //}

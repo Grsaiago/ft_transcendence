@@ -1,15 +1,25 @@
 {% load static %}
-<div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4">
+<div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4" id="profile-pic">
     <img class="profile-img friends rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
         <div class="profile-div shadow-sm rounded-4 w-100">
-            <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap" friend-id>None</p>
+            <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap" friend-id>{{ username }}</p>
             <div class="profile-box p-3 px-lg-4">
                 <div class="profile-box d-flex flex-column gap-1">
-                    <p class="text-profile m-0 text-nowrap" friend-name>None</p>
+                    <p class="text-profile m-0 text-nowrap" friend-name>{{ first_name }}</p>
                     <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Remove friend</a>
-                        <i class="add-icon bi bi-person-plus-fill"></i>
-                        <i class="remove-icon bi bi-person-dash-fill"></i>
+                        {% if is_friend %}
+                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Remove friend</a>
+                            <i class="remove-icon bi bi-person-dash-fill"></i>
+                        {% elif friend_request %}
+                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="add-friend-btn">Pending Request</a>
+                        <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
+                            {% if friend_request == "received" %}
+                                <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
+                            {% endif %}
+                        {% else %}
+                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Add friend</a>
+                            <i class="add-icon bi bi-person-plus-fill"></i>
+                        {% endif %}
                     </div>
                     <div class="d-flex flex-row align-items-center justify-content-between gap-2">
                         <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Block user</a>
@@ -24,7 +34,7 @@
         </div>
 </div>
 
-<div class="col-history col col-10 col-md-4 col-lg-4 p-0 d-flex flex-column justify-content-center gap-3 gap-md-4">
+<div class="col-history col col-10 col-md-4 col-lg-4 p-0 d-flex flex-column justify-content-center gap-3 gap-md-4" id="profile-stats">
     <div class="history-info shadow-sm rounded-4">
         <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game information</p>
         <div class="p-3 px-lg-4">
@@ -36,7 +46,7 @@
         </div>
     </div>
     
-    <div class="history shadow-sm rounded-4">
+    <div class="history shadow-sm rounded-4" >
         <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game history</p>
         <div class="py-3 px-2">
             <div class="history-box d-flex flex-column gap-1 align-items-center justify-content-center overflow-y-auto">
