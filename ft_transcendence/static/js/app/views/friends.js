@@ -32,7 +32,7 @@ export default class Profile extends AbstractView {
 
     async loadComponents() {
         await this.loadFriendsList();
-        // this.loadFriendProfile(); //fazer rota para pegar dados do amigo pelo id, chamar só no evento do click
+        await this.loadUsersList();
     }
 
     async getUserDetailHtml(user_id) {
@@ -80,7 +80,7 @@ export default class Profile extends AbstractView {
         catch (error) {
             console.error('Failed to fetch friends list: ', error);
         }
-        const friendsBox = document.querySelector('.friends-box');
+        const friendsBox = document.getElementById('friends-tab');
         // Clear any existing content
         friendsBox.innerHTML = '';
     
@@ -123,7 +123,95 @@ export default class Profile extends AbstractView {
             friendsBox.appendChild(noFriendsMessage);
         }
     }
- 
+
+    async loadUsersList() {
+        let usersData = {};
+        try {
+            const response = await fetch('/api/user/', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            usersData = await response.json();
+            console.log('Friends list fetched: ', usersData);
+        }
+        catch (error) {
+            console.error('Failed to fetch friends list: ', error);
+        }
+        const friendsBox = document.getElementById('search-tab');
+    
+        // Clear existing content in the friends box
+        friendsBox.innerHTML = '';
+    
+        // Separate pending friend requests and all users
+        const pendingRequests = usersData.users.filter(user => user.pending_friend_request);
+        const allUsers = usersData.users;
+    
+        // Generate HTML for pending friend requests if any
+        if (pendingRequests.length > 0) {
+            const pendingHeader = `
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
+                    <p class="text-profile m-0 px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests</p>
+                </div>
+            `;
+            friendsBox.insertAdjacentHTML('beforeend', pendingHeader);
+    
+            pendingRequests.forEach(request => {
+                const requestHtml = `
+                    <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
+                        <div class="d-flex flex-row align-items-center gap-3">
+                            <div class="status-icon">
+                                <img class="friend-img rounded-circle border-0" src="/static/assets/foto-perfil.png">
+                            </div>
+                            <p class="friend-name m-0 mt-1" data-friend="${request.id}">
+                                ${request.username}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                friendsBox.insertAdjacentHTML('beforeend', requestHtml);
+            });
+        } else {
+            const noPendingRequests = `
+                <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No pending requests</p>
+            `;
+            friendsBox.insertAdjacentHTML('beforeend', noPendingRequests);
+        }
+    
+        // Generate HTML for all users
+        if (allUsers.length > 0) {
+            const usersHeader = `
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
+                    <p class="text-profile m-0 px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">All Users</p>
+                </div>
+            `;
+            friendsBox.insertAdjacentHTML('beforeend', usersHeader);
+    
+            allUsers.forEach(user => {
+                const userHtml = `
+                    <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
+                        <div class="d-flex flex-row align-items-center gap-3">
+                            <div class="status-icon">
+                                <img class="friend-img rounded-circle border-0" src="/static/assets/foto-perfil.png">
+                            </div>
+                            <p class="friend-name m-0 mt-1" data-friend="${user.id}">
+                                ${user.username}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                friendsBox.insertAdjacentHTML('beforeend', userHtml);
+            });
+        } else {
+            const noUsers = `
+                <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No other user. What a shit game site.</p>
+            `;
+            friendsBox.insertAdjacentHTML('beforeend', noUsers);
+        }
+    }
+
     bindUIEventHandlers() {
         console.log('Loading friends event handlers...');
 

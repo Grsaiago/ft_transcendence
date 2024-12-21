@@ -175,7 +175,7 @@ def get_user_friends(request: HttpRequest):
 
 @require_GET
 @login_required
-def get_all_users(request: HttpRequest):
+def get_all_users_deprecated(request: HttpRequest):
     # Obtenha todos os usuários do sistema, excluindo o usuário atual
     all_users = TrUser.objects.exclude(id=request.user.id)
     
@@ -224,6 +224,31 @@ def get_all_users(request: HttpRequest):
     response = JsonResponse({"users": users_list})
     return response
 
+
+@require_GET
+@login_required
+def get_all_users(request: HttpRequest):
+    # Obtenha todos os usuários do sistema, excluindo o usuário atual
+    all_users = TrUser.objects.exclude(id=request.user.id)
+
+    users_list = []
+    for user in all_users:
+        #Verifica se tem pedido de amizade pendente
+        pending_friend_request = FriendRequest.objects.filter(
+                Q(sender_id=request.user.id, receiver_id=user.id) |
+                Q(sender_id=user.id, receiver_id=request.user.id)
+        ).exists()
+
+        # Adiciona os dados do usuário à lista
+        users_list.append({
+            "id": user.id,
+            "username": user.username,
+            "pending_friend_request": pending_friend_request,
+        })
+
+    response = JsonResponse({"users": users_list})
+    return response
+
 @require_GET
 @login_required
 def get_user_details(request, user_id):
@@ -264,10 +289,6 @@ def get_user_details(request, user_id):
             Q(first_user=request.user.id, second_user=user_id) |
             Q(first_user=user_id, second_user=request.user.id)
         ).exists()
-
-        block_route = reverse("user_management:block_user") if not is_blocked else reverse("user_management:unblock_user")
-
-        # friendShipManagementRoutes
 
         # Cria a resposta com os detalhes do usuário
         user_details = {
