@@ -5,7 +5,7 @@ export default class SendFriendRequestHandler extends AbstractHandler {
         super();
     }
 
-    updateUI() {
-        alert("Friend request sent.");
-    }
+    // updateUI() {
+    //     alert("Friend request sent.");
+    // }
 }

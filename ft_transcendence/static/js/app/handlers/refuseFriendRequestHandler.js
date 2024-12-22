@@ -5,7 +5,7 @@ export default class RefuseFriendRequestHandler extends AbstractHandler {
         super();
     }
 
-    updateUI() {
-        alert("Friend request refused.");
-    }
+    // updateUI() {
+    //     alert("Friend request refused.");
+    // }
 }

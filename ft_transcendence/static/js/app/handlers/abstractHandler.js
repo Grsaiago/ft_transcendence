@@ -29,6 +29,12 @@ export default class AbstractHandler{
         );
     }
 
-    updateUI() {
+    async updateUI(view, id) {
+        console.log("Updating UI");
+        //unbinding UI event handlers - NEED TO DO
+        await view.loadComponents();
+        //binding UI event handlers
+        view.bindUIEventHandlers();
+        await view.loadUserDetail(id);
     }
 }

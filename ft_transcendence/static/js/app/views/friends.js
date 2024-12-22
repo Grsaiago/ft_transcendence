@@ -148,14 +148,14 @@ export default class Profile extends AbstractView {
         const allUsers = usersData.users;
     
         // Generate HTML for pending friend requests if any
+        const pendingHeader = `
+            <div style="display: flex; align-items: center; gap: 5px;">
+                <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
+                <p class="text-profile m-0 px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests</p>
+            </div>
+        `;
+        friendsBox.insertAdjacentHTML('beforeend', pendingHeader);
         if (pendingRequests.length > 0) {
-            const pendingHeader = `
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
-                    <p class="text-profile m-0 px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests</p>
-                </div>
-            `;
-            friendsBox.insertAdjacentHTML('beforeend', pendingHeader);
     
             pendingRequests.forEach(request => {
                 const requestHtml = `
@@ -174,7 +174,7 @@ export default class Profile extends AbstractView {
             });
         } else {
             const noPendingRequests = `
-                <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No pending requests</p>
+                <p class="no-friend-msg my-2 text-nowrap d-flex justify-content-center">No pending request ...</p>
             `;
             friendsBox.insertAdjacentHTML('beforeend', noPendingRequests);
         }
@@ -269,7 +269,7 @@ export default class Profile extends AbstractView {
         this.highlightSelectedFriend(friendElement);
         this.loadUserDetail(friendId);
     }
-    
+
     handleTabSwitch(event) {
         const tab = event.target.textContent.trim().toLowerCase();
         this.toggleTabs(tab);

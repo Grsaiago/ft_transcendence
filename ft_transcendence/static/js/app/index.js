@@ -74,9 +74,8 @@ const handlersRouter = async (form) => {
     }
     
     var handler = new match.route.handler();
-    handler.postForm(form);
-    handler.updateUI();
-    
+    await handler.postForm(form);
+    handler.updateUI(view, form[1].value);
 };
 
 window.addEventListener("popstate", viewsRouter);
@@ -85,10 +84,9 @@ function submitForm(form) {
     handlersRouter(form);
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
-    
-    console.log("Página carregada, chamando router()");
+
+    console.log("Página carregada, chamando routers()");
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
@@ -96,10 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     });
-    
+
     document.body.addEventListener("submit", e => {
         const form = e.target;
-        
+
         if (form.tagName === "FORM" && form.matches("[api-link]")) {
             console.log(e.target);
             e.preventDefault();
