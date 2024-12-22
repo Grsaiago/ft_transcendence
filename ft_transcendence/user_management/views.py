@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm
+from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm, TranscendenceUserUpdateForm
 from .models import BlockedUsers, FriendRequest, Friendship
 
 class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
@@ -136,6 +136,7 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
         block_user_form = BlockUserForm()
         pending_friend_requests = FriendRequest.objects.filter(receiver=request.user)
         sent_friend_requests = FriendRequest.objects.filter(sender=request.user)
+        user_update_form = TranscendenceUserUpdateForm(instance=request.user)
         # essas duas variáveis abaixo são pra filtrar o resultado da query
         # de entradas na tabela de amizade
         friends = Friendship.objects.filter(
@@ -157,5 +158,6 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
             "sent_friend_requests": sent_friend_requests,
             "current_friends": current_friends,
             "blocked_users": blocked_users,
+            "user_update_form": user_update_form,
         }
         return render(request, self.template_name, context)

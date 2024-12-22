@@ -13,6 +13,7 @@ from .forms import (
     FriendRequestForm,
     RefuseFriendRequestForm,
     RemoveFriendshipForm,
+    TranscendenceUserUpdateForm,
     UnblockUserForm,
 )
 
@@ -137,3 +138,16 @@ def unblock_user(request: HttpRequest):
                 messages.error(request, f"error: {error}")
     return redirect("user_management:friend_list")
 
+@require_POST
+@login_required
+def update_user(request: HttpRequest):
+    post_data = request.POST.copy()
+    print(post_data)
+    update_user_form =  TranscendenceUserUpdateForm(post_data, request.FILES, instance=request.user)
+    if update_user_form.is_valid():
+        update_user_form.save()
+    else:
+        for _, errors in update_user_form.errors.items():
+            for error in errors:
+                messages.error(request, f"error: {error}")
+    return redirect("user_management:friend_list")

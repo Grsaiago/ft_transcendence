@@ -8,6 +8,7 @@ from .db_paths import (
     refuse_friend_request,
     remove_friendship,
     send_friend_request,
+    update_user,
 )
 
 app_name = "db-user_management"
@@ -18,6 +19,7 @@ urlpatterns = [
     path("accept-friend-request/", accept_friend_request, name="accept_friend_request"),
     path("refuse-friend-request/", refuse_friend_request, name="refuse_friend_request"),
     path("remove-friendship/", remove_friendship, name="remove_friendship"),
+    path("update_user/", update_user, name="update_user"),
     path("block-user/", block_user, name="block_user"),
     path("unblock-user/", unblock_user, name="unblock_user"),
 ]
