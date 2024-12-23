@@ -1,10 +1,15 @@
 from logging import log
 from django import http
+from django.urls import reverse
+from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
+from django.db.models import Q
+from .models import Friendship, TrUser, BlockedUsers, FriendRequest
+
 
 from .forms import (
     AcceptFriendRequestForm,
@@ -137,6 +142,169 @@ def unblock_user(request: HttpRequest):
             for error in errors:
                 messages.error(request, f"error: {error}")
     return redirect("user_management:friend_list")
+
+@require_GET
+@login_required
+def get_user_friends(request: HttpRequest):    
+    friends = Friendship.objects.filter(
+        Q(first_user=request.user.id) | Q(second_user=request.user.id)
+    )
+    
+    friends_list = []
+    for entry in friends:
+        # Determina quem é o amigo (não o usuário atual)
+        friend = entry.first_user if entry.first_user != request.user else entry.second_user
+        
+        # Obtém as informações detalhadas do amigo
+        friend_data = TrUser.objects.filter(id=friend.id).values(
+            'id', 'username', 'first_name', 'last_login'
+        ).first()
+
+        # Adiciona ao dicionário
+        if friend_data:
+            friends_list.append({
+                "id": friend_data['id'],
+                "username": friend_data['username'],
+                "first_name": friend_data['first_name'],
+                "last_login": friend_data['last_login'],
+            })
+    
+    response = JsonResponse({"friends": friends_list})
+    return response
+
+
+@require_GET
+@login_required
+def get_all_users_deprecated(request: HttpRequest):
+    # Obtenha todos os usuários do sistema, excluindo o usuário atual
+    all_users = TrUser.objects.exclude(id=request.user.id)
+    
+    users_list = []
+    for user in all_users:
+        # Verifica se o usuário está bloqueado
+        is_blocked = BlockedUsers.objects.filter(
+            blocker=request.user.id, blocked=user.id
+        ).exists()
+        
+        # Verifica se há um pedido de amizade relacionado
+        friend_request = FriendRequest.objects.filter(
+            sender_id=request.user.id, receiver_id=user.id
+        ).first()
+        
+        if not friend_request:
+            friend_request = FriendRequest.objects.filter(
+                sender_id=user.id, receiver_id=request.user.id
+            ).first()
+        
+        # Determina o estado do pedido de amizade
+        if friend_request:
+            friendship_status = (
+                "sender" if friend_request.sender_id == request.user.id else "receiver"
+            )
+        else:
+            friendship_status = None
+
+        # Verifica se os usuários já são amigos
+        is_friend = Friendship.objects.filter(
+            Q(first_user=request.user.id, second_user=user.id) |
+            Q(first_user=user.id, second_user=request.user.id)
+        ).exists()
+        
+        # Adiciona os dados do usuário à lista
+        users_list.append({
+            "id": user.id,
+            "username": user.username,
+            "first_name": user.first_name,
+            "last_login": user.last_login,
+            "is_blocked": is_blocked,
+            "friend_status": is_friend,
+            "friend_request_status": friendship_status,
+        })
+    
+    response = JsonResponse({"users": users_list})
+    return response
+
+
+@require_GET
+@login_required
+def get_all_users(request: HttpRequest):
+    # Obtenha todos os usuários do sistema, excluindo o usuário atual
+    all_users = TrUser.objects.exclude(id=request.user.id)
+
+    users_list = []
+    for user in all_users:
+        #Verifica se tem pedido de amizade pendente
+        pending_friend_request = FriendRequest.objects.filter(
+                Q(sender_id=request.user.id, receiver_id=user.id) |
+                Q(sender_id=user.id, receiver_id=request.user.id)
+        ).exists()
+
+        # Adiciona os dados do usuário à lista
+        users_list.append({
+            "id": user.id,
+            "username": user.username,
+            "pending_friend_request": pending_friend_request,
+        })
+
+    response = JsonResponse({"users": users_list})
+    return response
+
+@require_GET
+@login_required
+def get_user_details(request, user_id):
+    try:
+        # Obtenha as informações detalhadas do usuário solicitado
+        user = TrUser.objects.filter(id=user_id).values(
+            'id', 'username', 'first_name', 'last_login'
+        ).first()
+
+        if not user:
+            return JsonResponse({"error": "User not found."}, status=404)
+
+        # Verifica se o usuário está bloqueado
+        is_blocked = BlockedUsers.objects.filter(
+            blocker=request.user.id, blocked=user_id
+        ).exists()
+
+        # Verifica se há um pedido de amizade relacionado
+        friend_request = FriendRequest.objects.filter(
+            sender_id=request.user.id, receiver_id=user_id
+        ).first()
+
+        if not friend_request:
+            friend_request = FriendRequest.objects.filter(
+                sender_id=user_id, receiver_id=request.user.id
+            ).first()
+
+        # Determina o estado do pedido de amizade
+        if friend_request:
+            friendship_status = (
+                "sender" if friend_request.sender_id == request.user.id else "receiver"
+            )
+        else:
+            friendship_status = None
+
+        # Verifica se os usuários já são amigos
+        is_friend = Friendship.objects.filter(
+            Q(first_user=request.user.id, second_user=user_id) |
+            Q(first_user=user_id, second_user=request.user.id)
+        ).exists()
+
+        # Cria a resposta com os detalhes do usuário
+        user_details = {
+            "id": user['id'],
+            "username": user['username'],
+            "first_name": user['first_name'],
+            "last_login": user['last_login'],
+            "is_blocked": is_blocked,
+            "friend_status": is_friend,
+            "friend_request_status": friendship_status,
+        }
+
+        return JsonResponse(user_details)
+
+    except Exception as e:
+        return JsonResponse({"error": "An error occurred.", "details": str(e)}, status=500)
 
 @require_POST
 @login_required

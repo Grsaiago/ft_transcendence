@@ -110,15 +110,44 @@ body {
     height: 160px;
 }
 
+.profile-img.friends {
+    display: none;
+}
+
 .profile-div,
 .history,
 .history-info {
     background-color: var(--cor-2);
 }
 
+.col-history {
+    min-width: 240px;
+}
+
 .title {
     background-color: var(--cor-4);
     color: var(--cor-1);
+    font-size: 14px;
+}
+
+
+.title-friends {
+    background-color: #2c72a1;
+    color: var(--cor-1);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.title-friends:hover {
+    font-weight: 900;
+}
+
+
+.title-friends.selected {
+    background-color: var(--cor-4);
+    color: var(--cor-1);
+    cursor: pointer;
 }
 
 .history-box {
@@ -148,9 +177,18 @@ button {
 /* chat page */
 .col-friends {
     background-color: var(--cor-2);
-    height: 200px;
+    height: 196px;
     overflow: hidden;
+    min-width: 195px;
     max-width: 340px;
+}
+
+.col-profile {
+    min-width: 160px;
+}
+
+.col-friends.friends {
+    height: 180px;
 }
 
 .col-chat {
@@ -178,6 +216,10 @@ button {
 .friends-box {
     height: 106px;
     overflow-y: auto;
+}
+
+.friends-box.friends {
+    height: 82px;
 }
 
 .friends-box::-webkit-scrollbar {
@@ -301,7 +343,7 @@ button {
     -0.1px 0.1px black;
 }
 
-.info-icon {
+.info-icon, .add-icon, .remove-icon, .block-icon {
     font-size: 14px;
     text-shadow:
     0.1px 0 black,
@@ -386,13 +428,23 @@ button {
     font-size: 16px;
 }
 
+
+.col-profile.friends {
+    /* min-width: 160px;
+    max-width: 340px; */
+}
+
+
 @media (min-width: 574px) {
     .app-container {
         min-height: calc(100vh - 126px);
     }
+
 }
 
 @media (min-width: 768px) {
+
+
     body {
         font-size: 16px;
     }
@@ -422,6 +474,10 @@ button {
         min-width: 220px;
     }
 
+    .col-profile.friends {
+        min-width: 160px;
+    }
+
     .history-box {
         height: 160px;
     }
@@ -431,12 +487,20 @@ button {
         height: 200px;
     }
 
+    .profile-img.friends {
+        display: block;
+    }
+
     .text-profile {
         font-size: 16px;
     }
 
     .friends-box {
         height: 372px;
+    }
+
+    .friends-box.friends {
+        height: 320px;
     }
 
     .friend {
@@ -456,6 +520,11 @@ button {
     .col-chat {
         height: 480px;
     }
+
+    .col-friends.friends {
+        height: 418px;
+    }
+
     .messages {
         font-family: 'LT Galaxy Reverse', sans-serif;
         font-weight: 500;
@@ -494,18 +563,42 @@ button {
     }
 }
 
+@media (min-width: 992px) {
+
+    .friends-box.friends {
+        height: 312px;
+    }
+
+    .col-friends.friends {
+        height: 420px;
+    }
+
+    .title {
+        font-size: 16px;
+    }
+
+}
+
 @media (min-width: 1200px) {
     .profile-img {
         width: 240px;
         height: 240px;
     }
 
-    .col-profile {
-        min-width: 260px;
+    .col-friends.friends {
+        height: 460px;
+        min-width: 220px;
+    }
+    
+    .friends-box.friends {
+        height: 352px;
     }
 
     .history-box {
         height: 200px;
     }
 
+    .profile-div {
+        min-width: 240px;
+    }
 }

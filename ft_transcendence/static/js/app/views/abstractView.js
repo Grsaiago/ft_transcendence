@@ -21,6 +21,9 @@ export default class AbstractView{
         return "";
     }
 
+    loadComponents() {
+    }
+
     bindUIEventHandlers() {
     }
 
