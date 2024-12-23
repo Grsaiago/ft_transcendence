@@ -18,6 +18,7 @@ from .forms import (
     FriendRequestForm,
     RefuseFriendRequestForm,
     RemoveFriendshipForm,
+    TranscendenceUserUpdateForm,
     UnblockUserForm,
 )
 
@@ -141,7 +142,6 @@ def unblock_user(request: HttpRequest):
             for error in errors:
                 messages.error(request, f"error: {error}")
     return redirect("user_management:friend_list")
-
 
 @require_GET
 @login_required
@@ -305,3 +305,17 @@ def get_user_details(request, user_id):
 
     except Exception as e:
         return JsonResponse({"error": "An error occurred.", "details": str(e)}, status=500)
+
+@require_POST
+@login_required
+def update_user(request: HttpRequest):
+    post_data = request.POST.copy()
+    print(post_data)
+    update_user_form =  TranscendenceUserUpdateForm(post_data, request.FILES, instance=request.user)
+    if update_user_form.is_valid():
+        update_user_form.save()
+    else:
+        for _, errors in update_user_form.errors.items():
+            for error in errors:
+                messages.error(request, f"error: {error}")
+    return redirect("user_management:friend_list")

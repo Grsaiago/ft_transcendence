@@ -1,7 +1,11 @@
 import logging
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django.views import View
 from django.views.generic import DetailView, TemplateView
 
 from .forms import PongRoomForm, TournamentForm
@@ -10,7 +14,7 @@ from .models import GameMode, Match, PongRoom, Tournament, TournamentParticipant
 logger = logging.getLogger(__name__)
 
 
-class PongSelectGameMode(TemplateView):
+class PongSelectGameMode(LoginRequiredMixin, TemplateView):
     template_name = "pong/play.html"
 
     def get(self, request, *args, **kwargs):
@@ -30,7 +34,7 @@ class PongSelectGameMode(TemplateView):
             return redirect("pong:pongenter", game_mode=game_mode)
 
 
-class PongEnterView(TemplateView):
+class PongEnterView(LoginRequiredMixin, TemplateView):
     template_name = "pong/enter.html"
 
     def get_context_data(self, **kwargs):
@@ -91,7 +95,7 @@ class PongEnterView(TemplateView):
                 return self.render_to_response(context)
 
 
-class PongRoomView(TemplateView):
+class PongRoomView(LoginRequiredMixin, TemplateView):
     template_name = "pong/room.html"
 
     def get_context_data(self, **kwargs):
@@ -113,7 +117,7 @@ class PongRoomView(TemplateView):
         return self.render_to_response(context)
 
 
-class PongTournamentView(DetailView):
+class PongTournamentView(LoginRequiredMixin, DetailView):
     model = Tournament
     template_name = "pong/tournament.html"
     context_object_name = "tournament"
@@ -136,7 +140,88 @@ class PongTournamentView(DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        # implementar lógica para inscrisão em torneio
-
         tournament = self.get_object()
         return redirect("pong:pongtournament", tournament_id=tournament.id)
+
+
+def format_datetime(dt):
+    """
+    Formats a datetime object to a string in the format 'YYYY-MM-DD HH:MM'.
+    """
+    return timezone.localtime(dt).strftime("%Y-%m-%d %H:%M") if dt else None
+
+
+class UserStatsView(LoginRequiredMixin, View):
+    """
+    Returns general user statistics in JSON format:
+    - Last online time
+    - Total matches played and won
+    - Total tournaments played and won
+    """
+
+    def get(self, request):
+        user = request.user
+        last_online = format_datetime(user.last_login)
+        total_matches = (
+            Match.objects.filter(player1=user).count()
+            + Match.objects.filter(player2=user).count()
+        )
+        total_wins = Match.objects.filter(winner=user).count()
+        total_tournaments = TournamentParticipant.objects.filter(player=user).count()
+        total_tournament_wins = TournamentParticipant.objects.filter(
+            player=user, is_eliminated=False
+        ).count()
+
+        data = {
+            "last_online": last_online,
+            "total_matches": total_matches,
+            "total_wins": total_wins,
+            "total_tournaments": total_tournaments,
+            "total_tournament_wins": total_tournament_wins,
+        }
+        return JsonResponse(data)
+
+
+class UserHistoryView(LoginRequiredMixin, View):
+    """
+    Returns detailed user history in JSON format:
+    - Match history with date, opponent, and result
+    - Tournament history with date, tournament name, and result
+    """
+
+    def get(self, request):
+        user = request.user
+
+        # Match history
+        matches = Match.objects.filter(player1=user) | Match.objects.filter(
+            player2=user
+        )
+        match_history = [
+            {
+                "date": format_datetime(match.created_at),
+                "opponent": (
+                    match.player2.username
+                    if match.player1 == user
+                    else match.player1.username
+                ),
+                "result": "Won" if match.winner == user else "Lost",
+            }
+            for match in matches
+        ]
+
+        # Tournament history
+        tournaments = TournamentParticipant.objects.filter(player=user)
+        tournament_history = [
+            {
+                "date": format_datetime(tournament.tournament.created_at),
+                "tournament": tournament.tournament.name,
+                "result": "Won" if not tournament.is_eliminated else "Lost",
+            }
+            for tournament in tournaments
+        ]
+
+        data = {
+            "matches": match_history,
+            "tournaments": tournament_history,
+        }
+        return JsonResponse(data)
