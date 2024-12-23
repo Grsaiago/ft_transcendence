@@ -6,7 +6,7 @@
             <i class="refresh-icon mb-1 bi bi-arrow-clockwise"></i>
         </div>
         {% if game_mode == GameMode.TOURNAMENT %}
-        <div class="create-room-box rounded-4 p-2 p-lg-3 m-2">
+        <div class="create-room-box rounded-4 p-2 m-2">
             <form method="post">
                 {% csrf_token %}
                 <div>
@@ -34,7 +34,7 @@
                 </div>
             </form>
         </div>
-        <div class="enter-box-background rounded-4 p-2 p-lg-3 m-2">
+        <div class="enter-box-background rounded-4 p-2 m-2">
             <p class="enter-title m-0">Rooms</p>
             <div class="enter-box d-flex flex-column justify-content-start overflow-y-auto rounded-4">
                 {% if tournaments %}
@@ -54,7 +54,7 @@
         </div>
         
         {% else %}
-        <div class="create-room-box rounded-4 p-2 p-lg-3 m-2">
+        <div class="create-room-box rounded-4 p-2 m-2">
             <form method="post">
                 {% csrf_token %}
                 <div>
@@ -77,7 +77,7 @@
             </form>
         </div>
         <div>
-        <div class="enter-box-background rounded-4 p-2 p-lg-3 m-2">
+        <div class="enter-box-background rounded-4 p-2 m-2">
             <p class="enter-title m-0">Rooms</p>
             <div class="enter-box d-flex flex-column justify-content-start overflow-y-auto rounded-4">
                 {% if rooms %}

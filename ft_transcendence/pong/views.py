@@ -1,3 +1,5 @@
+from http.client import HTTPResponse
+from django.http import JsonResponse
 import logging
 
 from django.shortcuts import redirect, render
@@ -77,7 +79,8 @@ class PongEnterView(TemplateView):
                 tournament = form.save(commit=False)
                 tournament.max_players = int(max_players)
                 tournament.save()
-                return redirect("pong:pongtournament", tournament_id=tournament.id)
+                return JsonResponse({"message":"sala criada"}, status=200)
+                # return redirect("pong:pongtournament", tournament_id=tournament.id)
             else:
                 context = self.get_context_data(**kwargs)
                 context["form"] = form
@@ -90,7 +93,8 @@ class PongEnterView(TemplateView):
                 room = form.save(commit=False)
                 room.game_mode = game_mode
                 room.save()
-                return redirect("pong:pongroom", room_id=room.id)
+                return HTTPResponse()
+                # return redirect("pong:pongroom", room_id=room.id)
             else:
                 context = self.get_context_data(**kwargs)
                 context["form"] = form
