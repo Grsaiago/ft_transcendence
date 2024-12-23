@@ -4,6 +4,7 @@ import Friends from "./views/friends.js";
 import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
+import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 
 var view = null;
 
@@ -54,6 +55,7 @@ const viewsRouter = async () => {
 const handlersRouter = async (form) => {
     const routes = [
         {formType: "friendshipForm", handler: friendshipFormsHandler },
+        {formType: "blockForm", handler: userBlockFormsHandler },
     ];
 
     const potentialMatches = routes.map(route => {

@@ -76,8 +76,10 @@
                     <div class="d-flex flex-row align-items-center justify-content-between gap-2">
                         <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Unblock user</a>
                         <form action="{% url 'db-user_management:unblock_user' %}"
+                        formType="blockForm"
                         method="post"
-                        style="display:inline">
+                        style="display:inline"
+                        api-link>
                         {% csrf_token %}
                         <input type="hidden" name="blocked" value="{{ user_id }}">
                         <button type="submit" class="p-0 cursor-pointer">
@@ -89,8 +91,10 @@
                     <div class="d-flex flex-row align-items-center justify-content-between gap-2">
                         <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Block user</a>
                         <form action="{% url 'db-user_management:block_user' %}"
+                        formType="blockForm"
                         method="post"
-                        style="display:inline">
+                        style="display:inline"
+                        api-link>
                         {% csrf_token %}
                         <input type="hidden" name="blocked" value="{{ user_id }}">
                         <button type="submit" class="p-0 cursor-pointer">
@@ -113,7 +117,7 @@
         <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game information</p>
         <div class="p-3 px-lg-4">
             <div class=" history-info-box d-flex flex-column gap-1">
-                <p class="text-profile m-0 text-nowrap">Online on: 03/11/2024 at 23:37</p>
+                <p class="text-profile m-0 text-nowrap">Online on: {{ last_login }}</p>
                 <p class="text-profile m-0 text-nowrap">Games played: 3</p>
                 <p class="text-profile m-0 text-nowrap">Total wins: 2</p>
             </div>
