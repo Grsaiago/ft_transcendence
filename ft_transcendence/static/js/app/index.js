@@ -3,9 +3,7 @@ import Chat from "./views/chat.js";
 import Friends from "./views/friends.js";
 import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
-import AcceptFriendRequestHandler from "./handlers/acceptFriendRequestHandler.js";
-import RefuseFriendRequestHandler from "./handlers/refuseFriendRequestHandler.js";
-import CancelFriendRequestHandler from "./handlers/cancelFriendRequestHandler.js";
+import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 
 var view = null;
 
@@ -55,15 +53,13 @@ const viewsRouter = async () => {
 
 const handlersRouter = async (form) => {
     const routes = [
-        {formId: "accept-friend-request", handler: AcceptFriendRequestHandler },
-        {formId: "refuse-friend-request", handler: RefuseFriendRequestHandler },
-        {formId: "cancel-friend-request", handler: CancelFriendRequestHandler },
+        {formType: "friendshipForm", handler: friendshipFormsHandler },
     ];
 
     const potentialMatches = routes.map(route => {
         return {
             route: route,
-            isMatch: form.id === route.formId,
+            isMatch: form.getAttribute('formType') === route.formType,
         };
     });
 
@@ -75,7 +71,8 @@ const handlersRouter = async (form) => {
     
     var handler = new match.route.handler();
     await handler.postForm(form);
-    handler.updateUI(view, form[1].value);
+    var user_id = form[1].value;
+    await handler.updateUI(view, user_id);
 };
 
 window.addEventListener("popstate", viewsRouter);

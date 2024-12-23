@@ -67,6 +67,10 @@ export default class Profile extends AbstractView {
     }
 
     async loadFriendsList() {
+        const friendsBox = document.getElementById('friends-tab');
+        // Clear any existing content
+        friendsBox.innerHTML = '';
+
         let jsonData = {};
         try {
             const response = await fetch('/api/user/friends/', {
@@ -80,9 +84,6 @@ export default class Profile extends AbstractView {
         catch (error) {
             console.error('Failed to fetch friends list: ', error);
         }
-        const friendsBox = document.getElementById('friends-tab');
-        // Clear any existing content
-        friendsBox.innerHTML = '';
     
         if (jsonData.friends && jsonData.friends.length > 0) {
             jsonData.friends.forEach(friend => {
@@ -342,7 +343,7 @@ export default class Profile extends AbstractView {
     
     }
 
-    toggleTabs(tab) {
+    async toggleTabs(tab) {
         const divFriend = document.querySelector('.div-friend');
         const divSearch = document.querySelector('.div-search');
         const titleFriends = document.querySelector("#title-friends-friend");
@@ -354,8 +355,10 @@ export default class Profile extends AbstractView {
             titleSearch.classList.remove('selected'); 
             titleFriends.classList.add('selected');
             console.log("change tab to friends");
-            
+
             this.unhighlightPreviousFriend();
+
+            await this.loadFriendsList();
         } else if (tab === 'search') {
             divFriend.style.display = 'none';
             divSearch.style.display = 'block';
@@ -364,7 +367,9 @@ export default class Profile extends AbstractView {
             console.log("change tab to search");
 
             this.unhighlightPreviousFriend();
+            await this.loadUsersList();
         }
+        this.bindFriendListClickEvent();
     }
 
     highlightSelectedFriend(eventTarget) {

@@ -10,8 +10,10 @@
                         {% if is_friend %}
                             <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Remove friend</a>
                             <form action="{% url 'db-user_management:remove_friendship' %}"
+                            formType="friendshipForm"
                             method="post"
-                            style="display:inline">
+                            style="display:inline"
+                            api-link>
                             {% csrf_token %}
                             <input type="hidden" name="first_user" value="{{ user_id }}">
                             <button type="submit">
@@ -22,7 +24,7 @@
                             <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="add-friend-btn">Pending Request</a>
                             {% if friend_request == "received" %}
                                 <form action="{% url 'db-user_management:refuse_friend_request' %}"
-                                id="refuse-friend-request"
+                                formType="friendshipForm"
                                 method="post"
                                 style="display:inline"
                                 api-link>
@@ -33,7 +35,7 @@
                                 </button>
                                 </form>
                                 <form action="{% url 'db-user_management:accept_friend_request' %}"
-                                id="accept-friend-request"
+                                formType="friendshipForm"
                                 method="post"
                                 style="display:inline"
                                 api-link>
@@ -45,21 +47,23 @@
                                 </form>
                             {% else %}
                                 <form action="{% url 'db-user_management:cancel_friend_request' %}"
-                                id="cancel-friend-request"
+                                formType="friendshipForm"
                                 method="post"
                                 style="display:inline"
                                 api-link>
                                 {% csrf_token %}
                                 <input type="hidden" name="receiver" value="{{ user_id }}">
                                 <button type="submit" class="p-0 cursor-pointer">
-                                    <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
+                                    <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 18px;"></i>
                                 </button>
                                 </form>
                             {% endif %}
                         {% else %}
                         <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Add friend</a>
                         <form action="{% url 'db-user_management:send_friend_request' %}"
-                        method="post">
+                        formType="friendshipForm"
+                        method="post"
+                        api-link>
                         {% csrf_token %}
                         <input type="hidden" name="receiver" value="{{ user_id }}">
                         <button type="submit">

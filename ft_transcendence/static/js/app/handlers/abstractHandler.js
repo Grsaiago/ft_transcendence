@@ -9,7 +9,7 @@ export default class AbstractHandler{
         const formData = new FormData(form);
         const data = new URLSearchParams(formData);
 
-        fetch(form.action, {
+        return fetch(form.action, {
             method: form.method,
             body: data,
             headers: {
@@ -29,12 +29,5 @@ export default class AbstractHandler{
         );
     }
 
-    async updateUI(view, id) {
-        console.log("Updating UI");
-        //unbinding UI event handlers - NEED TO DO
-        await view.loadComponents();
-        //binding UI event handlers
-        view.bindUIEventHandlers();
-        await view.loadUserDetail(id);
-    }
+    async updateUI(view, id) {}
 }
