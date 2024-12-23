@@ -248,3 +248,17 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
             "friend_request": friendship_status,
         }
         return render(request, self.template_name, context)
+    
+class UserUpdateInfoView(auth_mixins.LoginRequiredMixin, generic_views.View):
+    template_name = "user_management/base_app.html"
+
+    def get(self, request, *args, **kwargs):
+        user_update_form = TranscendenceUserUpdateForm(instance=request.user)
+
+        context = {
+            "user_update_form": user_update_form,
+        }
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "user_management/update_info.html", context)
+        return render(request, self.template_name, context)

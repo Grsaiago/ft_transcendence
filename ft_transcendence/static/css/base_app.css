@@ -428,12 +428,15 @@ button {
     font-size: 16px;
 }
 
-
-.col-profile.friends {
-    /* min-width: 160px;
-    max-width: 340px; */
+.custom-file-input {
+    font-size: 14px;
+    margin: auto;
+    
 }
 
+#file-upload-button {
+    color: #2c72a1;
+}
 
 @media (min-width: 574px) {
     .app-container {

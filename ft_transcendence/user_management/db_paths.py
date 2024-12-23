@@ -318,4 +318,4 @@ def update_user(request: HttpRequest):
         for _, errors in update_user_form.errors.items():
             for error in errors:
                 messages.error(request, f"error: {error}")
-    return redirect("user_management:friend_list")
+    return redirect("user_management:profile")

@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth.forms import UserCreationForm, ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q
+from django.forms.widgets import ClearableFileInput
 
 from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
@@ -59,11 +60,24 @@ class TranscendenceUserUpdateForm(UserChangeForm):
     password = None
 
     # # tem que fazer assim pra dar override no widget padrão que tem uma checkbox
-    profile_picture = forms.ImageField(widget=forms.FileInput(), required=False)
+    profile_picture = forms.ImageField(
+        widget=forms.ClearableFileInput(attrs={'class': 'custom-file-input'}), 
+        required=False
+    )
 
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control  form-control-sm', 'autofocus': True})
+    )
+    first_name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control  form-control-sm'})
+    )
+    last_name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control  form-control-sm'}),
+    )
+    
     class Meta(UserChangeForm.Meta):
         model = TrUser
-        fields = ("username", "first_name", "last_name", "profile_picture",)
+        fields = ("username", "first_name", "last_name",)
 
 
 

@@ -1,0 +1,30 @@
+<div class="col col-10 col-sm-9 col-md-8 col-lg-6 col-xl-5 mx-auto">
+    <form class="form-style rounded-4 shadow"
+    action="{% url 'db-user_management:update_user' %}"
+    method="post"
+    enctype="multipart/form-data">
+        {% csrf_token %}
+        <p class="form-title text-center rounded-top-4 py-2 py-md-3 m-0">Update your information!</p>
+        <div class="py-3 py-md-4 px-4 px-md-5">
+            {% for field in user_update_form %}
+            <div class="mb-2 text-center d-flex flex-column">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}<small>{{ field.errors|striptags }}</small>{% endif %}
+            </div>
+            {% endfor %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert text-danger text-center p-0 mb-2 {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            <div class="text-center">
+                <button class="btn btn-custom mt-1" type="submit" value="update">
+                    <p class="btn-custom-name m-0">update</p>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

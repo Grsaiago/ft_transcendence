@@ -3,6 +3,7 @@ import Chat from "./views/chat.js";
 import Friends from "./views/friends.js";
 import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
+import Update_info from "./views/update_info.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 
@@ -23,6 +24,7 @@ const viewsRouter = async () => {
         {path: "/chat/", view: Chat },
         {path: "/friends/", view: Friends },
         {path: "/change_password/", view: Change_password },
+        {path: "/update_info/", view: Update_info },
     ];
 
     const potentialMatches = routes.map(route => {
