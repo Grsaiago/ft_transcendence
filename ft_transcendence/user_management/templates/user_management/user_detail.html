@@ -59,7 +59,7 @@
                                 </form>
                             {% endif %}
                         {% else %}
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Add friend</a>
+                        <a class="text-profile m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Add friend</a>
                         <form action="{% url 'db-user_management:send_friend_request' %}"
                         formType="friendshipForm"
                         method="post"
@@ -74,7 +74,7 @@
                     </div>
                     {% if is_blocked %}
                     <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Unblock user</a>
+                        <a class="text-profile m-0 cursor-pointer text-decoration-none text-nowrap" >Unblock user</a>
                         <form action="{% url 'db-user_management:unblock_user' %}"
                         formType="blockForm"
                         method="post"
@@ -89,7 +89,7 @@
                     </div>
                     {% else %}
                     <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Block user</a>
+                        <a class="text-profile m-0 cursor-pointer text-decoration-none text-nowrap" >Block user</a>
                         <form action="{% url 'db-user_management:block_user' %}"
                         formType="blockForm"
                         method="post"
@@ -104,8 +104,13 @@
                     </div>
                     {% endif %}
                     <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap">Send message</a>
+                        {% if is_friend %}
+                        <a class="text-profile m-0 cursor-pointer text-decoration-none text-nowrap">Send message</a>
+                        <i class="bi bi-send-fill" href="/chat/" data-link></i>
+                        {% else %}
+                        <a class="text-profile disabled m-0 text-decoration-none text-nowrap " >Send message</a>
                         <i class="bi bi-send-fill"></i>
+                        {% endif %}
                     </div>
                 </div>
             </div>

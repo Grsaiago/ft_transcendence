@@ -169,6 +169,11 @@ body {
     cursor: pointer;
 }
 
+.text-profile.disabled {
+    color: grey;
+    pointer-events: none;
+}
+
 button {
     border: none;
     background-color: transparent;
