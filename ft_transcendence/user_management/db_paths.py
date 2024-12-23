@@ -22,6 +22,7 @@ from .forms import (
     UnblockUserForm,
 )
 
+MAX_USER_PFP_SIZE = 1 * 1024 * 1024
 
 # TODO: Esses redirects estão sendo evitados no front, eles só estão aqui
 # pra podermos testar as rotas na página friend_list.
@@ -308,6 +309,13 @@ def get_user_details(request, user_id):
 def update_user(request: HttpRequest):
     post_data = request.POST.copy()
     update_user_form =  TranscendenceUserUpdateForm(post_data, request.FILES, instance=request.user)
+    # verificar o tamanho do arquivo
+    if len(request.FILES.keys()) > 0:
+        total_size = sum(file.size for file in request.FILES.values())
+        print(total_size)
+        if total_size > MAX_USER_PFP_SIZE:
+            messages.error(request, "invalid body size")
+            return redirect("user_management:friend_list")
     if update_user_form.is_valid():
         update_user_form.save()
     else:
