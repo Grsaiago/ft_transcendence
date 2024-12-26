@@ -3,15 +3,19 @@
 <div class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-5">
     <div class="col-play-mode col col-12 col-md-11 col-lg-9 p-0 mx-2 d-flex flex-column rounded-4">
         <p class="title title-play-mode rounded-top-4 text-center m-0 p-2 py-3">Select a game mode</p>
-        <form class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 px-2 py-4" id="gameModeForm" method="post">
+        <form class="d-flex flex-column flex-md-row justify-content-center align-items-center gap-4 px-2 py-4"
+            id="gameModeForm"
+            method="post"
+            formType="localGameForm"
+            api-link>
             {% csrf_token %}
-                <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" name="game_mode" value="{{ GameMode.LOCAL }}" data-link>
+                <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" game_mode="{{ GameMode.LOCAL }}" api-link>
                     <p class="d-flex justify-content-center m-0">Local</p>
                 </button>
-                <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" name="game_mode" value="{{ GameMode.ONLINE }}" data-link>
+                <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" name="game_mode" value="{{ GameMode.ONLINE }}" api-link>
                     <p class="d-flex justify-content-center m-0">Online</p>
                 </button>
-                <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" name="game_mode" value="{{ GameMode.TOURNAMENT }}" data-link>
+                <button class="play-mode-btn rounded-4 col-11 col-sm-9 col-md-3" type="submit" name="game_mode" value="{{ GameMode.TOURNAMENT }}" api-link>
                     <p class="d-flex justify-content-center m-0">Tournament</p>
                 </button>
             </form>

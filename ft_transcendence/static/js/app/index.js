@@ -8,6 +8,7 @@ import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
+import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 
 var view = null;
 
@@ -22,13 +23,13 @@ const navigateTo = url => {
 
 const viewsRouter = async () => {
     const routes = [
-        {path: "/profile/", view: Profile },
-        {path: "/play/", view: Play },
-        {path: "/enter/online/", view: EnterOnline },
-        {path: "/enter/tournament/", view: EnterTournament },
-        {path: "/chat/", view: Chat },
-        {path: "/friends/", view: Friends },
-        {path: "/change_password/", view: Change_password },
+        { path: "/profile/", view: Profile },
+        { path: "/play/", view: Play },
+        { path: "/enter/online/", view: EnterOnline },
+        { path: "/enter/tournament/", view: EnterTournament },
+        { path: "/chat/", view: Chat },
+        { path: "/friends/", view: Friends },
+        { path: "/change_password/", view: Change_password },
     ];
 
     const potentialMatches = routes.map(route => {
@@ -60,27 +61,21 @@ const viewsRouter = async () => {
 
 const handlersRouter = async (form) => {
     const routes = [
-        {formType: "friendshipForm", handler: friendshipFormsHandler },
-        {formType: "blockForm", handler: userBlockFormsHandler },
+        { formType: "friendshipForm", handler: friendshipFormsHandler },
+        { formType: "blockForm", handler: userBlockFormsHandler },
+        { formType: "localGameForm", handler: localGameFormsHandler },
     ];
 
-    const potentialMatches = routes.map(route => {
-        return {
-            route: route,
-            isMatch: form.getAttribute('formType') === route.formType,
-        };
-    });
-
-    let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+    let match = routes.find((route) => form.getAttribute('formType') === route.formType);
 
     if (!match) {
-        return ;
+        return;
     }
-    
-    var handler = new match.route.handler();
+
+    const handler = new match.handler();
     await handler.postForm(form);
-    var user_id = form[1].value;
-    await handler.updateUI(view, user_id);
+    const context = handler.getContext(form);
+    await handler.updateUI(view, context);
 };
 
 window.addEventListener("popstate", viewsRouter);
