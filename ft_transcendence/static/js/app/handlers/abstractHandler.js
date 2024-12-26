@@ -14,6 +14,7 @@ export default class AbstractHandler{
             body: data,
             headers: {
                 "X-Requested-With": "XMLHttpRequest",
+                "Content-Type": "application/x-www-form-urlencoded",
                 },
             })
             .then(response => {

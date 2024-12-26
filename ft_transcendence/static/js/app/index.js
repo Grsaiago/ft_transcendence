@@ -6,6 +6,7 @@ import Change_password from "./views/change_password.js";
 import Update_info from "./views/update_info.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
+import profileFormsHandler from "./handlers/profileFormsHandler.js";
 
 var view = null;
 
@@ -58,6 +59,8 @@ const handlersRouter = async (form) => {
     const routes = [
         {formType: "friendshipForm", handler: friendshipFormsHandler },
         {formType: "blockForm", handler: userBlockFormsHandler },
+        {formType: "profileForm", handler: profileFormsHandler },
+        
     ];
 
     const potentialMatches = routes.map(route => {
