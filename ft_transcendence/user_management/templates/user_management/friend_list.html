@@ -12,6 +12,15 @@
         <button type="submit">Logout</button>
     </form>
     <h1>Hello {{ user.username }}</h1>
+    <!-- update user's own info -->
+    <form action="{% url 'db-user_management:update_user' %}"
+          method="post"
+          enctype="multipart/form-data"
+          style="display:inline">
+        {% csrf_token %}
+        {{ user_update_form.as_p }}
+        <button type="submit">Update</button>
+    </form>
     {% if user.profile_picture %}
         <img src="{{ user.profile_picture.url }}" alt="Profile Image">
     {% endif %}

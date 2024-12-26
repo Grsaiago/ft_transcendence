@@ -4,7 +4,7 @@ import AbstractView from "./abstractView.js";
 export default class Change_password extends AbstractView {
     constructor() {
         super();
-        this.setTitle("change_password");
+        this.setTitle("Change_password");
     }
 
     async getHtml() {
@@ -22,5 +22,13 @@ export default class Change_password extends AbstractView {
             console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
+    }
+
+    bindUIEventHandlers() {
+        console.log('Loading Change password event handlers...');
+    }
+
+    removeUIEventHandlers() {
+        console.log('Removing Change password event handlers...');
     }
 }

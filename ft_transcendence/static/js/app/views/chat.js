@@ -12,7 +12,7 @@ export default class Chat extends AbstractView {
         this.atualizaChat = this.atualizaChat.bind(this);
         this.handleChatChange = this.handleChatChange.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
-        this.sendMessageButton = this.sendMessageButton.bind(this);
+        this.sendMessageEnterKey = this.sendMessageEnterKey.bind(this);
     }
 
     async getHtml() {
@@ -45,7 +45,7 @@ export default class Chat extends AbstractView {
         sendButton.addEventListener('click', this.sendMessage);
 
         var input = document.getElementById('chat-message-input');
-        input.addEventListener('keydown', this.sendMessageButton);
+        input.addEventListener('keydown', this.sendMessageEnterKey);
 
         document.addEventListener('chatMessageReceived', this.handleMessageUI);
     }
@@ -98,7 +98,7 @@ export default class Chat extends AbstractView {
             selectedChat.classList.remove('selected');
     }
 
-    sendMessageButton(event) {
+    sendMessageEnterKey(event) {
         if (event.key === "Enter")
             this.sendMessage();
     }
