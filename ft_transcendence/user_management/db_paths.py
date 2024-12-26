@@ -1,6 +1,7 @@
 from logging import log
 from django import http
 from django.urls import reverse
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.db.models import Q
+from django.contrib.auth import update_session_auth_hash
 from .models import Friendship, TrUser, BlockedUsers, FriendRequest
 
 
@@ -20,6 +22,7 @@ from .forms import (
     RemoveFriendshipForm,
     TranscendenceUserUpdateForm,
     UnblockUserForm,
+    CustomPasswordChangeForm,
 )
 
 
@@ -319,3 +322,19 @@ def update_user(request: HttpRequest):
             for error in errors:
                 messages.error(request, f"error: {error}")
     return redirect("user_management:profile")
+
+@require_POST
+@login_required
+def change_password(request: HttpRequest):
+    # Cria uma instância do formulário de alteração de senha com os dados enviados
+    form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+    
+    if form.is_valid():
+        # Salva a nova senha e atualiza a sessão do usuário
+        form.save()
+    else:
+        for _, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"error: {error}")
+    return redirect("user_management:profile")
+   
