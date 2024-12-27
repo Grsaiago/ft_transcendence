@@ -6,7 +6,7 @@ export default class friendshipFormsHandler extends AbstractHandler {
         this.updateUI = this.updateUI.bind(this);
     }
 
-    async updateUI(view, id) {
+    async updateUI(view, id, response) {
         //unbinding UI event handlers - NEED TO DO
         await view.loadComponents();
         //binding UI event handlers

@@ -6,7 +6,7 @@ export default class userBlockFormsHandler extends AbstractHandler {
         this.updateUI = this.updateUI.bind(this);
     }
 
-    async updateUI(view, id) {
+    async updateUI(view, id, response) {
         await view.loadUserDetail(id);
     }
 }

@@ -14,7 +14,7 @@ var chatManager = new ChatManager();
 
 chatManager.loadEventHandlers();
 
-const navigateTo = url => {
+export const navigateTo = url => {
     history.pushState(null, null, url);
     viewsRouter();
 };
@@ -77,9 +77,10 @@ const handlersRouter = async (form) => {
     }
     
     var handler = new match.route.handler();
-    await handler.postForm(form);
+    const response = await handler.postForm(form);
+    
     var user_id = form[1].value;
-    await handler.updateUI(view, user_id);
+    await handler.updateUI(view, user_id, response);
 };
 
 window.addEventListener("popstate", viewsRouter);

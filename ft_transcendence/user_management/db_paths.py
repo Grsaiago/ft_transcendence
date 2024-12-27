@@ -317,11 +317,12 @@ def update_user(request: HttpRequest):
     update_user_form =  TranscendenceUserUpdateForm(post_data, request.FILES, instance=request.user)
     if update_user_form.is_valid():
         update_user_form.save()
+        return HttpResponse(status=200)
     else:
         for _, errors in update_user_form.errors.items():
             for error in errors:
                 messages.error(request, f"error: {error}")
-    return redirect("user_management:profile")
+        return HttpResponse(status=400) 
 
 @require_POST
 @login_required
@@ -332,9 +333,11 @@ def change_password(request: HttpRequest):
     if form.is_valid():
         # Salva a nova senha e atualiza a sessão do usuário
         form.save()
+        update_session_auth_hash(request, request.user)
+        return HttpResponse(status=200)
     else:
         for _, errors in form.errors.items():
             for error in errors:
                 messages.error(request, f"error: {error}")
-    return redirect("user_management:profile")
+        return HttpResponse(status=400) 
    

@@ -20,15 +20,18 @@ export default class AbstractHandler{
             .then(response => {
                 if (response.ok) {
                     console.log("Success:", data);
+                    return response;
                 } else {
                     console.error("Failed to submit form:", response.statusText);
+                    return response;
                 }
             })
             .catch(error => {
                 console.error("Error:", error);
+                throw error;
             }
         );
     }
 
-    async updateUI(view, id) {}
+    async updateUI(view, id, response) {}
 }
