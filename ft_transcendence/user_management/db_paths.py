@@ -319,9 +319,7 @@ def update_user(request: HttpRequest):
         update_user_form.save()
         return HttpResponse(status=200)
     else:
-        for _, errors in update_user_form.errors.items():
-            for error in errors:
-                messages.error(request, f"error: {error}")
+        messages.error(request, "There was an error with your submission.")
         return HttpResponse(status=400) 
 
 @require_POST
@@ -331,13 +329,15 @@ def change_password(request: HttpRequest):
     form = CustomPasswordChangeForm(user=request.user, data=request.POST)
     
     if form.is_valid():
-        # Salva a nova senha e atualiza a sessão do usuário
         form.save()
         update_session_auth_hash(request, request.user)
         return HttpResponse(status=200)
     else:
-        for _, errors in form.errors.items():
-            for error in errors:
-                messages.error(request, f"error: {error}")
+        if form.has_error('old_password'):
+            messages.error(request, "Invalid old password.")
+        elif form.has_error('new_password2'):
+            messages.error(request, "Invalid new password.")
+        else:
+            messages.error(request, "There was an error with your submission.")
         return HttpResponse(status=400) 
    
