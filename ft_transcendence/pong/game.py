@@ -11,6 +11,7 @@ LEFT = "left"
 UP = "up"
 DOWN = "down"
 STOP = "stop"
+WINNER_SCORE = 3
 
 
 class BallPosition(TypedDict):
@@ -168,7 +169,7 @@ class PongGame:
         Updates the score for the given side and checks if a player has won.
         """
         self.score[side] += 1
-        if self.score[side] == 3:
+        if self.score[side] == WINNER_SCORE:
             self.winner = side
 
     async def paddle_on(self, paddle: str, direction: str) -> None:
