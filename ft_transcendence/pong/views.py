@@ -33,7 +33,11 @@ class PongSelectGameMode(TemplateView):
             room = PongRoom.objects.create(
                 name=room_name, game_mode=GameMode.LOCAL.value
             )
-            return redirect("pong:pongroom", room_id=room.id)
+            response = JsonResponse({
+                "message": "Sala criada",
+                "room_id": room.id,
+            })
+            return response
         else:
             logger.info(f"Redirecting to PongEnterView with game_mode: {game_mode}")
             return redirect("pong:pongenter", game_mode=game_mode)

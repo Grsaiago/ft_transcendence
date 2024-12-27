@@ -11,7 +11,7 @@ export default class userBlockFormsHandler extends AbstractHandler {
         await view.loadUserDetail(user_id);
     }
 
-    getContext(form) {
+    getContext(form, _response) {
         return {
             user_id: form[1].value
         }

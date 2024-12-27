@@ -73,8 +73,8 @@ const handlersRouter = async (form) => {
     }
 
     const handler = new match.handler();
-    await handler.postForm(form);
-    const context = handler.getContext(form);
+    const jsonResponse = await handler.postForm(form);
+    const context = handler.getContext(form, jsonResponse);
     await handler.updateUI(view, context);
 };
 
