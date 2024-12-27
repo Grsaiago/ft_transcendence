@@ -25,6 +25,10 @@ from .forms import (
     CustomPasswordChangeForm,
 )
 
+MAX_USER_PFP_SIZE = 1 * 1024 * 1024
+
+# TODO: Esses redirects estão sendo evitados no front, eles só estão aqui
+# pra podermos testar as rotas na página friend_list.
 
 @require_POST
 @login_required
@@ -34,7 +38,6 @@ def send_friend_request(request: HttpRequest):
     form = FriendRequestForm(post_data)
     if form.is_valid():
         form.save()
-        messages.success(request, "Friend request sent successfully!")
     else:
         for _, errors in form.errors.items():
             for error in errors:
@@ -52,7 +55,6 @@ def cancel_friend_request(request: HttpRequest):
     if cancel_form.is_valid():
         # Lógica de recusar o pedido de amizade tá dentro do form
         cancel_form.save()
-        messages.success(request, "Friend request canceled successfully!")
     else:
         for _, errors in cancel_form.errors.items():
             for error in errors:
@@ -70,7 +72,6 @@ def accept_friend_request(request: HttpRequest):
     if accept_form.is_valid():
         # Lógica de aceitar o pedido de amizade tá dentro do form
         accept_form.save()
-        messages.success(request, "Friend request accepted successfully!")
     else:
         for _, errors in accept_form.errors.items():
             for error in errors:
@@ -88,7 +89,6 @@ def refuse_friend_request(request: HttpRequest):
     if refuse_form.is_valid():
         # Lógica de recusar o pedido de amizade tá dentro do form
         refuse_form.save()
-        messages.success(request, "Friend request refused successfully!")
     else:
         for _, errors in refuse_form.errors.items():
             for error in errors:
@@ -106,7 +106,6 @@ def remove_friendship(request: HttpRequest):
     if remove_friendship_form.is_valid():
         # Lógica de recusar o pedido de amizade tá dentro do form
         remove_friendship_form.save()
-        messages.success(request, "Friendship removed successfully!")
     else:
         for _, errors in remove_friendship_form.errors.items():
             for error in errors:
@@ -124,7 +123,6 @@ def block_user(request: HttpRequest):
     if block_user_form.is_valid():
         # Lógica de bloquear o usuário tá na model e o form chama
         block_user_form.save()
-        messages.success(request, "User blocked successfully!")
     else:
         for _, errors in block_user_form.errors.items():
             for error in errors:
@@ -313,8 +311,14 @@ def get_user_details(request, user_id):
 @login_required
 def update_user(request: HttpRequest):
     post_data = request.POST.copy()
-    print(post_data)
     update_user_form =  TranscendenceUserUpdateForm(post_data, request.FILES, instance=request.user)
+    # verificar o tamanho do arquivo
+    if len(request.FILES.keys()) > 0:
+        total_size = sum(file.size for file in request.FILES.values())
+        print(total_size)
+        if total_size > MAX_USER_PFP_SIZE:
+            messages.error(request, "invalid body size")
+            return redirect("user_management:friend_list")
     if update_user_form.is_valid():
         update_user_form.save()
         return HttpResponse(status=200)
