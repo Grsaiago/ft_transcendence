@@ -1,4 +1,6 @@
 import AbstractHandler from "./abstractHandler.js";
+import { navigateTo } from "../index.js";
+
 export default class localGameFormsHandler extends AbstractHandler {
     constructor() {
         super();
@@ -35,6 +37,7 @@ export default class localGameFormsHandler extends AbstractHandler {
 
     async updateUI(view, context) {
         console.log(`Load /room/${context}`);
+        navigateTo(`/room/${context}/`);
     }
 
     getContext(_form, response) {

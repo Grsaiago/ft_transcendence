@@ -9,6 +9,7 @@ import Change_password from "./views/change_password.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
+import Room from "./views/roomView.js";
 
 var view = null;
 
@@ -16,12 +17,13 @@ var chatManager = new ChatManager();
 
 chatManager.loadEventHandlers();
 
-const navigateTo = url => {
+export const navigateTo = (url) => {
+    //tratamento de url relativa para absoluta
     history.pushState(null, null, url);
-    viewsRouter();
+    viewsRouter(url);
 };
 
-const viewsRouter = async () => {
+const viewsRouter = async (url) => {
     const routes = [
         { path: "/profile/", view: Profile },
         { path: "/play/", view: Play },
@@ -30,12 +32,17 @@ const viewsRouter = async () => {
         { path: "/chat/", view: Chat },
         { path: "/friends/", view: Friends },
         { path: "/change_password/", view: Change_password },
+        { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
     ];
 
     const potentialMatches = routes.map(route => {
+        const isMatch = route.regex
+            ? route.regex.test(location.pathname) // Use regex for dynamic routes
+            : location.pathname === route.path;
+
         return {
             route: route,
-            isMatch: location.pathname === route.path
+            isMatch: isMatch,
         };
     });
 
@@ -53,7 +60,7 @@ const viewsRouter = async () => {
     }
 
     view = new match.route.view();
-    document.querySelector("#app").innerHTML = await view.getHtml();
+    document.querySelector("#app").innerHTML = await view.getHtml(url);
     await view.loadComponents();
     view.bindUIEventHandlers();
 
