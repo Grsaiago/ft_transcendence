@@ -9,7 +9,7 @@ import Change_password from "./views/change_password.js";
 import Update_info from "./views/update_info.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
-import UpdateInfoFormsHandler from "./handlers/UpdateInfoFormsHandler.js";
+import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import Room from "./views/roomView.js";
 
