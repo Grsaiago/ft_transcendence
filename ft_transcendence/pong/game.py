@@ -1,4 +1,5 @@
 import random
+import asyncio
 from typing import Dict, Optional, TypedDict
 
 THICKNESS = 15
@@ -12,7 +13,6 @@ UP = "up"
 DOWN = "down"
 STOP = "stop"
 WINNER_SCORE = 3
-
 
 class BallPosition(TypedDict):
     x: float
@@ -163,6 +163,7 @@ class PongGame:
         self.paddle_right: Paddle = Paddle(width, height, RIGHT)
         self.score: Dict[str, int] = {"left": 0, "right": 0}
         self.winner: Optional[str] = None
+        self.lock: asyncio.Lock = asyncio.Lock()
 
     async def update_score(self, side: str) -> None:
         """
@@ -180,10 +181,11 @@ class PongGame:
             paddle (str): The paddle to move ('left' or 'right').
             direction (str): The direction to move the paddle ('up' or 'down').
         """
-        if paddle == "left":
-            await self.paddle_left.set_speed(direction)
-        if paddle == "right":
-            await self.paddle_right.set_speed(direction)
+        async with self.lock:
+            if paddle == "left":
+                await self.paddle_left.set_speed(direction)
+            if paddle == "right":
+                await self.paddle_right.set_speed(direction)
 
     async def paddle_off(self, paddle: str) -> None:
         """
@@ -256,11 +258,12 @@ class PongGame:
         Checks for collisions and moves the objects in the game if the game has no winner.
         Returns the current state of the game.
         """
-        await self.check_colisions()
-        # just do next move if the game is not finished, so don't have a winner
-        if not self.has_winner():
-            await self.move_objects()
-        return await self.get_game_state()
+        async with self.lock:
+            await self.check_colisions()
+            # just do next move if the game is not finished, so don't have a winner
+            if not self.has_winner():
+                await self.move_objects()
+            return await self.get_game_state()
 
     def has_winner(self) -> bool:
         """
