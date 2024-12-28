@@ -7,6 +7,32 @@ export default class profileFormsHandler extends AbstractHandler {
         this.updateUI = this.updateUI.bind(this);
     }
 
+    async postForm(form) {
+        const formData = new FormData(form);
+
+        return fetch(form.action, {
+            method: form.method,
+            body: formData,
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("Success:", data);
+                    return response;
+                } else {
+                    console.error("Failed to submit form:", response.statusText);
+                    return response;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                throw error;
+            }
+        );
+    }
+
     async updateUI(view, id, response) {
         view.bindUIEventHandlers();
         if (response.ok)

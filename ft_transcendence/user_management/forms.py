@@ -60,7 +60,7 @@ class TranscendenceUserUpdateForm(UserChangeForm):
     password = None
 
     profile_picture = forms.ImageField(
-        widget=forms.ClearableFileInput(attrs={'class': 'custom-file-input'}), 
+        widget=forms.FileInput(attrs={'class': 'custom-file-input'}), 
         required=False
     )
 
