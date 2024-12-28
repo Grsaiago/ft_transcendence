@@ -21,6 +21,7 @@ daphne = "^4.1.2"
 django-redis = "^5.4.0"
 redis = "^5.0.8"
 pillow = "^11.0.0"
+whitenoise = "^6.8.2"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1.1"
