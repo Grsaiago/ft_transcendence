@@ -42,14 +42,9 @@ class PongSelectGameMode(TemplateView):
             return redirect("pong:pongenter", game_mode=game_mode)
 
 
-<<<<<<< HEAD
 class PongEnterView(TemplateView):
     template_name = "../../user_management/templates/user_management/base_app.html"
     # template_name = "pong/enter.html"
-=======
-class PongEnterView(LoginRequiredMixin, TemplateView):
-    template_name = "pong/enter.html"
->>>>>>> 0c3073f2ef9256718df55a6149679986e1ddb54e
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
