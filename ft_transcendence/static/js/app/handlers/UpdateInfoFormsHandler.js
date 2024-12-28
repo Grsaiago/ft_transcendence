@@ -1,7 +1,7 @@
 import AbstractHandler from "./abstractHandler.js";
 import { navigateTo } from "../index.js";
 
-export default class profileFormsHandler extends AbstractHandler {
+export default class UpdateInfoFormsHandler extends AbstractHandler {
     constructor() {
         super();
         this.updateUI = this.updateUI.bind(this);
@@ -19,7 +19,7 @@ export default class profileFormsHandler extends AbstractHandler {
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("Success:", data);
+                    console.log("Success:", formData);
                     return response;
                 } else {
                     console.error("Failed to submit form:", response.statusText);
@@ -33,11 +33,15 @@ export default class profileFormsHandler extends AbstractHandler {
         );
     }
 
-    async updateUI(view, id, response) {
+    async updateUI(view, context) {
         view.bindUIEventHandlers();
-        if (response.ok)
+        if (context.ok)
             navigateTo("/profile/");
         else
-            navigateTo("/change_password/");
+            navigateTo("/update_info/");
+    }
+
+    getContext(_form, response) {
+        return response;
     }
 }
