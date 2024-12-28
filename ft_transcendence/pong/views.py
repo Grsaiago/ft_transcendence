@@ -15,7 +15,6 @@ from .models import GameMode, Match, PongRoom, Tournament, TournamentParticipant
 
 logger = logging.getLogger(__name__)
 
-
 class PongSelectGameMode(TemplateView):
     template_name = "../../user_management/templates/user_management/base_app.html"
 
