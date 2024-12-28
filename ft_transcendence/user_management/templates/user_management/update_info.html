@@ -12,7 +12,6 @@
             <div class="mb-2 text-center d-flex flex-column">
                 {{ field.label_tag }}
                 {{ field }}
-                {% if field.errors %}<small>{{ field.errors|striptags }}</small>{% endif %}
             </div>
             {% endfor %}
             {% if messages %}

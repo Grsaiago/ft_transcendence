@@ -317,8 +317,8 @@ def update_user(request: HttpRequest):
         total_size = sum(file.size for file in request.FILES.values())
         print(total_size)
         if total_size > MAX_USER_PFP_SIZE:
-            messages.error(request, "invalid body size")
-            return redirect("user_management:friend_list")
+            messages.error(request, "invalid body size.")
+            return HttpResponse(status=400) 
     if update_user_form.is_valid():
         update_user_form.save()
         return HttpResponse(status=200)
