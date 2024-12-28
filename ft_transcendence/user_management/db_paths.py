@@ -1,6 +1,7 @@
 from logging import log
 from django import http
 from django.urls import reverse
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.db.models import Q
+from django.contrib.auth import update_session_auth_hash
 from .models import Friendship, TrUser, BlockedUsers, FriendRequest
 
 
@@ -20,6 +22,7 @@ from .forms import (
     RemoveFriendshipForm,
     TranscendenceUserUpdateForm,
     UnblockUserForm,
+    CustomPasswordChangeForm,
 )
 
 MAX_USER_PFP_SIZE = 1 * 1024 * 1024
@@ -314,12 +317,31 @@ def update_user(request: HttpRequest):
         total_size = sum(file.size for file in request.FILES.values())
         print(total_size)
         if total_size > MAX_USER_PFP_SIZE:
-            messages.error(request, "invalid body size")
-            return redirect("user_management:friend_list")
+            messages.error(request, "invalid body size.")
+            return HttpResponse(status=400) 
     if update_user_form.is_valid():
         update_user_form.save()
+        return HttpResponse(status=200)
     else:
-        for _, errors in update_user_form.errors.items():
-            for error in errors:
-                messages.error(request, f"error: {error}")
-    return redirect("user_management:friend_list")
+        messages.error(request, "There was an error with your submission.")
+        return HttpResponse(status=400) 
+
+@require_POST
+@login_required
+def change_password(request: HttpRequest):
+    # Cria uma instância do formulário de alteração de senha com os dados enviados
+    form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+    
+    if form.is_valid():
+        form.save()
+        update_session_auth_hash(request, request.user)
+        return HttpResponse(status=200)
+    else:
+        if form.has_error('old_password'):
+            messages.error(request, "Invalid old password.")
+        elif form.has_error('new_password2'):
+            messages.error(request, "Invalid new password.")
+        else:
+            messages.error(request, "There was an error with your submission.")
+        return HttpResponse(status=400) 
+   

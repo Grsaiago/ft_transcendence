@@ -109,15 +109,6 @@ class UserChangePasswordView(
     success_url = reverse_lazy("user_management:homepage")
     form_class = CustomPasswordChangeForm
 
-    def form_invalid(self, form):
-        if form.has_error('old_password'):
-            messages.error(self.request, "Invalid old password.")
-
-        elif form.has_error('new_password2'):
-            messages.error(self.request, "The new passwords do not match.")
-            
-        return self.render_to_response(self.get_context_data(form=form))
-
     def get(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             context = self.get_context_data()
@@ -247,4 +238,18 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
             "is_friend": is_friend,
             "friend_request": friendship_status,
         }
+        return render(request, self.template_name, context)
+    
+class UserUpdateInfoView(auth_mixins.LoginRequiredMixin, generic_views.View):
+    template_name = "user_management/base_app.html"
+
+    def get(self, request, *args, **kwargs):
+        user_update_form = TranscendenceUserUpdateForm(instance=request.user)
+
+        context = {
+            "user_update_form": user_update_form,
+        }
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "user_management/update_info.html", context)
         return render(request, self.template_name, context)

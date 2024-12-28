@@ -6,8 +6,11 @@ import Chat from "./views/chat.js";
 import Friends from "./views/friends.js";
 import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
+import Update_info from "./views/update_info.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
+import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
+import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import Room from "./views/roomView.js";
 
@@ -32,6 +35,7 @@ const viewsRouter = async (url) => {
         { path: "/chat/", view: Chat },
         { path: "/friends/", view: Friends },
         { path: "/change_password/", view: Change_password },
+        {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
     ];
 
@@ -62,6 +66,8 @@ const handlersRouter = async (form) => {
         { formType: "friendshipForm", handler: friendshipFormsHandler },
         { formType: "blockForm", handler: userBlockFormsHandler },
         { formType: "localGameForm", handler: localGameFormsHandler },
+        { formType: "updateInfoForm", handler: UpdateInfoFormsHandler},
+        { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
     ];
 
     let match = routes.find((route) => form.getAttribute('formType') === route.formType);
@@ -71,8 +77,8 @@ const handlersRouter = async (form) => {
     }
 
     const handler = new match.handler();
-    const jsonResponse = await handler.postForm(form);
-    const context = handler.getContext(form, jsonResponse);
+    const Response = await handler.postForm(form);
+    const context = handler.getContext(form, Response);
     await handler.updateUI(view, context);
 };
 
