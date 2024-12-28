@@ -183,6 +183,12 @@ button {
     max-width: 340px;
 }
 
+.col-room {
+    background-color: var(--cor-2);
+    overflow: hidden;
+    /* max-width: 340px; */
+}
+
 .col-profile {
     min-width: 160px;
 }
@@ -254,6 +260,10 @@ button {
     width: 20px;
     height: 20px;
     background-color: var(--cor-5);
+}
+
+.friend-name {
+    color: var(--cor-5);
 }
 
 .friend-name:hover {
@@ -410,6 +420,12 @@ button {
     font-size: 12px;
 }
 
+.btn-custom-name-enter {
+    color: #fff;
+    font-family: "Arcade Rounded", sans-serif;
+    font-size: 10px;
+}
+
 .form-control {
     font-family: 'LT Galaxy Reverse', sans-serif;
     font-weight: 500;
@@ -429,11 +445,96 @@ button {
 }
 
 
-.col-profile.friends {
-    /* min-width: 160px;
-    max-width: 340px; */
+/* jogar */
+
+.col-play-mode {
+    background-color: var(--cor-2);
 }
 
+.title-play-mode {
+    font-size: 17px;
+}
+
+.play-mode-btn {
+    background-color: var(--cor-6);
+    color: var(--cor-4);
+    font-size: 15px;
+    font-weight: 900;
+    height: 60px;
+    min-width: 176px;
+    border: 2px solid transparent;
+    padding: 0 16px;
+}
+
+.play-mode-btn:hover {
+    background-color: #ececec;
+    color: #156181;
+    border: 2px solid #ececec; /* Adiciona borda sólida */
+    box-shadow: 
+        -0.3px -0.3px 0.2em #ececec,
+        0.3px -0.3px 0.2em #ececec,
+        -0.3px 0.3px 0.2em #ececec,
+        0.3px 0.3px 0.2em #ececec; /* Efeito borrado */
+}
+
+.enter-box-background {
+    background-color: var(--cor-6);
+}
+.enter-box {
+    height: 106px;
+    overflow-y: auto;
+}
+
+.enter-box::-webkit-scrollbar {
+    width: 8px; 
+}
+
+.enter-box::-webkit-scrollbar-thumb {
+    background: var(--cor-1);
+    border-radius: 10px; 
+}
+
+.enter-box::-webkit-scrollbar-thumb:hover {
+    background: var(--cor-1);
+}
+
+.enter{
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 1.5px;
+}
+
+.enter:hover {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    background-color: var(--cor-1);
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+}
+
+.enter-name {
+    color: var(--cor-5);
+}
+
+.enter-name:hover {
+    font-weight: 900;
+    color: var(--cor-4);
+    cursor: pointer;
+}
+
+.enter-title {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    color: var(--cor-5);
+    text-align: center;
+}
+
+.create-room-box {
+    background-color: var(--cor-6);
+}
 
 @media (min-width: 574px) {
     .app-container {
@@ -474,6 +575,10 @@ button {
         min-width: 220px;
     }
 
+    .profile-img.friends {
+        display: block;
+    }
+
     .col-profile.friends {
         min-width: 160px;
     }
@@ -485,10 +590,6 @@ button {
     .profile-img {
         width: 200px;
         height: 200px;
-    }
-
-    .profile-img.friends {
-        display: block;
     }
 
     .text-profile {
@@ -519,6 +620,10 @@ button {
     .col-friends,
     .col-chat {
         height: 480px;
+    }
+
+    .col-room {
+        height: 420px;
     }
 
     .col-friends.friends {
@@ -561,6 +666,39 @@ button {
     .btn-custom {
         font-size: 16px;
     }
+
+    .title-play-mode {
+        font-size: 18px;
+    }
+    
+    .play-mode-btn {
+        font-size: 16px;
+        height: 80px;
+    }
+
+    .enter-box-background {
+        height: 240px;
+    }
+
+    .enter-box {
+        height: 200px;
+    }
+}
+
+@media (min-width: 992px) {
+
+    .friends-box.friends {
+        height: 312px;
+    }
+
+    .col-friends.friends {
+        height: 420px;
+    }
+
+    .title {
+        font-size: 16px;
+    }
+
 }
 
 @media (min-width: 992px) {
@@ -592,10 +730,30 @@ button {
     
     .friends-box.friends {
         height: 352px;
+    .col-friends.friends {
+        height: 460px;
+        min-width: 220px;
+    }
+    
+    .friends-box.friends {
+        height: 352px;
     }
 
     .history-box {
         height: 200px;
+    }
+
+    .title-play-mode {
+        font-size: 20px;
+    }
+    
+    .play-mode-btn {
+        font-size: 18px;
+        height: 80px;
+    }
+
+    .enter-box-background {
+        height: 240px;
     }
 
     .profile-div {

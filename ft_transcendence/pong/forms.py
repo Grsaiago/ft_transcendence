@@ -13,9 +13,10 @@ class PongRoomForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "class": "pong-room-form-input",
-                    "placeholder": "Crie um nome de sala",
-                    "title": "Escolha um nome para a sala. Tamanho máximo: 50 caracteres.",
+                    "class": "form-control rounded-5 border-0",
+                    "placeholder": "Choose a name",
+                    "title": "room-name.",
+                    "maxlength": "50",
                 }
             ),
         }
@@ -31,9 +32,10 @@ class TournamentForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "class": "pong-room-form-input",
-                    "placeholder": "Crie um nome de torneio",
-                    "title": "Escolha um nome para o torneio. Tamanho máximo: 50 caracteres.",
+                    "class": "form-control rounded-5 border-0",
+                    "placeholder": "Choose a name",
+                    "title": "tournament-name",
+                    "maxlength": "50",
                 }
             ),
         }
