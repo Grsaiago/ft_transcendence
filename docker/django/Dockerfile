@@ -18,7 +18,8 @@ FROM python:3.12.1-bullseye AS image
 RUN apt-get update && apt-get install -y \
 	curl \
 	build-essential \
-	libpq-dev
+	libpq-dev \
+	gettext
 
 WORKDIR /app
 
@@ -30,7 +31,13 @@ WORKDIR /app/ft_transcendence
 
 COPY ./ft_transcendence/ .
 
-ENTRYPOINT [ "daphne", "-b", "0.0.0.0", "-p", "8000", "ft_transcendence.asgi:application"]
+COPY ./docker/django/entrypoint.sh ./
+
+RUN chmod +x ./entrypoint.sh
+
+# TODO: Make entrypoint into a script for initialization, the script will run migrations, collect static, apply translations etc etc
+# AND THEN RUN THE BELOW ENTRYPOINT USING EXEC IN THE SHELLSCRIPT
+ENTRYPOINT ["./entrypoint.sh"]
 
 # # Single stage with final build including poetry
 # FROM python:3.12.1-bullseye
