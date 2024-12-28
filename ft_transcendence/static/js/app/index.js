@@ -4,7 +4,7 @@ import EnterOnline from "./views/enter_online.js";
 import EnterTournament from "./views/enter_tournament.js";
 import Chat from "./views/chat.js";
 import Friends from "./views/friends.js";
-import ChatManager from "./managers/ChatManager.js";
+import WebSocketManager from "./managers/WebSocketManager.js";
 import Change_password from "./views/change_password.js";
 import Update_info from "./views/update_info.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
@@ -16,9 +16,9 @@ import Room from "./views/roomView.js";
 
 var view = null;
 
-var chatManager = new ChatManager();
+var wSManager = new WebSocketManager();
 
-chatManager.loadEventHandlers();
+wSManager.chatManager.loadEventHandlers();
 
 export const navigateTo = (url) => {
     //tratamento de url relativa para absoluta
