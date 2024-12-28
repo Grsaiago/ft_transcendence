@@ -94,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
+            console.log("data-link: " + e.target.href);
             navigateTo(e.target.href);
         }
 
