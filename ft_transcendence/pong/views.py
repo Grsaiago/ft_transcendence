@@ -52,9 +52,6 @@ class PongEnterView(TemplateView):
 
         logger.info(f"Pong enter view game_mode: {game_mode}")
 
-        if not game_mode:
-            return redirect("pong:selectmode")
-
         context["game_mode"] = game_mode
         context["GameMode"] = GameMode.as_dict()
 
