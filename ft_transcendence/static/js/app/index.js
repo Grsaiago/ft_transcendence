@@ -13,7 +13,6 @@ import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
 import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import Room from "./views/roomView.js";
-import WebSocketManager from "./managers/WebSocketManager.js";
 
 var view = null;
 
