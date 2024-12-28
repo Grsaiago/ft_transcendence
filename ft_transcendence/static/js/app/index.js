@@ -35,18 +35,9 @@ const viewsRouter = async (url) => {
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
     ];
 
-    const potentialMatches = routes.map(route => {
-        const isMatch = route.regex
-            ? route.regex.test(location.pathname) // Use regex for dynamic routes
-            : location.pathname === route.path;
-
-        return {
-            route: route,
-            isMatch: isMatch,
-        };
-    });
-
-    let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+    let match = routes.find((route) =>  route.regex
+        ? route.regex.test(location.pathname) // Use regex for dynamic routes
+        : location.pathname === route.path);
 
     if (!match) {
         match = {
@@ -59,7 +50,7 @@ const viewsRouter = async (url) => {
         view.removeUIEventHandlers();
     }
 
-    view = new match.route.view();
+    view = new match.view();
     document.querySelector("#app").innerHTML = await view.getHtml(url);
     await view.loadComponents();
     view.bindUIEventHandlers();
