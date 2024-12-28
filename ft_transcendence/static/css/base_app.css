@@ -575,6 +575,10 @@ button {
         min-width: 220px;
     }
 
+    .profile-img.friends {
+        display: block;
+    }
+
     .col-profile.friends {
         min-width: 160px;
     }
@@ -586,10 +590,6 @@ button {
     .profile-img {
         width: 200px;
         height: 200px;
-    }
-
-    .profile-img.friends {
-        display: block;
     }
 
     .text-profile {
@@ -701,12 +701,35 @@ button {
 
 }
 
+@media (min-width: 992px) {
+
+    .friends-box.friends {
+        height: 312px;
+    }
+
+    .col-friends.friends {
+        height: 420px;
+    }
+
+    .title {
+        font-size: 16px;
+    }
+
+}
+
 @media (min-width: 1200px) {
     .profile-img {
         width: 240px;
         height: 240px;
     }
 
+    .col-friends.friends {
+        height: 460px;
+        min-width: 220px;
+    }
+    
+    .friends-box.friends {
+        height: 352px;
     .col-friends.friends {
         height: 460px;
         min-width: 220px;

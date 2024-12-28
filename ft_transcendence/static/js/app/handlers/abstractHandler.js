@@ -29,7 +29,7 @@ export default class AbstractHandler {
             );
     }
 
-    async updateUI(view, context) { }
+    async updateUI(_view, _context) { }
 
     getContext() { }
 }
