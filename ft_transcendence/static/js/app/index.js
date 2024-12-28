@@ -1,7 +1,10 @@
 import Profile from "./views/profile.js";
 import Chat from "./views/chat.js";
+import Friends from "./views/friends.js";
 import ChatManager from "./managers/ChatManager.js";
 import Change_password from "./views/change_password.js";
+import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
+import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 
 var view = null;
 
@@ -11,17 +14,17 @@ chatManager.loadEventHandlers();
 
 const navigateTo = url => {
     history.pushState(null, null, url);
-    router();
+    viewsRouter();
 };
 
-const router = async () => {
+const viewsRouter = async () => {
     const routes = [
         {path: "/profile/", view: Profile },
         {path: "/chat/", view: Chat },
+        {path: "/friends/", view: Friends },
         {path: "/change_password/", view: Change_password },
     ];
 
-    //Test each route for potential match
     const potentialMatches = routes.map(route => {
         return {
             route: route,
@@ -44,15 +47,45 @@ const router = async () => {
 
     view = new match.route.view();
     document.querySelector("#app").innerHTML = await view.getHtml();
+    await view.loadComponents();
     view.bindUIEventHandlers();
 
 };
 
-window.addEventListener("popstate", router);
+const handlersRouter = async (form) => {
+    const routes = [
+        {formType: "friendshipForm", handler: friendshipFormsHandler },
+        {formType: "blockForm", handler: userBlockFormsHandler },
+    ];
+
+    const potentialMatches = routes.map(route => {
+        return {
+            route: route,
+            isMatch: form.getAttribute('formType') === route.formType,
+        };
+    });
+
+    let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+
+    if (!match) {
+        return ;
+    }
+    
+    var handler = new match.route.handler();
+    await handler.postForm(form);
+    var user_id = form[1].value;
+    await handler.updateUI(view, user_id);
+};
+
+window.addEventListener("popstate", viewsRouter);
+
+function submitForm(form) {
+    handlersRouter(form);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Página carregada, chamando router()");
 
+    console.log("Página carregada, chamando routers()");
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
@@ -61,5 +94,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    router();
+    document.body.addEventListener("submit", e => {
+        const form = e.target;
+
+        if (form.tagName === "FORM" && form.matches("[api-link]")) {
+            console.log(e.target);
+            e.preventDefault();
+            submitForm(form);
+        }
+    });
+
+    viewsRouter();
+
 });

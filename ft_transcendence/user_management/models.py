@@ -12,12 +12,12 @@ from django.db.models import Q
 
 class TrUser(AbstractUser):
     # ..todos os campos de AbstractBaseUser
-    profile_picture = models.TextField(
-        verbose_name="base64 encoding of the user's pfp",
+    profile_picture = models.ImageField(
+        upload_to='user/profile_pictures',
+        default='user/profile_pictures/foto-perfil-default.png',
+        help_text="Foto de perfil do usuário",
         null=True,
-        blank=True,
-        unique=False,
-        default=None,
+        blank=True
     )
     updated_at = models.DateTimeField(auto_now=True)
 

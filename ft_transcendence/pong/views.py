@@ -127,15 +127,14 @@ class PongTournamentView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         tournament = self.get_object()
         participants = TournamentParticipant.objects.filter(tournament=tournament)
-        matches = Match.objects.filter(
-            room__game_mode=GameMode.TOURNAMENT.value,
-        )
-        context["participants"] = participants
-        context["matches"] = matches
-        context["game_mode"] = kwargs.get("game_mode")
         context["user"] = self.request.user
+        context["participants_slots"] = range(tournament.max_players)
+        context["quarter_slots"] = (
+            list(range(1, 5)) if tournament.max_players == 8 else []
+        )
+        context["semi_slots"] = list(range(1, 3))
         logger.info(
-            f"Displaying tournament: {tournament.name} with {participants.count()} participants and {matches.count()} matches"
+            f"Displaying tournament: {tournament.name} with {participants.count()}"
         )
         return context
 
