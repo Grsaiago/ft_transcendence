@@ -1,4 +1,4 @@
-export default class AbstractHandler{
+export default class AbstractHandler {
     constructor() {
         if (this.constructor === AbstractHandler) {
             throw new Error("AbstractHandler is an abstract class and cannot be instantiated directly.");
@@ -30,8 +30,10 @@ export default class AbstractHandler{
                 console.error("Error:", error);
                 throw error;
             }
-        );
+            );
     }
 
-    async updateUI(view, id, response) {}
+    async updateUI(_view, _context) { }
+
+    getContext() { }
 }

@@ -1,4 +1,7 @@
 import Profile from "./views/profile.js";
+import Play from "./views/play.js";
+import EnterOnline from "./views/enter_online.js";
+import EnterTournament from "./views/enter_tournament.js";
 import Chat from "./views/chat.js";
 import Friends from "./views/friends.js";
 import ChatManager from "./managers/ChatManager.js";
@@ -7,6 +10,8 @@ import Update_info from "./views/update_info.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 import profileFormsHandler from "./handlers/profileFormsHandler.js";
+import localGameFormsHandler from "./handlers/localGameFormHandler.js";
+import Room from "./views/roomView.js";
 
 var view = null;
 
@@ -14,28 +19,28 @@ var chatManager = new ChatManager();
 
 chatManager.loadEventHandlers();
 
-export const navigateTo = url => {
+export const navigateTo = (url) => {
+    //tratamento de url relativa para absoluta
     history.pushState(null, null, url);
-    viewsRouter();
+    viewsRouter(url);
 };
 
-const viewsRouter = async () => {
+const viewsRouter = async (url) => {
     const routes = [
-        {path: "/profile/", view: Profile },
-        {path: "/chat/", view: Chat },
-        {path: "/friends/", view: Friends },
-        {path: "/change_password/", view: Change_password },
+        { path: "/profile/", view: Profile },
+        { path: "/play/", view: Play },
+        { path: "/enter/online/", view: EnterOnline },
+        { path: "/enter/tournament/", view: EnterTournament },
+        { path: "/chat/", view: Chat },
+        { path: "/friends/", view: Friends },
+        { path: "/change_password/", view: Change_password },
+        { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
         {path: "/update_info/", view: Update_info },
     ];
 
-    const potentialMatches = routes.map(route => {
-        return {
-            route: route,
-            isMatch: location.pathname === route.path
-        };
-    });
-
-    let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+    let match = routes.find((route) =>  route.regex
+        ? route.regex.test(location.pathname) // Use regex for dynamic routes
+        : location.pathname === route.path);
 
     if (!match) {
         match = {
@@ -48,8 +53,8 @@ const viewsRouter = async () => {
         view.removeUIEventHandlers();
     }
 
-    view = new match.route.view();
-    document.querySelector("#app").innerHTML = await view.getHtml();
+    view = new match.view();
+    document.querySelector("#app").innerHTML = await view.getHtml(url);
     await view.loadComponents();
     view.bindUIEventHandlers();
 
@@ -57,30 +62,21 @@ const viewsRouter = async () => {
 
 const handlersRouter = async (form) => {
     const routes = [
-        {formType: "friendshipForm", handler: friendshipFormsHandler },
-        {formType: "blockForm", handler: userBlockFormsHandler },
-        {formType: "profileForm", handler: profileFormsHandler },
-        
+        { formType: "friendshipForm", handler: friendshipFormsHandler },
+        { formType: "blockForm", handler: userBlockFormsHandler },
+        { formType: "localGameForm", handler: localGameFormsHandler },
     ];
 
-    const potentialMatches = routes.map(route => {
-        return {
-            route: route,
-            isMatch: form.getAttribute('formType') === route.formType,
-        };
-    });
-
-    let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch);
+    let match = routes.find((route) => form.getAttribute('formType') === route.formType);
 
     if (!match) {
-        return ;
+        return;
     }
-    
-    var handler = new match.route.handler();
-    const response = await handler.postForm(form);
-    
-    var user_id = form[1].value;
-    await handler.updateUI(view, user_id, response);
+
+    const handler = new match.handler();
+    const jsonResponse = await handler.postForm(form);
+    const context = handler.getContext(form, jsonResponse);
+    await handler.updateUI(view, context);
 };
 
 window.addEventListener("popstate", viewsRouter);

@@ -1,3 +1,5 @@
+from http.client import HTTPResponse
+from django.http import JsonResponse
 import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,11 +16,19 @@ from .models import GameMode, Match, PongRoom, Tournament, TournamentParticipant
 logger = logging.getLogger(__name__)
 
 
+<<<<<<< HEAD
+class PongSelectGameMode(TemplateView):
+    template_name = "../../user_management/templates/user_management/base_app.html"
+=======
 class PongSelectGameMode(LoginRequiredMixin, TemplateView):
     template_name = "pong/play.html"
+>>>>>>> 0c3073f2ef9256718df55a6149679986e1ddb54e
 
     def get(self, request, *args, **kwargs):
-        return render(request, self.template_name, {"GameMode": GameMode.as_dict()})
+        context = {"GameMode": GameMode.as_dict()}
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/play.html", context)
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
         game_mode = request.POST.get("game_mode")
@@ -28,14 +38,24 @@ class PongSelectGameMode(LoginRequiredMixin, TemplateView):
             room = PongRoom.objects.create(
                 name=room_name, game_mode=GameMode.LOCAL.value
             )
-            return redirect("pong:pongroom", room_id=room.id)
+            response = JsonResponse({
+                "message": "Sala criada",
+                "room_id": room.id,
+            })
+            return response
         else:
             logger.info(f"Redirecting to PongEnterView with game_mode: {game_mode}")
             return redirect("pong:pongenter", game_mode=game_mode)
 
 
+<<<<<<< HEAD
+class PongEnterView(TemplateView):
+    template_name = "../../user_management/templates/user_management/base_app.html"
+    # template_name = "pong/enter.html"
+=======
 class PongEnterView(LoginRequiredMixin, TemplateView):
     template_name = "pong/enter.html"
+>>>>>>> 0c3073f2ef9256718df55a6149679986e1ddb54e
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -60,6 +80,8 @@ class PongEnterView(LoginRequiredMixin, TemplateView):
         return context
 
     def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/enter.html", self.get_context_data(**kwargs))
         return self.render_to_response(self.get_context_data(**kwargs))
 
     def post(self, request, *args, **kwargs):
@@ -75,7 +97,8 @@ class PongEnterView(LoginRequiredMixin, TemplateView):
                 tournament = form.save(commit=False)
                 tournament.max_players = int(max_players)
                 tournament.save()
-                return redirect("pong:pongtournament", tournament_id=tournament.id)
+                return JsonResponse({"message":"sala criada"}, status=200)
+                # return redirect("pong:pongtournament", tournament_id=tournament.id)
             else:
                 context = self.get_context_data(**kwargs)
                 context["form"] = form
@@ -88,7 +111,8 @@ class PongEnterView(LoginRequiredMixin, TemplateView):
                 room = form.save(commit=False)
                 room.game_mode = game_mode
                 room.save()
-                return redirect("pong:pongroom", room_id=room.id)
+                return HTTPResponse()
+                # return redirect("pong:pongroom", room_id=room.id)
             else:
                 context = self.get_context_data(**kwargs)
                 context["form"] = form
@@ -127,15 +151,14 @@ class PongTournamentView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         tournament = self.get_object()
         participants = TournamentParticipant.objects.filter(tournament=tournament)
-        matches = Match.objects.filter(
-            room__game_mode=GameMode.TOURNAMENT.value,
-        )
-        context["participants"] = participants
-        context["matches"] = matches
-        context["game_mode"] = kwargs.get("game_mode")
         context["user"] = self.request.user
+        context["participants_slots"] = range(tournament.max_players)
+        context["quarter_slots"] = (
+            list(range(1, 5)) if tournament.max_players == 8 else []
+        )
+        context["semi_slots"] = list(range(1, 3))
         logger.info(
-            f"Displaying tournament: {tournament.name} with {participants.count()} participants and {matches.count()} matches"
+            f"Displaying tournament: {tournament.name} with {participants.count()}"
         )
         return context
 
