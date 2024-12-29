@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from .views import (
     UserChangePasswordView,
@@ -9,6 +11,8 @@ from .views import (
     HomepageView,
     UserProfileView,
     UserChatView,
+    UserFriendsView,
+    UserDetailView
 )
 
 app_name = "user_management"
@@ -22,4 +26,7 @@ urlpatterns = [
     path("friend_list/", UserFriendListView.as_view(), name="friend_list"),
     path("profile/", UserProfileView.as_view(), name="profile"),
     path("chat/", UserChatView.as_view(), name="chat"),
-]
+    path("friends/", UserFriendsView.as_view(), name="friends"),
+    path("user/<int:user_id>/", UserDetailView.as_view(), name="user_details"),
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

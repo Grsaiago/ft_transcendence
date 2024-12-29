@@ -12,6 +12,18 @@
         <button type="submit">Logout</button>
     </form>
     <h1>Hello {{ user.username }}</h1>
+    <!-- update user's own info -->
+    <form action="{% url 'db-user_management:update_user' %}"
+          method="post"
+          enctype="multipart/form-data"
+          style="display:inline">
+        {% csrf_token %}
+        {{ user_update_form.as_p }}
+        <button type="submit">Update</button>
+    </form>
+    {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="Profile Image">
+    {% endif %}
     <h1> {% trans "ManageFriendsHeader" %} </h1>
     <!-- Form to send a friend request -->
     <h2> {% trans "SendFriendRequestHeader" %} </h2>
@@ -27,6 +39,24 @@
         {{ block_user_form.blocked }}
         <button type="submit">Block User</button>
     </form>
+    <!-- Lista de usuários bloqueados-->
+    <h2>Usuários bloqueados</h2>
+    <ul>
+        {% for blocked_user in blocked_users %}
+            <li>
+                {{ blocked_user.blocked.username}}
+                <form action="{% url 'db-user_management:unblock_user' %}"
+                      method="post"
+                      style="display:inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="blocked" value="{{ blocked_user.blocked.id }}">
+                    <button type="submit">Unblock User</button>
+                </form>
+            </li>
+        {% empty %}
+            <li> {% trans "NoFriendsMessage" %} </li>
+        {% endfor %}
+    </ul>
     <!-- Lista de amigos -->
     <h2> {% trans "FriendManageHeader" %} </h2>
     <ul>

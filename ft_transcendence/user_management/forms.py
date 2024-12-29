@@ -1,5 +1,5 @@
 import django.forms as forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm
 from django.contrib.auth.forms import UserCreationForm, ValidationError
 from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Q
@@ -55,9 +55,21 @@ class TranscendenceUserCreationForm(UserCreationForm):
     #      label="user's profile picture",
     #  )
 
+class TranscendenceUserUpdateForm(UserChangeForm):
+    password = None
+
+    # # tem que fazer assim pra dar override no widget padrão que tem uma checkbox
+    profile_picture = forms.ImageField(widget=forms.FileInput(), required=False)
+
+    class Meta(UserChangeForm.Meta):
+        model = TrUser
+        fields = ("username", "first_name", "last_name", "profile_picture",)
+
+
+
 class CustomPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
-        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm'}),
+        widget=forms.PasswordInput(attrs={'class': 'form-control form-control-sm', 'autofocus': True}),
         label="Old Password"
     )
     new_password1 = forms.CharField(
@@ -251,6 +263,21 @@ class BlockUserForm(forms.ModelForm):
         model = BlockedUsers
         fields = ["blocker", "blocked"]
 
+    def clean(self):
+        if self.cleaned_data.get("blocker") == self.cleaned_data.get("blocked"):
+            raise ValidationError("Cannot block yourself")
+        # Usuário já foi bloqueado
+        if BlockedUsers.objects.filter(
+            Q(blocker=self.cleaned_data.get("blocker"), blocked=self.cleaned_data.get("blocked"))
+        ).exists():
+            raise ValidationError("User already blocked")
+        # Usuário já te bloqueou
+        if BlockedUsers.objects.filter(
+            Q(blocker=self.cleaned_data.get("blocked"), blocked=self.cleaned_data.get("blocker"))
+        ).exists():
+            raise ValidationError("User already blocked you")
+        return super().clean()
+
     def save(self, commit=True):
         # TODO: Apagar as entradas das tabelas de Friendship e FriendRequest caso existam
 
@@ -276,3 +303,17 @@ class BlockUserForm(forms.ModelForm):
             )
         ).delete()
         return super().save(commit)
+
+class UnblockUserForm(forms.ModelForm):
+    class Meta:
+        model = BlockedUsers
+        fields = ["blocker","blocked"]
+
+    def save(self, commit=True):
+        BlockedUsers.objects.filter(
+            Q(
+                blocker=self.cleaned_data.get("blocker"),
+                blocked=self.cleaned_data.get("blocked")
+            )
+        ).delete()
+        return 

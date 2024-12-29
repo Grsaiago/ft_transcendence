@@ -7,17 +7,17 @@
         </div>
         <div class="p-2 p-lg-3">
             <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
-                <input type="text" class="form-control rounded-5 border-0" placeholder="search user">
+                <input type="text" class="form-control rounded-5 border-0" placeholder="search friend">
                 <i class="search-icon mx-2 mb-1 bi bi-search"></i>
             </div>
             <div class="friends-box d-flex flex-column justify-content-start overflow-y-auto">
             {% for friend, chat_room_id in current_friends.items %}
-                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5" >
+                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5">
                     <div class="d-flex flex-row align-items-center gap-3">
                         <div class="status-icon">
                             <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
                         </div>
-                        <p class="friend-name m-0 mt-1" chat_id="{{ chat_room_id }}" data-chat>
+                        <p class="friend-name m-0 mt-1" chat_id="{{ chat_room_id }}">
                             {{ friend }}
                         </p>
                     </div>
@@ -35,18 +35,11 @@
         <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Chat</p>
         <div class="p-2 d-flex flex-column flex-grow-1 gap-1">
             <div class="messages d-flex flex-column align-items-end px-2 overflow-y-auto" id ="chat-messages">
-                <div>
-                    <p class="chat-msg-user-time">Fernanda, 15:04</p>
-                    <p class="chat-msg-content">Fala ai fdp</p>
-                </div>
-                <div>
-                    <p class="chat-msg-user-time">Fernanda, 15:07</p>
-                    <p class="chat-msg-content">Turo bom ?</p>
-                </div>
+
             </div>
             <div class="message-input d-flex flex-row align-items-center justify-content-end rounded-5 m-0 mt-auto">
                 <input class="form-control rounded-5 border-0" type="text" id="chat-message-input" placeholder="Type a message">
-                <button type="button" class="p-0 cursor-pointer" value="send" data-send-msg>
+                <button type="button" class="p-0 cursor-pointer" value="send" id='send-msg-button'>
                     <i class="send-icon bi bi-play-fill p-0 m-0"></i>
                 </button>
             </div>

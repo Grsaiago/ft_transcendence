@@ -12,12 +12,12 @@ from django.db.models import Q
 
 class TrUser(AbstractUser):
     # ..todos os campos de AbstractBaseUser
-    profile_picture = models.TextField(
-        verbose_name="base64 encoding of the user's pfp",
+    profile_picture = models.ImageField(
+        upload_to='user/profile_pictures',
+        default='user/profile_pictures/foto-perfil-default.png',
+        help_text="Foto de perfil do usuário",
         null=True,
-        blank=True,
-        unique=False,
-        default=None,
+        blank=True
     )
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -100,19 +100,3 @@ class BlockedUsers(models.Model):
 
     # Pra facilitar a vida dos LSPs
     objects = models.Manager()
-
-    def clean(self):
-        super().clean()
-        if self.blocker == self.blocked:
-            raise ValidationError("Cannot block yourself")
-        # Usuário já foi bloqueado
-        if BlockedUsers.objects.filter(
-            Q(blocker=self.blocker, blocked=self.blocked)
-        ).exists():
-            raise ValidationError("User already blocked")
-        # Usuário já te bloqueou
-        if BlockedUsers.objects.filter(
-            Q(blocker=self.blocked, blocked=self.blocker)
-        ).exists():
-            raise ValidationError("User already blocked you")
-        return

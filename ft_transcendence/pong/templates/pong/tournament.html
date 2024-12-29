@@ -1,0 +1,63 @@
+{% extends "pong/base.html" %}
+{% block title %}Tournament Details{% endblock %}
+{% block content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'pong/css/pong.css' %}">
+    <section class="section_enter">
+        <h2>{{ tournament.id }}</h2>
+        <h2>{{ tournament.name }}</h2>
+        <section class="section_tournament"
+                 id="game-data"
+                 data-tournament-id="{{ tournament.id }}"
+                 data-game-mode="tournament"
+                 data-username="{{ user.username }}">
+            <div>
+                <p>
+                    Max Players: <span id="maxPlayersValue">{{ tournament.max_players }}</span>
+                </p>
+                <p>Participants:</p>
+                <ul id="participantsList">
+                    {% for i in participants_slots %}<li id="participant-{{ i }}">Player {{ i|add:1 }}</li>{% endfor %}
+                </ul>
+                <p>Matches:</p>
+                <div id="bracket-container" class="bracket-container">
+                    {% if tournament.max_players == 8 %}
+                        <div class="round" id="quarter-finals">
+                            <h3>Quarterfinals</h3>
+                            {% for i in quarter_slots %}
+                                <div class="match" id="Quarter{{ i }}">
+                                    <div class="player" id="Quarter{{ i }}-p1">TBD</div>
+                                    <div class="player" id="Quarter{{ i }}-p2">TBD</div>
+                                    <button id="Quarter{{ i }}-btn" style="display: none;">Go to Match</button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="round" id="semi-finals">
+                        <h3>Semifinals</h3>
+                        {% for i in semi_slots %}
+                            <div class="match" id="Semi{{ i }}">
+                                <div class="player" id="Semi{{ i }}-p1">TBD</div>
+                                <div class="player" id="Semi{{ i }}-p2">TBD</div>
+                                <button id="Semi{{ i }}-btn" style="display: none;">Go to Match</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="round" id="final">
+                        <h3>Final</h3>
+                        <div class="match" id="Final1">
+                            <div class="player" id="Final-p1">TBD</div>
+                            <div class="player" id="Final-p2">TBD</div>
+                            <button id="Final-btn" style="display: none;">Go to Match</button>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+            <h3 id="tournamentMessages"></h3>
+            <h4 id="tournamentErrorMsg"></h4>
+        </div>
+    </section>
+    <button id="joinTournament">Join Tournament</button>
+</section>
+<script type="module" src="{% static 'pong/js/handle-tournament.js' %}"></script>
+{% endblock content %}

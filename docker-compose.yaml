@@ -2,6 +2,7 @@
 name: transcendence
 
 services:
+
   db:
     image: postgres:latest
     container_name: tr_db
@@ -19,6 +20,22 @@ services:
       #   timeout: 30s
       #   retries: 5
       #   start_period: 30s
+
+      # django:
+      #   container_name: django
+      #   build:
+      #     context: .
+      #     dockerfile: ./docker/django/Dockerfile
+      #   restart: always
+      #   volumes:
+      #     - media_data:/app/ft_transcendence/media:rw
+      #   ports:
+      #     - "8000:8000"
+      #   env_file:
+      #     - .env
+      #   depends_on:
+      #     - db
+      #     - redis
 
   redis:
     image: redis:latest
@@ -105,3 +122,5 @@ volumes:
   grafana-data: {}
   prometheus-data: {}
   elasticsearch-data: {}
+  pg_data:
+  media_data:
