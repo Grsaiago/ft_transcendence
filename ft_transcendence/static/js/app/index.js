@@ -52,7 +52,7 @@ const viewsRouter = async (url) => {
         : location.pathname === route.path);
 
     if (!match) {
-        match = routes[0];
+        match = routes[0]
     }
 
     if (view) {
