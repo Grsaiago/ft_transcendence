@@ -24,7 +24,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("user_management.urls")),
     path("api/", include("user_management.db_urls")),
-    path('', include('django_prometheus.urls')),
-]
     path("", include("pong.urls")),
+    path('', include('django_prometheus.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

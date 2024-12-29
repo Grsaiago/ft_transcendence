@@ -123,6 +123,7 @@ CACHES = {
     }
 }
 
+# in production disable existing_loggers to True, change handlers to ["null"]
 # Setup de log pro ELK
 LOGGING = {
     "version": 1,
@@ -131,7 +132,7 @@ LOGGING = {
         "logstash": {
             "level": "DEBUG",
             "class": "logstash.TCPLogstashHandler",
-            "host": "localhost", # change when django is inside docker network
+            "host": "logstash", # change when django is inside docker network
             "port": 5044,        # Match the port from the Logstash configuration
         },
     },
@@ -201,19 +202,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# in production disable existing_loggers to True, change handlers to ["null"]
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
-}
