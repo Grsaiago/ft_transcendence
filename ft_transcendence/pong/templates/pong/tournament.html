@@ -1,7 +1,11 @@
 {% load static %}
 <div class="app-row d-flex flex-column flex-md-row justify-content-center gap-2 gap-md-4 px-3 px-md-4 px-lg-5">
     <div class="col col-12 col-md-4 d-flex flex-row flex-md-column gap-3 d-flex justify-content-center">
-        <div class="col-tournament p-0 rounded-4 ">
+        <div class="col-tournament p-0 rounded-4"
+        id="game-data"
+        data-tournament-id="{{ tournament.id }}"
+        data-game-mode="tournament"
+        data-username="{{ user.username }}">
             <div class="title rounded-top-4 d-flex flex-row align-items-center justify-content-center">
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Tournament</p>
             </div>
@@ -43,8 +47,8 @@
                 </div>
             </div>
             <div class="d-flex justify-content-center gap-3">
-                <button id="joinTournament" class="btn btn-custom mb-2">
-                    <p class="btn-custom-name-enter m-0">Join</p>
+                <button id="joinTournament" class="btn btn-custom mb-2">join
+                    <!-- <p class="btn-custom-name-enter m-0">Join</p> -->
                 </button>
             </div>
         </div>
@@ -118,4 +122,3 @@
         </div>
     </div>
 </div>
-<script type="module" src="{% static 'pong/js/handle-tournament.js' %}"></script>

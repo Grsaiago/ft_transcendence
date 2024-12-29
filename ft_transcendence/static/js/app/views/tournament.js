@@ -23,6 +23,16 @@ export default class Tournament extends AbstractView {
         }
     }
 
+    async loadComponents() {
+        console.log('Loading Tournament components...');
+        // Carregando o script handle-tournament.js dinamicamente
+        await import('./handle-tournament.js').then((module) => {
+            console.log("Tournament script loaded successfully");
+        }).catch((error) => {
+            console.error("Failed to load tournament script: ", error);
+        });
+    }
+
     bindUIEventHandlers() {
         console.log('Loading play event handlers...');
     }
