@@ -14,6 +14,14 @@ import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js"
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import Room from "./views/roomView.js";
 
+
+const hostname = window.location.hostname;
+if (hostname === "www.transcendence.com") {
+    log.setLevel(log.levels.ERROR);
+} else {
+    log.setLevel(log.levels.DEBUG);
+}
+
 var view = null;
 
 var wSManager = new WebSocketManager();

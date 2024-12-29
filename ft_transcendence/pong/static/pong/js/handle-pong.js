@@ -147,7 +147,7 @@ function handleWinner(winner) {
 }
 
 function handleRedirectTournament(redirect) {
-  window.location.href = redirect;
+  window.location.href = redirect; //navigateTo
 }
 
 function sendMessage(message) {
