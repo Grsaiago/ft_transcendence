@@ -1,3 +1,5 @@
+import { PongGame } from "/static/pong/js/PongGame.js";
+
 export default class PongRoomManager {
     constructor () {
 
@@ -5,18 +7,36 @@ export default class PongRoomManager {
         this.handleSocketMessage = this.handleSocketMessage.bind(this);
     }
 
-    connectSocket(socketUrl)
+    setGameData(context, width, height, roomId, gameMode) {
+        this.gameData = {
+            'context': context,
+            'width': width,
+            'height': height,
+            'roomId': roomId,
+            'gameMode': gameMode
+        }
+    }
+
+    connectSocket()
     {
+        let socketUrl;
+
+        if (this.gameData.gameMode === "tournament") {
+            socketUrl = `ws://${window.location.host}/ws/pong/tournament_match/${this.gameData.roomId}/`;
+        } else {
+            socketUrl = `ws://${window.location.host}/ws/pong/${this.gameData.gameMode}/`;
+        }
+        
         this.socket = new WebSocket(socketUrl);
     }
 
-    createGame(context, width, height)
+    createGame()
     {
         //Initialize game
-        this.pongGame = new PongGame(context, width, height);
+        this.pongGame = new PongGame(this.gameData.context, this.gameData.width, this.gameData.height);
     }
 
-    loadEventHandlers() {
+    loadSocketEventHandlers() {
         this.socket.onopen = (event) => {
             this.handleSocketOpen(event);
         };
@@ -37,9 +57,9 @@ export default class PongRoomManager {
     handleSocketOpen(event) {
         const message = {
             type: "join_room",
-            room_id: roomId,
-            width: canvas.width,
-            height: canvas.height,
+            room_id: this.gameData.roomId,
+            width: this.gameData.width,
+            height: this.gameData.height,
         };
         this.sendMessage(message);
         log.info("WebSocket connection established with:", event);
@@ -51,48 +71,34 @@ export default class PongRoomManager {
         
         switch (data.type) {
             case "not_auth":
-            alert(data.message);
-            socket.close();
-            break;
+                alert(data.message);
+                socket.close();
+                break;
         
             case "game_init":
-            pongGame.drawGameState(data.game_state);
-            break;
+                this.pongGame.drawGameState(data.game_state);
+                break;
         
             case "update_game_state":
-            pongGame.drawGameState(data.game_state);
-            break;
+                this.pongGame.drawGameState(data.game_state);
+                break;
         
             case "game_has_started":
-            this.handleGameHasStarted();
-            break;
+                document.dispatchEvent(new CustomEvent('GameStarted'));
+                break;
         
             case "winner":
-            handleWinner(data.winner);
-            break;
+                document.dispatchEvent(new CustomEvent('Winner', {player_winner: winner}));
+                break;
         
             case "redirect_tournament":
-            handleRedirectTournament(data.redirect);
-            break
+                document.dispatchEvent(new CustomEvent('RedirectTournament'));
+                break
         
             default:
-            log.error("Unknown message type:", data.type);
+                log.error("Unknown message type:", data.type);
         }
     }
-
-    handleGameHasStarted() {
-        startButton.style.display = "none";
-        const messageContainer = document.getElementById("messageContainer");
-        messageContainer.textContent = "Game has started!";
-        log.info("Game has started!");
-    }
-
-    handleWinner(winner) {
-        const messageContainer = document.getElementById("messageContainer");
-        messageContainer.textContent = `${winner} wins!`;
-        startButton.textContent = "Play Again!";
-        startButton.style.display = "block";
-      }
 
     sendMessage(message) {
         const jsonMessage = JSON.stringify(message);

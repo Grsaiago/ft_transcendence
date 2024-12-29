@@ -1,6 +1,5 @@
 import AbstractView from "./abstractView.js";
 import PongRoomManager from "../managers/PongRoomManager.js";
-import { PongGame } from "/static/pong/js/PongGame.js";
 
 export default class Room extends AbstractView {
     constructor() {
@@ -30,48 +29,134 @@ export default class Room extends AbstractView {
         this.initGame();
     }
 
-    //Drawing Game Canvas
-
-    initGame()
-    {
-        //Get canvas and context
-        const canvas = document.getElementById("pongCanvas");
-        const context = canvas.getContext("2d");
-        
-        this.pongRoomManager.createGame(context, canvas.width, canvas.height);
-
-        this.connectSocket();
-    }
-
-    connectSocket()
-    {
-        //Get game data
-        const gameData = document.getElementById("game-data");
-        const roomId = gameData.dataset.roomId;
-        const gameMode = gameData.dataset.gameMode;
-        
-        log.info("room_id:", roomId);
-        log.info("game_mode:", gameMode);
-
-        let socketUrl;
-
-        if (gameMode === "tournament") {
-            socketUrl = `ws://${window.location.host}/ws/pong/tournament_match/${roomId}/`;
-          } else {
-            socketUrl = `ws://${window.location.host}/ws/pong/${gameMode}/`;
-          }
-
-        this.pongRoomManager.connectSocket(socketUrl);
-        this.pongRoomManager.loadEventHandlers();
-    }
-
-
-
     bindUIEventHandlers() {
-        console.log('Loading play event handlers...');
+        this.bindMovementHandlers();
+        this.bindStartButtonHandler();
+        this.bindPongRoomEventHandlers()
     }
 
     removeUIEventHandlers() {
-        console.log('Removing play event handlers...');
+        this.unbindMovementHandler();
+        this.unbindStartButtonHandler();
+        this.unbindPongRoomEventHandlers();
+    }
+
+    //Creating game canvas and connecting to socket
+
+    initGame()
+    {
+        this.loadGameData();
+
+        this.pongRoomManager.createGame();
+
+        this.pongRoomManager.connectSocket();
+
+        this.pongRoomManager.loadSocketEventHandlers();
+    }
+
+    loadGameData() {
+        //Get canvas and context
+        const canvas = document.getElementById("pongCanvas");
+        const context = canvas.getContext("2d");
+    
+        //Get game info
+        const gameData = document.getElementById("game-data");
+        const roomId = gameData.dataset.roomId;
+        const gameMode = gameData.dataset.gameMode;
+
+        this.pongRoomManager.setGameData(context, canvas.width, canvas.height, roomId, gameMode);
+    }
+
+    //Key events Handlers
+
+    handleKeyEvent(event, keyType) {
+        const validKeys = ["ArrowUp", "ArrowDown", "w", "s", "W", "S"];
+        if (validKeys.includes(event.key)) {
+          event.preventDefault();
+          const message = {
+            type: keyType,
+            key: event.key.toLocaleLowerCase(),
+          };
+          this.pongRoomManager.sendMessage(message);
+        }
+    }
+
+    handleClickStartButton() {
+        const message = {
+          type: "start_game",
+        };
+        this.pongRoomManager.sendMessage(message);
+    }
+
+    //PongRoom Events Handlers
+
+    handleGameHasStarted() {
+        console.log("GameStarted received")
+        startButton = document.getElementById("startGame");
+        startButton.style.display = "none";
+        const messageContainer = document.getElementById("messageContainer");
+        messageContainer.textContent = "Game has started!";
+        log.info("Game has started!");
+    }
+
+    handleWinner(event) {
+        console.log("Winner received")
+        const messageContainer = document.getElementById("messageContainer");
+        messageContainer.textContent = `${event.player_winner} wins!`;
+        startButton = document.getElementById("startGame");
+        startButton.textContent = "Play Again!";
+        startButton.style.display = "block";
+    }
+
+    handleRedirectTournament(redirect) {
+        window.location.href = redirect; //navigateTo
+    }
+
+    //Binders
+    bindPongRoomEventHandlers() {
+        document.addEventListener('GameStarted', this.handleGameHasStarted);
+        document.addEventListener('Winner', this.handleWinner);
+        document.addEventListener('RedirectTournament', this.handleRedirectTournament);
+    }
+
+    bindMovementHandlers() {
+        document.addEventListener("keydown", (event) => {
+            this.handleKeyEvent(event, "keydown");
+        });
+        
+            document.addEventListener("keyup", (event) => {
+            this.handleKeyEvent(event, "keyup");
+        });
+    }
+
+    bindStartButtonHandler() {
+        const startButton = document.getElementById("startGame");
+        startButton.addEventListener("click", () => {
+            this.handleClickStartButton();
+        });
+    }
+
+    //Unbinders
+    unbindMovementHandler() {
+        document.removeEventListener("keydown", (event) => {
+            this.handleKeyEvent(event, "keydown");
+        });
+        
+        document.removeEventListener("keyup", (event) => {
+            this.handleKeyEvent(event, "keyup");
+        });
+    }
+
+    unbindStartButtonHandler() {
+        const startButton = document.getElementById("startGame");
+        startButton.removeEventListener("click", () => {
+            this.handleClickStartButton();
+        });
+    }
+
+    unbindPongRoomEventHandlers() {
+        document.removeEventListener('GameStarted', this.handleGameHasStarted);
+        document.removeEventListener('Winner', this.handleWinner);
+        document.removeEventListener('RedirectTournament', this.handleRedirectTournament);
     }
 }
