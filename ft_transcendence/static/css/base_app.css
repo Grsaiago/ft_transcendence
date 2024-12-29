@@ -424,6 +424,11 @@ button {
     background-color: var(--cor-4);
 }
 
+.btn-custom.disabled {
+    background-color: #505050;
+    pointer-events: none;
+}
+
 .btn-custom:hover {
     background-color: var(--cor-4);
     color: #fff;

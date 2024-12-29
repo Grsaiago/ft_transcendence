@@ -43,7 +43,6 @@ socket.onerror = (event) => {
 //Event listerners - Join tournament button
 const joinButton = document.getElementById("joinTournament");
 joinButton.addEventListener("click", () => {
-  console.log("button join tournament clicked")
   handleClickJoinButton();
 });
 
@@ -59,7 +58,8 @@ function handleSocketMessage(event) {
       break;
 
     case "joined":
-      joinButton.style.display = "none";
+      joinButton.classList.add("disabled");
+      joinButton.disabled = true;
       break;
 
     case "current_state":
@@ -107,7 +107,7 @@ function handleClickJoinButton() {
   sendMessage({
     type: "join_tournament"
   });
-  joinButton.style.display = "none";
+  // joinButton.style.display = "none";
 }
 
 function sendMessage(message) {
@@ -149,7 +149,8 @@ function updateTournamentUI(state) {
         buttonElem.style.display = "block";
         buttonElem.onclick = () => redirectToMatch(match.room_id);
       } else {
-        buttonElem.style.display = "none";
+        buttonElem.classList.add("disabled");
+        // buttonElem.style.display = "none";
       }
     }
   });
