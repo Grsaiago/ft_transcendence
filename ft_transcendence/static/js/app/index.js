@@ -13,6 +13,7 @@ import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
 import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import Room from "./views/roomView.js";
+import Tournament from "./views/tournament.js";
 
 var view = null;
 
@@ -37,6 +38,7 @@ const viewsRouter = async (url) => {
         { path: "/change_password/", view: Change_password },
         {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
+        { path: "/tournament/:id/", view: Tournament, regex: /^\/tournament\/\d+\/$/ },
     ];
 
     let match = routes.find((route) =>  route.regex

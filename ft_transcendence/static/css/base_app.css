@@ -163,6 +163,14 @@ body {
     color: black;
 }
 
+.text-tournament {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--cor-5);
+}
+
 .text-profile.option:hover {
     font-weight: 900;
     color: var(--cor-4);
@@ -187,6 +195,16 @@ button {
     background-color: var(--cor-2);
     overflow: hidden;
     /* max-width: 340px; */
+}
+
+.col-tournament {
+    background-color: var(--cor-2);
+    overflow: hidden;
+}
+
+.col-matches {
+    background-color: var(--cor-2);
+    overflow: hidden;
 }
 
 .col-profile {

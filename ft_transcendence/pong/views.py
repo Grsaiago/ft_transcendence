@@ -44,7 +44,6 @@ class PongSelectGameMode(TemplateView):
 
 class PongEnterView(TemplateView):
     template_name = "../../user_management/templates/user_management/base_app.html"
-    # template_name = "pong/enter.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -146,8 +145,8 @@ class PongTournamentView(LoginRequiredMixin, DetailView):
         logger.info(
             f"Displaying tournament: {tournament.name} with {participants.count()}"
         )
-        return context
-
+        return context 
+   
     def post(self, request, *args, **kwargs):
         tournament = self.get_object()
         return redirect("pong:pongtournament", tournament_id=tournament.id)
