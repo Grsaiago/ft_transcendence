@@ -28,6 +28,10 @@ export const navigateTo = (url) => {
 };
 
 const viewsRouter = async (url) => {
+    if (!url) {
+        url = location.pathname;
+    }
+
     const routes = [
         { path: "/profile/", view: Profile },
         { path: "/play/", view: Play },
@@ -84,15 +88,19 @@ const handlersRouter = async (form) => {
     await handler.updateUI(view, context);
 };
 
-window.addEventListener("popstate", viewsRouter);
+window.addEventListener("popstate", () => {
+    viewsRouter(location.pathname);
+});
 
 function submitForm(form) {
     handlersRouter(form);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
     console.log("Página carregada, chamando routers()");
+
+    viewsRouter(location.pathname);
+
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
@@ -112,6 +120,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    viewsRouter();
 
 });

@@ -128,13 +128,14 @@ class PongRoomView(LoginRequiredMixin, TemplateView):
 
 class PongTournamentView(LoginRequiredMixin, DetailView):
     model = Tournament
-    template_name = "pong/tournament.html"
+    template_name = "../../user_management/templates/user_management/base_app.html"
     context_object_name = "tournament"
     pk_url_kwarg = "tournament_id"
 
     def get_context_data(self, **kwargs):
+        self.object = self.get_object()
         context = super().get_context_data(**kwargs)
-        tournament = self.get_object()
+        tournament = self.object
         participants = TournamentParticipant.objects.filter(tournament=tournament)
         context["user"] = self.request.user
         context["participants_slots"] = range(tournament.max_players)
@@ -146,6 +147,13 @@ class PongTournamentView(LoginRequiredMixin, DetailView):
             f"Displaying tournament: {tournament.name} with {participants.count()}"
         )
         return context 
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(**kwargs)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/tournament.html", context)
+        return render(request, self.template_name, context)
    
     def post(self, request, *args, **kwargs):
         tournament = self.get_object()
