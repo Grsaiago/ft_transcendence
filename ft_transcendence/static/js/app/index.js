@@ -12,7 +12,10 @@ import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
 import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
+import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
+import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
+import Tournament from "./views/tournament.js";
 
 var view = null;
 
@@ -27,6 +30,10 @@ export const navigateTo = (url) => {
 };
 
 const viewsRouter = async (url) => {
+    if (!url) {
+        url = location.pathname;
+    }
+
     const routes = [
         { path: "/profile/", view: Profile },
         { path: "/play/", view: Play },
@@ -37,6 +44,7 @@ const viewsRouter = async (url) => {
         { path: "/change_password/", view: Change_password },
         {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
+        { path: "/tournament/:id/", view: Tournament, regex: /^\/tournament\/\d+\/$/ },
     ];
 
     let match = routes.find((route) =>  route.regex
@@ -65,6 +73,8 @@ const handlersRouter = async (form) => {
         { formType: "localGameForm", handler: localGameFormsHandler },
         { formType: "updateInfoForm", handler: UpdateInfoFormsHandler},
         { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
+        { formType: "createTournamentForm", handler: CreateTournamentHandler},
+        { formType: "createRoomForm", handler: CreateRoomHandler},
     ];
 
     let match = routes.find((route) => form.getAttribute('formType') === route.formType);
@@ -86,8 +96,8 @@ function submitForm(form) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
     console.log("Página carregada, chamando routers()");
+    
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();

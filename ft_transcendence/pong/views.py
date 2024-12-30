@@ -44,7 +44,6 @@ class PongSelectGameMode(TemplateView):
 
 class PongEnterView(TemplateView):
     template_name = "../../user_management/templates/user_management/base_app.html"
-    # template_name = "pong/enter.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -84,29 +83,22 @@ class PongEnterView(TemplateView):
                 tournament.max_players = int(max_players)
                 tournament.save()
                 return JsonResponse({"message":"sala criada"}, status=200)
-                # return redirect("pong:pongtournament", tournament_id=tournament.id)
             else:
-                context = self.get_context_data(**kwargs)
-                context["form"] = form
-                context["tournament_id"] = tournament.id
-                context["game_mode"] = game_mode
-                return self.render_to_response(context)
+                return JsonResponse({"message":"houve um erro na criacão da sala"}, status=400)
         else:
             form = PongRoomForm(request.POST)
             if form.is_valid():
                 room = form.save(commit=False)
                 room.game_mode = game_mode
                 room.save()
-                return HTTPResponse()
-                # return redirect("pong:pongroom", room_id=room.id)
+                return JsonResponse({"message":"sala criada"}, status=200)
             else:
-                context = self.get_context_data(**kwargs)
-                context["form"] = form
-                return self.render_to_response(context)
+                return JsonResponse({"message":"houve um erro na criacão da sala"}, status=400)
 
 
 class PongRoomView(LoginRequiredMixin, TemplateView):
-    template_name = "pong/room.html"
+    
+    template_name = "../../user_management/templates/user_management/base_app.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,18 +116,21 @@ class PongRoomView(LoginRequiredMixin, TemplateView):
         context = self.get_context_data(**kwargs)
         if context["room"] is None:
             return redirect("pong:selectmode")
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/room.html", context)
         return self.render_to_response(context)
 
 
 class PongTournamentView(LoginRequiredMixin, DetailView):
     model = Tournament
-    template_name = "pong/tournament.html"
+    template_name = "../../user_management/templates/user_management/base_app.html"
     context_object_name = "tournament"
     pk_url_kwarg = "tournament_id"
 
     def get_context_data(self, **kwargs):
+        self.object = self.get_object()
         context = super().get_context_data(**kwargs)
-        tournament = self.get_object()
+        tournament = self.object
         participants = TournamentParticipant.objects.filter(tournament=tournament)
         context["user"] = self.request.user
         context["participants_slots"] = range(tournament.max_players)
@@ -147,6 +142,13 @@ class PongTournamentView(LoginRequiredMixin, DetailView):
             f"Displaying tournament: {tournament.name} with {participants.count()}"
         )
         return context
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(**kwargs)
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/tournament.html", context)
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
         tournament = self.get_object()
