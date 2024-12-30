@@ -11,8 +11,7 @@
             action="{% url 'pong:pongenter' game_mode='tournament' %}"
             formType="createTournamentForm"
             method="post"
-            api-link
-            >
+            api-link>
                 {% csrf_token %}
                 <div>
                     <p class="enter-title m-0">Create a room</p>
@@ -60,7 +59,11 @@
         
         {% else %}
         <div class="create-room-box rounded-4 p-2 m-2">
-            <form method="post">
+            <form
+            action="{% url 'pong:pongenter' game_mode='online' %}"
+            formType="createRoomForm"
+            method="post"
+            api-link>
                 {% csrf_token %}
                 <div>
                 {% for field in form %}

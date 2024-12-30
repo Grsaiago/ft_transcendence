@@ -1,7 +1,7 @@
 import AbstractHandler from "./abstractHandler.js";
 import { navigateTo } from "../index.js";
 
-export default class CreateTournamentHandler extends AbstractHandler {
+export default class CreateRoomHandler extends AbstractHandler {
     constructor() {
         super();
         this.updateUI = this.updateUI.bind(this);
@@ -9,23 +9,7 @@ export default class CreateTournamentHandler extends AbstractHandler {
 
 
     async postForm(form) {
-        const formData = new FormData(form);
-
-        const submitButton = form.querySelector('button[type="submit"]:focus');
-        const maxPlayers = submitButton ? submitButton.value : null;
-
-
-        if (maxPlayers) {
-            formData.append('max_players', maxPlayers); // Adiciona ao FormData
-        } else {
-            console.error("Erro: max_players não foi selecionado");
-        }
-    
-        // Exibe todos os campos do FormData para depuração
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-    
+        const formData = new FormData(form);    
     
         return fetch(form.action, {
             method: form.method,
@@ -54,9 +38,9 @@ export default class CreateTournamentHandler extends AbstractHandler {
     async updateUI(view, context) {
         view.bindUIEventHandlers();
         if (context.ok)
-            navigateTo("/enter/tournament/");
+            navigateTo("/enter/online/");
         else
-            console.log("erro ao criar torneio")
+            console.log("erro ao criar a sala")
     }
 
     getContext(_form, response) {

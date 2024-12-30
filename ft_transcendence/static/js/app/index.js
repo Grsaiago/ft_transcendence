@@ -12,6 +12,7 @@ import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
 import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js";
 import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
+import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import Room from "./views/roomView.js";
 import Tournament from "./views/tournament.js";
@@ -73,6 +74,7 @@ const handlersRouter = async (form) => {
         { formType: "updateInfoForm", handler: UpdateInfoFormsHandler},
         { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
         { formType: "createTournamentForm", handler: CreateTournamentHandler},
+        { formType: "createRoomForm", handler: CreateRoomHandler},
     ];
 
     let match = routes.find((route) => form.getAttribute('formType') === route.formType);
