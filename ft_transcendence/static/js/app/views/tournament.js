@@ -1,4 +1,5 @@
 import AbstractView from "./abstractView.js";
+import { navigateTo } from "../index.js";
 
 export default class Tournament extends AbstractView {
     constructor() {
@@ -38,6 +39,16 @@ export default class Tournament extends AbstractView {
         
         this.joinButton.addEventListener("click", () => {
             this.handleClickJoinButton();
+        });   
+
+        const playButtons = document.querySelectorAll('button[id*="Quarter"][id*="-btn"], button[id*="Semi"][id*="-btn"], button[id="Final-btn"]');
+        playButtons.forEach((button) => {
+            button.addEventListener("click", (e) => {
+                e.preventDefault(); // Impede o comportamento padrão
+                const round = button.id.split('-')[0]; // Pega o nome da rodada (Quarter, Semi ou Final)
+                const roomId = button.id.split('-')[0].replace(/Quarter|Semi/, ''); // Remove 'Quarter' ou 'Semi' e deixa apenas o índice
+                this.redirectToMatch(roomId);
+            });
         });
     }
 
@@ -71,22 +82,22 @@ export default class Tournament extends AbstractView {
 
         //Websocket connection
         const socketUrl = `ws://${window.location.host}/ws/pong/tournament/${tournamentId}/`;
-        const socket = new WebSocket(socketUrl);
+        this.socket = new WebSocket(socketUrl);
 
         //Websocket
-        socket.onopen = (event) => {
+        this.socket.onopen = (event) => {
             log.info("WebSocket connection opened", event);
         };
 
-        socket.onmessage = (event) => {
+        this.socket.onmessage = (event) => {
             this.handleSocketMessage(event);
         };
 
-        socket.onclose = (event) => {
+        this.socket.onclose = (event) => {
             log.info("WebSocket connection closed", event.code);
         };
 
-        socket.onerror = (event) => {
+        this.socket.onerror = (event) => {
             log.error("WebSocket connection error", event);
         };
     }
@@ -146,7 +157,7 @@ export default class Tournament extends AbstractView {
     }
 
     handleClickJoinButton() {
-        sendMessage({
+        this.sendMessage({
             type: "join_tournament"
         });
     }
@@ -154,7 +165,7 @@ export default class Tournament extends AbstractView {
     sendMessage(message) {
         const jsonMessage = JSON.stringify(message);
         log.debug("Sending message:", jsonMessage);
-        socket.send(jsonMessage);
+        this.socket.send(jsonMessage);
     }
 
     updateTournamentUI(state) {
@@ -199,7 +210,8 @@ export default class Tournament extends AbstractView {
 
     // Função para redirecionar para a partida
     redirectToMatch(roomId) {
-        window.location.href = `/room/${roomId}/`;
+        // window.location.href = `/room/${roomId}/`;
+        navigateTo(`/room/${roomId}/`);
     }
 
     //function to display tournament message
