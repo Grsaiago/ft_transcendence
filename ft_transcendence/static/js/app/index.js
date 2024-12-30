@@ -15,6 +15,7 @@ import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
 import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
+import Tournament from "./views/tournament.js";
 
 var view = null;
 
@@ -29,7 +30,6 @@ export const navigateTo = (url) => {
 };
 
 const viewsRouter = async (url) => {
-
     if (!url) {
         url = location.pathname;
     }
@@ -44,6 +44,7 @@ const viewsRouter = async (url) => {
         { path: "/change_password/", view: Change_password },
         {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
+        { path: "/tournament/:id/", view: Tournament, regex: /^\/tournament\/\d+\/$/ },
     ];
 
     let match = routes.find((route) =>  route.regex
@@ -66,7 +67,6 @@ const viewsRouter = async (url) => {
 };
 
 const handlersRouter = async (form) => {
-
     const routes = [
         { formType: "friendshipForm", handler: friendshipFormsHandler },
         { formType: "blockForm", handler: userBlockFormsHandler },
@@ -96,8 +96,8 @@ function submitForm(form) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
     console.log("Página carregada, chamando routers()");
+    
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
