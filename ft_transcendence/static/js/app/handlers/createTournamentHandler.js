@@ -21,12 +21,6 @@ export default class CreateTournamentHandler extends AbstractHandler {
             console.error("Erro: max_players não foi selecionado");
         }
     
-        // Exibe todos os campos do FormData para depuração
-        for (const [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
-    
-    
         return fetch(form.action, {
             method: form.method,
             body: formData,
