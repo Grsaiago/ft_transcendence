@@ -1,19 +1,16 @@
-{% extends "pong/base.html" %}
-{% block title %}PongGame{% endblock %}
-{% block content %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'pong/css/pong.css' %}">
-    <section class="section_enter">
-        <h2>{{ room.id }}</h2>
-        <h2>{{ room.name }}</h2>
-        <section class="section_pong"
-                 id="game-data"
-                 data-room-id="{{ room.id }}"
-                 data-game-mode="{{ game_mode }}">
-            <canvas id="pongCanvas" width="650" height="480"></canvas>
-        </section>
-        <div id="messageContainer"></div>
-        <button id="startGame">Start!</button>
-    </section>
-    <script type="module" src="{% static 'pong/js/handle-pong.js' %}"></script>
-{% endblock content %}
+{% load static %}
+<div class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-5">
+    <div class="section_pong d-flex justify-content-center align-items-center flex-column"
+    id="game-data"
+    data-room-id="{{ room.id }}"
+    data-game-mode="{{ game_mode }}">
+                
+    
+        <canvas id="pongCanvas" width="650" height="480"></canvas>
+        
+        <button id="startGame" class="btn btn-custom mt-2">
+            <p id="startGameText" class="btn-custom-play-name m-0">Play</p>
+        </button>
+        <div id="messageContainer" class="text-play m-0 mt-1"></div>
+    </div>
+</div>
