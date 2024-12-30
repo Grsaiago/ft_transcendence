@@ -12,6 +12,8 @@ import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
 import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
+import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
+import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
 
 var view = null;
@@ -27,6 +29,11 @@ export const navigateTo = (url) => {
 };
 
 const viewsRouter = async (url) => {
+
+    if (!url) {
+        url = location.pathname;
+    }
+
     const routes = [
         { path: "/profile/", view: Profile },
         { path: "/play/", view: Play },
@@ -59,12 +66,15 @@ const viewsRouter = async (url) => {
 };
 
 const handlersRouter = async (form) => {
+
     const routes = [
         { formType: "friendshipForm", handler: friendshipFormsHandler },
         { formType: "blockForm", handler: userBlockFormsHandler },
         { formType: "localGameForm", handler: localGameFormsHandler },
         { formType: "updateInfoForm", handler: UpdateInfoFormsHandler},
         { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
+        { formType: "createTournamentForm", handler: CreateTournamentHandler},
+        { formType: "createRoomForm", handler: CreateRoomHandler},
     ];
 
     let match = routes.find((route) => form.getAttribute('formType') === route.formType);

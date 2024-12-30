@@ -44,7 +44,6 @@ class PongSelectGameMode(TemplateView):
 
 class PongEnterView(TemplateView):
     template_name = "../../user_management/templates/user_management/base_app.html"
-    # template_name = "pong/enter.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -84,25 +83,17 @@ class PongEnterView(TemplateView):
                 tournament.max_players = int(max_players)
                 tournament.save()
                 return JsonResponse({"message":"sala criada"}, status=200)
-                # return redirect("pong:pongtournament", tournament_id=tournament.id)
             else:
-                context = self.get_context_data(**kwargs)
-                context["form"] = form
-                context["tournament_id"] = tournament.id
-                context["game_mode"] = game_mode
-                return self.render_to_response(context)
+                return JsonResponse({"message":"houve um erro na criacão da sala"}, status=400)
         else:
             form = PongRoomForm(request.POST)
             if form.is_valid():
                 room = form.save(commit=False)
                 room.game_mode = game_mode
                 room.save()
-                return HTTPResponse()
-                # return redirect("pong:pongroom", room_id=room.id)
+                return JsonResponse({"message":"sala criada"}, status=200)
             else:
-                context = self.get_context_data(**kwargs)
-                context["form"] = form
-                return self.render_to_response(context)
+                return JsonResponse({"message":"houve um erro na criacão da sala"}, status=400)
 
 
 class PongRoomView(LoginRequiredMixin, TemplateView):
