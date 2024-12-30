@@ -7,7 +7,12 @@
         </div>
         {% if game_mode == GameMode.TOURNAMENT %}
         <div class="create-room-box rounded-4 p-2 m-2">
-            <form method="post">
+            <form
+            action="{% url 'pong:pongenter' game_mode='tournament' %}"
+            formType="createTournamentForm"
+            method="post"
+            api-link
+            >
                 {% csrf_token %}
                 <div>
                     <p class="enter-title m-0">Create a room</p>
@@ -25,10 +30,10 @@
                     {% endif %}
                     <div class="d-flex justify-content-center gap-3">
                         <button class="btn btn-custom mt-2" type="submit" name="max_players" value="4">
-                            <p class="btn-custom-name-enter m-0">4 Players</p>
+                             <p class="btn-custom-name-enter m-0">4 Players</p>
                         </button>
-                        <button class="btn btn-custom mt-2" type="submit" name="max_players" value="8">
-                            <p class="btn-custom-name-enter m-0">8 Players</p>
+                        <button class="btn btn-custom mt-2" type="submit" name="max_players" value="8" >
+                             <p class="btn-custom-name-enter m-0">8 Players</p>
                         </button>
                     </div>
                 </div>

@@ -85,11 +85,7 @@ class PongEnterView(TemplateView):
                 return JsonResponse({"message":"sala criada"}, status=200)
                 # return redirect("pong:pongtournament", tournament_id=tournament.id)
             else:
-                context = self.get_context_data(**kwargs)
-                context["form"] = form
-                context["tournament_id"] = tournament.id
-                context["game_mode"] = game_mode
-                return self.render_to_response(context)
+                return JsonResponse({"message":"houve um erro na criacão da sala"}, status=400)
         else:
             form = PongRoomForm(request.POST)
             if form.is_valid():

@@ -11,6 +11,7 @@ import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
 import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
 import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js";
+import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import Room from "./views/roomView.js";
 import Tournament from "./views/tournament.js";
@@ -71,6 +72,7 @@ const handlersRouter = async (form) => {
         { formType: "localGameForm", handler: localGameFormsHandler },
         { formType: "updateInfoForm", handler: UpdateInfoFormsHandler},
         { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
+        { formType: "createTournamentForm", handler: CreateTournamentHandler},
     ];
 
     let match = routes.find((route) => form.getAttribute('formType') === route.formType);
@@ -93,10 +95,13 @@ function submitForm(form) {
     handlersRouter(form);
 }
 
+
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Página carregada, chamando routers()");
-
+    
     viewsRouter(location.pathname);
+    
 
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
