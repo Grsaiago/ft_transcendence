@@ -97,7 +97,8 @@ class PongEnterView(TemplateView):
 
 
 class PongRoomView(LoginRequiredMixin, TemplateView):
-    template_name = "pong/room.html"
+    
+    template_name = "../../user_management/templates/user_management/base_app.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -115,6 +116,8 @@ class PongRoomView(LoginRequiredMixin, TemplateView):
         context = self.get_context_data(**kwargs)
         if context["room"] is None:
             return redirect("pong:selectmode")
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/room.html", context)
         return self.render_to_response(context)
 
 
