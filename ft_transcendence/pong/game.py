@@ -2,9 +2,9 @@ import random
 import asyncio
 from typing import Dict, Optional, TypedDict
 
-THICKNESS = 15
-BALL_SPEED = 5
-PADDLE_SPEED = BALL_SPEED * 2
+THICKNESS = float(15)
+BALL_SPEED = float(5)
+PADDLE_SPEED = float(BALL_SPEED * 2)
 X = "x"
 Y = "y"
 RIGHT = "right"
@@ -17,7 +17,7 @@ WINNER_SCORE = 3
 class BallPosition(TypedDict):
     x: float
     y: float
-    size: int
+    size: float
     center: float
     x_speed: float
     y_speed: float
@@ -26,8 +26,8 @@ class BallPosition(TypedDict):
 class PaddlePosition(TypedDict):
     x: float
     y: float
-    width: int
-    height: int
+    width: float
+    height: float
 
 
 class GameState(TypedDict):
@@ -51,9 +51,9 @@ class Ball:
             width (int): The width of game are from canvas.
             height (int): The height of the game area from canvas.
         """
-        self.size: int = THICKNESS
+        self.size: float = float(THICKNESS)
         self.center: float = float(self.size / 2)
-        self.base_speed: int = BALL_SPEED
+        self.base_speed: float = BALL_SPEED
         self.x_start: float = float(width / 2) - self.center
         self.y_start: float = float(height / 2) - self.center
         self.y_min_start: int = 6 * THICKNESS
@@ -87,7 +87,7 @@ class Ball:
         Reset the ball to the center of the game area with a random y position and speed.
         """
         self.x = self.x_start
-        self.y = float(random.randint(self.y_min_start, self.y_max_start))
+        self.y = float(random.randint(int(self.y_min_start), int(self.y_max_start)))
         self.x_speed = self.base_speed
         self.y_speed = self.base_speed
         if random.randint(0, 1) == 0:
@@ -104,16 +104,16 @@ class Paddle:
             height (int): The height of the game area.
             side (str): The side the paddle is on ('left' or 'right').
         """
-        self.width: int = THICKNESS
-        self.height: int = 120
-        self.top_limit: int = THICKNESS
-        self.bottom_limit: int = height - self.height - THICKNESS
+        self.width: float = float(THICKNESS)
+        self.height: float = 120.0
+        self.top_limit: float = float(THICKNESS)
+        self.bottom_limit: float = float(height - self.height - THICKNESS)
         self.y: float = float(height / 2) - (self.height / 2)
         if side == LEFT:
             self.x: float = float(THICKNESS * 2)
         else:
             self.x: float = float(width - self.width - (THICKNESS * 2))
-        self.speed: int = 0
+        self.speed: float = 0.0
 
     async def set_speed(self, direction: str) -> None:
         """
@@ -194,10 +194,11 @@ class PongGame:
         Args:
             paddle(str): The paddle to stop ('left' or 'right').
         """
-        if paddle == "left":
-            await self.paddle_left.set_speed(STOP)
-        elif paddle == "right":
-            await self.paddle_right.set_speed(STOP)
+        async with self.lock:
+            if paddle == "left":
+                await self.paddle_left.set_speed(STOP)
+            elif paddle == "right":
+                await self.paddle_right.set_speed(STOP)
 
     async def calculate_ball_colision(self) -> None:
         """
@@ -221,19 +222,19 @@ class PongGame:
         """
         if (
             self.paddle_left.x
-            <= self.ball.x
+            <= self.ball.x + self.ball.size / 2
             <= self.paddle_left.x + self.paddle_left.width
             and self.paddle_left.y
-            <= self.ball.y
+            <= self.ball.y + self.ball.size / 2
             <= self.paddle_left.y + self.paddle_left.height
         ):
             await self.ball.bounce(X)
         if (
             self.paddle_right.x
-            <= self.ball.x + self.ball.size
+            <= self.ball.x + self.ball.size /2
             <= self.paddle_right.x + self.paddle_right.width
             and self.paddle_right.y
-            <= self.ball.y
+            <= self.ball.y + self.ball.size / 2
             <= self.paddle_right.y + self.paddle_right.height
         ):
             await self.ball.bounce(X)
