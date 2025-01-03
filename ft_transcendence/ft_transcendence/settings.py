@@ -165,6 +165,7 @@ STATIC_URL = "static/"
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "pong/static/pong",
 ]
 
 MEDIA_URL = "/media/"

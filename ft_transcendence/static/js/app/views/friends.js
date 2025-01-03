@@ -32,7 +32,6 @@ export default class Profile extends AbstractView {
 
     async loadComponents() {
         await this.loadFriendsList();
-        await this.loadUsersList();
     }
 
     async getUserDetailHtml(user_id) {

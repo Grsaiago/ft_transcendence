@@ -83,6 +83,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         Handles the WebSocket disconnection event.
         Calls the finish_game method to perform any necessary cleanup.
         """
+        print("DISCONNECT")
         await self.finish_game()
 
     async def receive(self, text_data: str) -> None:

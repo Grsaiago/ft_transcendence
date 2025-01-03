@@ -156,7 +156,7 @@ function updateTournamentUI(state) {
 
 // Função para redirecionar para a partida
 function redirectToMatch(roomId) {
-  window.location.href = `/room/${roomId}/`;
+  window.location.href = `/room/${roomId}/`; //navigateTo
 }
 
 //function to display tournament message

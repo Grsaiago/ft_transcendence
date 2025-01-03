@@ -17,6 +17,13 @@ import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
 import Tournament from "./views/tournament.js";
 
+const hostname = window.location.hostname;
+if (hostname === "www.transcendence.com") {
+    log.setLevel(log.levels.ERROR);
+} else {
+    log.setLevel(log.levels.DEBUG);
+}
+
 var view = null;
 
 var wSManager = new WebSocketManager();
@@ -57,6 +64,7 @@ const viewsRouter = async (url) => {
 
     if (view) {
         view.removeUIEventHandlers();
+        view.unloadComponents();
     }
 
     view = new match.view();
