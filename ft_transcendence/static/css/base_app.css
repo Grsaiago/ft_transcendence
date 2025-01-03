@@ -127,7 +127,7 @@ body {
 .title {
     background-color: var(--cor-4);
     color: var(--cor-1);
-    font-size: 14px;
+    font-size: 13px;
 }
 
 
@@ -163,6 +163,24 @@ body {
     color: black;
 }
 
+.text-play {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.7;
+    font-weight: bold;
+    color: var(--cor-5);
+    height: 27.2px;
+}
+
+.text-tournament {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 1.2;
+    color: var(--cor-5);
+}
+
 .text-profile.option:hover {
     font-weight: 900;
     color: var(--cor-4);
@@ -186,7 +204,18 @@ button {
 .col-room {
     background-color: var(--cor-2);
     overflow: hidden;
-    /* max-width: 340px; */
+    height: 380px;
+}
+
+.col-tournament {
+    background-color: var(--cor-2);
+    overflow: hidden;
+    min-width: 180px;
+}
+
+.col-matches {
+    background-color: var(--cor-2);
+    overflow: hidden;
 }
 
 .col-profile {
@@ -199,7 +228,7 @@ button {
 
 .col-chat {
     background-color: var(--cor-2);
-    height: 320px;
+    height: 300px;
 }
 
 .search {
@@ -285,7 +314,7 @@ button {
     font-weight: 500;
     font-size: 13px;
     letter-spacing: 1.5px;
-    height: 230px;
+    height: 210px;
     flex-direction: column-reverse;
 }
 
@@ -404,6 +433,11 @@ button {
     background-color: var(--cor-4);
 }
 
+.btn-custom.disabled {
+    background-color: #505050;
+    pointer-events: none;
+}
+
 .btn-custom:hover {
     background-color: var(--cor-4);
     color: #fff;
@@ -424,6 +458,17 @@ button {
     color: #fff;
     font-family: "Arcade Rounded", sans-serif;
     font-size: 10px;
+}
+
+
+.btn-custom-play {
+    background-color: var(--cor-4);
+}
+
+.btn-custom-play-name {
+    color: #fff;
+    font-family: "Arcade Rounded", sans-serif;
+    font-size: 13px;
 }
 
 .form-control {
@@ -480,8 +525,9 @@ button {
 .enter-box-background {
     background-color: var(--cor-6);
 }
+
 .enter-box {
-    height: 106px;
+    height: 168px;
     overflow-y: auto;
 }
 
@@ -525,8 +571,8 @@ button {
 
 .enter-title {
     font-family: 'LT Galaxy Reverse', sans-serif;
-    font-size: 16px;
-    font-weight: 900;
+    font-size: 14px;
+    font-weight: 700;
     letter-spacing: 1.5px;
     color: var(--cor-5);
     text-align: center;
@@ -683,7 +729,20 @@ button {
     .enter-box {
         height: 200px;
     }
+
+    .enter-title {
+        font-size: 16px;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+    }
+
+    .text-tournament {
+        font-size: 14px;
+        line-height: 1.5;
+    }
 }
+
+
 
 @media (min-width: 992px) {
 

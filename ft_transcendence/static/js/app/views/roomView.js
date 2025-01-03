@@ -4,8 +4,14 @@ import PongRoomManager from "../managers/PongRoomManager.js";
 export default class Room extends AbstractView {
     constructor() {
         super();
-        this.setTitle("Play");
+        this.setTitle("Room");
         this.pongRoomManager = new PongRoomManager();
+        this.isCanvasFocused = true;
+
+        this.handleFocus = this.handleFocus.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
+        this.handleKeyEvent = this.handleKeyEvent.bind(this);
+        this.handleClickStartButton = this.handleClickStartButton.bind(this);
     }
 
     async getHtml(url) {
@@ -16,12 +22,12 @@ export default class Room extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('Play html fetched. Returning...');
+            console.log('Room html fetched. Returning...');
             return html;
         }
         catch(error) {
             console.error('Failed to fetch page: ', error);
-            return "<p>Error loading login page</p>";
+            return "<p>Error loading Room page</p>";
         }
     }
 
@@ -29,10 +35,15 @@ export default class Room extends AbstractView {
         this.initGame();
     }
 
+    unloadComponents() {
+        this.pongRoomManager.socket.close();
+    }
+
     bindUIEventHandlers() {
         this.bindMovementHandlers();
         this.bindStartButtonHandler();
-        this.bindPongRoomEventHandlers()
+        this.bindPongRoomEventHandlers();
+        this.bindCanvasFocusEvents();
     }
 
     removeUIEventHandlers() {
@@ -71,7 +82,7 @@ export default class Room extends AbstractView {
 
     handleKeyEvent(event, keyType) {
         const validKeys = ["ArrowUp", "ArrowDown", "w", "s", "W", "S"];
-        if (validKeys.includes(event.key)) {
+        if (validKeys.includes(event.key) && this.isCanvasFocused) {
           event.preventDefault();
           const message = {
             type: keyType,
@@ -81,10 +92,16 @@ export default class Room extends AbstractView {
         }
     }
 
+    handleKeydown = (event) => this.handleKeyEvent(event, "keydown");
+
+    handleKeyup = (event) => this.handleKeyEvent(event, "keyup");
+
     handleClickStartButton() {
         const message = {
           type: "start_game",
         };
+        document.getElementById("pongCanvas").focus();
+        this.isCanvasFocused = true;
         this.pongRoomManager.sendMessage(message);
     }
 
@@ -92,7 +109,7 @@ export default class Room extends AbstractView {
 
     handleGameHasStarted() {
         console.log("GameStarted received")
-        startButton = document.getElementById("startGame");
+        const startButton = document.getElementById("startGame");
         startButton.style.display = "none";
         const messageContainer = document.getElementById("messageContainer");
         messageContainer.textContent = "Game has started!";
@@ -102,14 +119,24 @@ export default class Room extends AbstractView {
     handleWinner(event) {
         console.log("Winner received")
         const messageContainer = document.getElementById("messageContainer");
-        messageContainer.textContent = `${event.player_winner} wins!`;
-        startButton = document.getElementById("startGame");
+        messageContainer.textContent = `${event.detail} wins!`;
+        const startButton = document.getElementById("startGame");
         startButton.textContent = "Play Again!";
         startButton.style.display = "block";
     }
 
     handleRedirectTournament(redirect) {
         window.location.href = redirect; //navigateTo
+    }
+
+    //CanvasFocus Event Handlers
+
+    handleFocus() {
+        this.isCanvasFocused = true;
+    }
+
+    handleBlur() {
+        this.isCanvasFocused = false;
     }
 
     //Binders
@@ -120,38 +147,30 @@ export default class Room extends AbstractView {
     }
 
     bindMovementHandlers() {
-        document.addEventListener("keydown", (event) => {
-            this.handleKeyEvent(event, "keydown");
-        });
-        
-            document.addEventListener("keyup", (event) => {
-            this.handleKeyEvent(event, "keyup");
-        });
+        document.addEventListener("keydown", this.handleKeydown);
+        document.addEventListener("keyup", this.handleKeyup);
     }
 
     bindStartButtonHandler() {
         const startButton = document.getElementById("startGame");
-        startButton.addEventListener("click", () => {
-            this.handleClickStartButton();
-        });
+        startButton.addEventListener("click", this.handleClickStartButton);
+    }
+
+    bindCanvasFocusEvents() {
+        const canvas = document.getElementById("pongCanvas");
+        canvas.addEventListener("focus", this.handleFocus);
+        canvas.addEventListener("blur", this.handleBlur);
     }
 
     //Unbinders
     unbindMovementHandler() {
-        document.removeEventListener("keydown", (event) => {
-            this.handleKeyEvent(event, "keydown");
-        });
-        
-        document.removeEventListener("keyup", (event) => {
-            this.handleKeyEvent(event, "keyup");
-        });
+        document.removeEventListener("keydown", this.handleKeydown);
+        document.removeEventListener("keyup", this.handleKeyup);
     }
 
     unbindStartButtonHandler() {
         const startButton = document.getElementById("startGame");
-        startButton.removeEventListener("click", () => {
-            this.handleClickStartButton();
-        });
+        startButton.removeEventListener("click", this.handleClickStartButton);
     }
 
     unbindPongRoomEventHandlers() {

@@ -15,7 +15,6 @@ export default class EnterTournament extends AbstractView {
             });
             const html = await response.text();
             console.log('enter/tournament html fetched. Returning...');
-            console.log(html);
             return html;
         }
         catch(error) {

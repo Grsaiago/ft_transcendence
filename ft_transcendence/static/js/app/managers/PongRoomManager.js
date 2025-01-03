@@ -88,7 +88,7 @@ export default class PongRoomManager {
                 break;
         
             case "winner":
-                document.dispatchEvent(new CustomEvent('Winner', {player_winner: winner}));
+                document.dispatchEvent(new CustomEvent('Winner', {detail: data.winner}));
                 break;
         
             case "redirect_tournament":
