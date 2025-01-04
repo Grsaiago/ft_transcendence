@@ -10,10 +10,9 @@
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Tournament</p>
             </div>
             <div class="p-3">
-                <p class="text-tournament m-0 text-nowrap">Id: {{ tournament.id }}</p>
                 <p class="text-tournament m-0 text-nowrap">Name: {{ tournament.name }}</p>
                 <p class="text-tournament m-0 text-nowrap">Max Players:
-                    <span id="maxPlayersValue">{{ tournament.max_players }}</span>
+                    <span id="maxPlayersValue">4</span>
                 </p>
             </div>
         </div>
@@ -21,35 +20,48 @@
             <div class="title rounded-top-4 d-flex flex-row align-items-center justify-content-center">
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Players</p>
             </div>
-            <div class="p-1 px-md-3">
-                <div class="row justify-content-center gap-2" id="participantsList">
-                    {% if tournament.max_players == 4 %}
-                    <div class="col-12" style="display: inline-block; width: auto;">
-                    {% endif %}
-                    {% if tournament.max_players == 8 %}
-                    <div class="col-6" style="display: inline-block; width: auto;">
-                    {% endif %}
-                        {% for i in participants_slots|slice:"0:4" %}
-                            <p class="text-tournament m-0 text-center text-nowrap" id="participant-{{ i }}">
-                                Player {{ i|add:1 }}
-                            </p>
-                        {% endfor %}
-                    </div>
-                    {% if tournament.max_players == 8 %}
-                    <div class="col-6" style="display: inline-block; width: auto;">
-                        {% for i in participants_slots|slice:"4:8" %}
-                            <p class="text-tournament m-0 text-center text-nowrap" id="participant-{{ i }}">
-                                Player {{ i|add:1 }}
-                            </p>
-                        {% endfor %}
-                        </div>
-                    {% endif %}
+            <div class="p-2 px-md-3">
+                <div class="d-flex flex-row p-0 mb-2">
+                    <label id="player-name"></label>
+                    <input type="text" name="name" class="form-control form-player rounded-5 border-0 mr-2" placeholder="Choose a name" title="player-name" maxlength="20">
+                    <button class="btn btn-custom px-2">
+                        <p class="btn-custom-name-enter m-0">
+                            ok
+                        </p>
+                    </button>
                 </div>
-            </div>
-            <div class="d-flex justify-content-center gap-3">
-                <button id="joinTournament" class="btn btn-custom mb-2">
-                    <p class="btn-custom-name-enter m-0">Join</p>
-                </button>
+                <div class="d-flex flex-row p-0 mb-2">
+                    <label id="player-name"></label>
+                    <input type="text" name="name" class="form-control form-player rounded-5 border-0 mr-2" placeholder="Choose a name" title="player-name" maxlength="20">
+                    <button class="btn btn-custom px-2">
+                        <p class="btn-custom-name-enter m-0">
+                            ok
+                        </p>
+                    </button>
+                </div>
+                <div class="d-flex flex-row p-0 mb-2">
+                    <label id="player-name"></label>
+                    <input type="text" name="name" class="form-control form-player rounded-5 border-0 mr-2" placeholder="Choose a name" title="player-name" maxlength="20">
+                    <button class="btn btn-custom px-2">
+                        <p class="btn-custom-name-enter m-0">
+                            ok
+                        </p>
+                    </button>
+                </div>
+                <div class="d-flex flex-row p-0 mb-2">
+                    <label id="player-name"></label>
+                    <input type="text" name="name" class="form-control form-player rounded-5 border-0 mr-2" placeholder="Choose a name" title="player-name" maxlength="20">
+                    <button class="btn btn-custom px-2">
+                        <p class="btn-custom-name-enter m-0">
+                            ok
+                        </p>
+                    </button>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button id="startTournament" class="btn btn-custom">
+                        <p class="btn-custom-name-enter m-0">Start</p>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -59,65 +71,53 @@
             <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Matches</p>
         </div>
         <div class="matches p-2 d-flex flex-column gap-1 gap-md-2">
-            {% if tournament.max_players == 8 %}
-            <div id="quarter-finals">
-                <p class="enter-title m-0">Quarterfinals</p>
-                <div class="row d-flex justify-content-center gap-2">
-                    {% for i in quarter_slots %}
-                    <div class="create-room-box col col-5 rounded-4 px-2 d-flex justify-content-center">
-                        <div class="d-flex flex-column py-1 rounded-3" id="Quarter{{ i }}">
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Quarter{{ i }}-p1">
-                                TBD
-                            </div>
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Quarter{{ i }}-p2">
-                                TBD
-                            </div>
-                            <button class="btn btn-custom py-1 px-2" id="Quarter{{ i }}-btn">
-                                <p class="btn-custom-name-enter m-0">Play</p>
-                            </button>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
             <div id="semi-finals">
                 <p class="enter-title m-0">Semifinals</p>
                 <div class="row d-flex justify-content-center gap-2">
-                    {% for i in semi_slots %}
                     <div class="create-room-box col col-5 rounded-4 px-2 d-flex justify-content-center">
-                        <div class="d-flex flex-column py-1 rounded-3" id="Semi{{ i }}">
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi{{ i }}-p1">
+                        <div class="d-flex flex-column py-1 rounded-3" id="Semi-1">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-1-p1">
                                 TBD
                             </div>
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi{{ i }}-p2">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-1-p2">
                                 TBD
                             </div>
-                            <button class="btn btn-custom py-1 px-2" id="Semi{{ i }}-btn">
-                                <p class="btn-custom-name-enter m-0">Play</p>
-                            </button>
+                            <p class="text-tournament text-center m-0">waiting for game...</p>
                         </div>
                     </div>
-                    {% endfor %}
+                    <div class="create-room-box col col-5 rounded-4 px-2 d-flex justify-content-center">
+                        <div class="d-flex flex-column py-1 rounded-3" id="Semi-2">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-2-p1">
+                                TBD
+                            </div>
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-2-p2">
+                                TBD
+                            </div>
+                            <p class="text-tournament text-center m-0">waiting for game...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="final">
                 <p class="enter-title m-0">Final</p>
                 <div class="d-flex justify-content-center gap-2">
                     <div class="create-room-box col col-6 rounded-4 px-2 d-flex justify-content-center">
-                        <div class="d-flex flex-column py-1 rounded-3" id="Final1">
+                        <div class="d-flex flex-column py-1 rounded-3" id="Final">
                             <div class="text-tournament text-center m-0 text-nowrap" id="Final-p1">
                                 TBD
                             </div>
                             <div class="text-tournament text-center m-0 text-nowrap" id="Final-p2">
                                 TBD
                             </div>
-                            <button class="btn btn-custom py-1 px-2" id="Final-btn">
-                                <p class="btn-custom-name-enter m-0">Play</p>
-                            </button>
+                            <p class="text-tournament text-center m-0">waiting for game...</p>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-custom py-1 px-2" id="play-btn">
+                    <p class="btn-custom-name-enter m-0">Play</p>
+                </button>
             </div>
         </div>
     </div>
