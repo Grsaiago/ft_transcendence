@@ -13,8 +13,6 @@ services:
       - data-layer-network
     expose:
       - "5432"
-    ports:
-      - "5432:5432"
     env_file:
       - .env
       # TODO:: add a healthcheck
@@ -34,9 +32,9 @@ services:
     volumes:
       - media-data:/app/ft_transcendence/media:rw
     networks:
-      - metrics-scrape-network
       - data-layer-network
-      - logs-network
+      - metrics-scrape-network
+      - logs-scrape-network
     ports:
       - "443:443"
     env_file:
@@ -55,8 +53,6 @@ services:
       - data-layer-network
     expose:
       - "6379"
-    ports:
-      - "6379:6379"
     depends_on:
       - db
 
@@ -110,7 +106,9 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data:rw
     networks:
-      - logs-network
+      - logs-display-network
+    expose:
+      - "9200" # redundancy for documentation
     ports:
       - "9200:9200"
     depends_on:
@@ -122,11 +120,13 @@ services:
     volumes:
       - ./docker/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
     networks:
-      - logs-network
+      - logs-scrape-network
+      - logs-display-network
     expose:
       - "5044" # a input port que o django vai dar push nos logs
+      - "9600" # redundancy for documentation
     ports:
-      - "9600:9600" #healthcheck port
+      - "9600:9600" # healthcheck port
     env_file:
       - .env
     depends_on:
@@ -136,7 +136,9 @@ services:
     image: docker.elastic.co/kibana/kibana:8.10.2
     container_name: kibana
     networks:
-      - logs-network
+      - logs-display-network
+    expose:
+      - "5601" # redundancy for documentation
     ports:
       - "5601:5601"
     env_file:
@@ -156,4 +158,5 @@ networks:
   metrics-scrape-network: {}
   metrics-display-network: {}
   data-layer-network: {}
-  logs-network: {}
+  logs-display-network: {}
+  logs-scrape-network: {}
