@@ -31,7 +31,10 @@ class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
         )
 
         current_friends = {
-            (entry.first_user if entry.first_user != request.user else entry.second_user).username: entry.chat_room_id
+            (entry.first_user if entry.first_user != request.user else entry.second_user).username: {
+                'chat_room_id': entry.chat_room_id,
+                'is_online': entry.first_user.is_online if entry.first_user != request.user else entry.second_user.is_online
+            }
             for entry in friends
         }
 

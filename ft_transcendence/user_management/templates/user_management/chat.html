@@ -12,13 +12,13 @@
                     <i class="search-icon mx-2 mb-1 bi bi-search"></i>
                 </div>
                 <div class="friends-box d-flex flex-column justify-content-start overflow-y-auto">
-                {% for friend, chat_room_id in current_friends.items %}
+                {% for friend, data in current_friends.items %}
                     <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5">
                         <div class="d-flex flex-row align-items-center gap-3">
                             <div class="status-icon">
-                                <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
+                                <i class="bi bi-circle-fill" style="color: {% if data.is_online %}green{% else %}red{% endif %};"></i>
                             </div>
-                            <p class="friend-name m-0 mt-1" chat_id="{{ chat_room_id }}">
+                            <p class="friend-name m-0 mt-1" chat_id="{{ data.chat_room_id }}">
                                 {{ friend }}
                             </p>
                         </div>
