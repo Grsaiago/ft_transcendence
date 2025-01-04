@@ -68,7 +68,7 @@ remove_containers:
 
 .PHONY: remove_images
 remove_images:
-	-@docker image rm -f $$(docker image ls -q --filter 'label=com.docker.compose.project=transcendence') 2> /dev/null
+	-@docker image rm -f $$(docker image ls -aq) 2> /dev/null
 
 .PHONY: remove_volumes
 remove_volumes:
