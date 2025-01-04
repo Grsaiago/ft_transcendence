@@ -207,6 +207,11 @@ button {
     height: 380px;
 }
 
+.col-room-tournament {
+    background-color: var(--cor-2);
+    overflow: hidden;
+}
+
 .col-tournament {
     background-color: var(--cor-2);
     overflow: hidden;
