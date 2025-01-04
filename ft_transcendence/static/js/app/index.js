@@ -15,7 +15,7 @@ import localGameFormsHandler from "./handlers/localGameFormHandler.js";
 import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
 import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
-import Tournament from "./views/tournament.js";
+import OnlineTournament from "./views/onlineTournamentView.js";
 
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
@@ -37,7 +37,7 @@ export const navigateTo = (url) => {
 };
 
 const viewsRouter = async (url) => {
-    if (!url) {
+    if (!url || typeof url !== "string") {
         url = location.pathname;
     }
 
@@ -51,7 +51,7 @@ const viewsRouter = async (url) => {
         { path: "/change_password/", view: Change_password },
         {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
-        { path: "/tournament/:id/", view: Tournament, regex: /^\/tournament\/\d+\/$/ },
+        { path: "/tournament/:id/", view: OnlineTournament, regex: /^\/tournament\/\d+\/$/ },
     ];
 
     let match = routes.find((route) =>  route.regex
