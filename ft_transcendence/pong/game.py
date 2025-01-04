@@ -63,14 +63,14 @@ class Ball:
         self.x_speed: float = float(self.base_speed)
         self.y_speed: float = float(self.base_speed)
 
-    async def move(self) -> None:
+    def move(self) -> None:
         """
         Updates the ball's position based on its current speed.
         """
         self.x += self.x_speed
         self.y += self.y_speed
 
-    async def bounce(self, direction: str) -> None:
+    def bounce(self, direction: str) -> None:
         """
         Reverses the ball's speed in the given direction.
 
@@ -82,7 +82,7 @@ class Ball:
         elif direction == Y:
             self.y_speed *= -1
 
-    async def reset(self) -> None:
+    def reset(self) -> None:
         """
         Reset the ball to the center of the game area with a random y position and speed.
         """
@@ -91,7 +91,7 @@ class Ball:
         self.x_speed = self.base_speed
         self.y_speed = self.base_speed
         if random.randint(0, 1) == 0:
-            await self.bounce(X)
+            self.bounce(X)
 
 
 class Paddle:
@@ -129,7 +129,7 @@ class Paddle:
         elif direction == STOP:
             self.speed = 0
 
-    async def limit(self) -> None:
+    def limit(self) -> None:
         """
         Limits the paddle's movement to prevent it from moving outside the game area.
         """
@@ -139,12 +139,12 @@ class Paddle:
         if self.y >= self.bottom_limit:
             self.y = self.bottom_limit
 
-    async def move(self) -> None:
+    def move(self) -> None:
         """
         Updates the paddle's position based on its speed and applies movement limits.
         """
         self.y += self.speed
-        await self.limit()
+        self.limit()
 
 
 class PongGame:
@@ -200,7 +200,7 @@ class PongGame:
             elif paddle == "right":
                 await self.paddle_right.set_speed(STOP)
 
-    async def calculate_ball_colision(self) -> None:
+    def calculate_ball_colision(self) -> None:
         """
         Checks if the ball hits the top or bottom boundaries and bounces it.
         Resets the ball if it hits the left or right boundaries.
@@ -208,41 +208,41 @@ class PongGame:
         if self.ball.y <= THICKNESS or self.ball.y + self.ball.size >= (
             self.height - THICKNESS
         ):
-            await self.ball.bounce(Y)
+            self.ball.bounce(Y)
         if self.ball.x <= 0:
-            await self.update_score(RIGHT)
-            await self.ball.reset()
+            self.update_score(RIGHT)
+            self.ball.reset()
         if self.ball.x + self.ball.size >= self.width:
-            await self.update_score(LEFT)
-            await self.ball.reset()
+            self.update_score(LEFT)
+            self.ball.reset()
 
-    async def calculate_paddle_colision(self) -> None:
+    def calculate_paddle_colision(self) -> None:
         """
         Checks if the ball hits the paddles and bounces it.
         """
         if self.paddle_left.x <= self.ball.x <= self.paddle_left.x + self.paddle_left.width:
             if self.paddle_left.y <= self.ball.y <= self.paddle_left.y + self.paddle_left.height:
-                await self.ball.bounce(X)
+                self.ball.bounce(X)
 
         if self.paddle_right.x <= self.ball.x + self.ball.size <= self.paddle_right.x + self.paddle_right.width:
             if self.paddle_right.y <= self.ball.y <= self.paddle_right.y + self.paddle_right.height:
-                await self.ball.bounce(X)
+                self.ball.bounce(X)
 
 
-    async def check_colisions(self) -> None:
+    def check_colisions(self) -> None:
         """
         Checks for collisions between the ball and the paddles.
         """
-        await self.calculate_ball_colision()
-        await self.calculate_paddle_colision()
+        self.calculate_ball_colision()
+        self.calculate_paddle_colision()
 
-    async def move_objects(self) -> None:
+    def move_objects(self) -> None:
         """
         Moves the ball and paddles based on their current speeds.
         """
-        await self.ball.move()
-        await self.paddle_left.move()
-        await self.paddle_right.move()
+        self.ball.move()
+        self.paddle_left.move()
+        self.paddle_right.move()
 
     async def calculate_game_tick(self) -> GameState:
         """
@@ -250,10 +250,10 @@ class PongGame:
         Returns the current state of the game.
         """
         async with self.lock:
-            await self.check_colisions()
+            self.check_colisions()
             # just do next move if the game is not finished, so don't have a winner
             if not self.has_winner():
-                await self.move_objects()
+                self.move_objects()
             return await self.get_game_state()
 
     def has_winner(self) -> bool:
