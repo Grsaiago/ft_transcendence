@@ -9,9 +9,11 @@ from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
 class SignInAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm', 'autofocus': True})
+        label="Username",
+        widget=forms.TextInput(attrs={'class': 'form-control form-control-sm'})
     )
     password = forms.CharField(
+        label="Password",
         widget=forms.PasswordInput(attrs={'class': 'form-control  form-control-sm'})
     )
 
