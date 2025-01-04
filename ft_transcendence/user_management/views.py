@@ -53,7 +53,7 @@ class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
 
 
 class UserSignUpView(generic_views.FormView):
-    template_name = "user_management/base_sign.html"
+    template_name = "user_management/sign_up.html"
     form_class = TranscendenceUserCreationForm
     # TODO: Change to homepage instead of password change page
     success_url = reverse_lazy("user_management:sign_in")
@@ -75,13 +75,11 @@ class UserSignUpView(generic_views.FormView):
         return self.render_to_response(self.get_context_data(form=form))
     
     def get(self, request, *args, **kwargs):
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            context = self.get_context_data()
-            return render(request, "user_management/sign_up.html", context)
-        return super().get(request, *args, **kwargs)
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
 
 class UserSignInView(auth_views.LoginView):
-    template_name = "user_management/base_sign.html"
+    template_name = "user_management/sign_in.html"
     redirect_authenticated_user = True
     # TODO: Change to homepage instead of password change page
     success_url = reverse_lazy("user_management:homepage")
@@ -95,10 +93,8 @@ class UserSignInView(auth_views.LoginView):
         return self.render_to_response(self.get_context_data(form=form))
 
     def get(self, request, *args, **kwargs):
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            context = self.get_context_data()
-            return render(request, "user_management/sign_in.html", context)
-        return super().get(request, *args, **kwargs)
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
     
 
 class UserChangePasswordView(

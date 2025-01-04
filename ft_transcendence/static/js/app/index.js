@@ -1,4 +1,6 @@
 import Profile from "./views/profile.js";
+import Sign_in from "./views/sign_in.js";
+import Sign_up from "./views/sign_up.js";
 import Play from "./views/play.js";
 import EnterOnline from "./views/enter_online.js";
 import EnterTournament from "./views/enter_tournament.js";
@@ -43,13 +45,15 @@ const viewsRouter = async (url) => {
 
     const routes = [
         { path: "/profile/", view: Profile },
+        { path: "/sign_in/", view: Sign_in },
+        { path: "/sign_up/", view: Sign_up },
         { path: "/play/", view: Play },
         { path: "/enter/online/", view: EnterOnline },
         { path: "/enter/tournament/", view: EnterTournament },
         { path: "/chat/", view: Chat },
         { path: "/friends/", view: Friends },
         { path: "/change_password/", view: Change_password },
-        {path: "/update_info/", view: Update_info },
+        { path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
         { path: "/tournament/:id/", view: Tournament, regex: /^\/tournament\/\d+\/$/ },
     ];
@@ -68,7 +72,14 @@ const viewsRouter = async (url) => {
     }
 
     view = new match.view();
-    document.querySelector("#app").innerHTML = await view.getHtml(url);
+
+    if (view.constructor === Sign_in || view.constructor === Sign_up) {
+        console.log("/sign_in/ view called")
+        document.body.innerHTML = await view.getHtml(url);
+    }
+    else {
+        document.querySelector("#app").innerHTML = await view.getHtml(url);
+    }
     await view.loadComponents();
     view.bindUIEventHandlers();
 
