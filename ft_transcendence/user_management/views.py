@@ -8,6 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 
 from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm, TranscendenceUserUpdateForm
 from .models import BlockedUsers, FriendRequest, Friendship, TrUser
@@ -186,13 +187,13 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
             raise Http404("User ID not provided")
         
         user = TrUser.objects.filter(id=user_id).values(
-            'id', 'username', 'first_name', 'last_login'
+            'id', 'username', 'first_name', 'last_login', 'profile_picture'
         ).first()
         
         if not user:
             raise Http404("User not found")
 
-        ast_login = None
+        last_login = None
         if user['last_login']:
             last_login = user['last_login'].strftime("%d/%m/%Y at %H:%M")
 
@@ -218,6 +219,7 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
                     "sent" if friend_request.sender_id == request.user.id else "received"
                 )
 
+        profile_picture = settings.MEDIA_URL + user['profile_picture'] if user['profile_picture'] else "{% static 'assets/foto-perfil.png' %}"
 
         context = {
             "user_id": user['id'],
@@ -227,7 +229,9 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
             "is_blocked": is_blocked,
             "is_friend": is_friend,
             "friend_request": friendship_status,
+            "profile_picture": profile_picture,
         }
+
         return render(request, self.template_name, context)
     
 class UserUpdateInfoView(auth_mixins.LoginRequiredMixin, generic_views.View):
