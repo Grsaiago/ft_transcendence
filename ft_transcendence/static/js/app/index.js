@@ -77,13 +77,7 @@ const viewsRouter = async (url) => {
 
     view = new match.view();
 
-    if (view.constructor === Sign_in || view.constructor === Sign_up) {
-        console.log("/sign_in/ view called")
-        document.body.innerHTML = await view.getHtml(url);
-    }
-    else {
-        document.querySelector("#app").innerHTML = await view.getHtml(url);
-    }
+    document.body.innerHTML = await view.getHtml(url);
     await view.loadComponents();
     view.bindUIEventHandlers();
 

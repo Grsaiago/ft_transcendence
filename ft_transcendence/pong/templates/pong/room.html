@@ -1,16 +1,19 @@
+{% extends 'pong/base_app.html' %}
 {% load static %}
-<div class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-5">
-    <div class="section_pong d-flex justify-content-center align-items-center flex-column"
-    id="game-data"
-    data-room-id="{{ room.id }}"
-    data-game-mode="{{ game_mode }}">
+{% block content %}
+    <div class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-5">
+        <div class="section_pong d-flex justify-content-center align-items-center flex-column"
+        id="game-data"
+        data-room-id="{{ room.id }}"
+        data-game-mode="{{ game_mode }}">
 
 
-        <canvas id="pongCanvas" width="650" height="480" tabindex="0"></canvas>
+            <canvas id="pongCanvas" width="650" height="480" tabindex="0"></canvas>
 
-        <button id="startGame" class="btn btn-custom mt-2">
-            <p id="startGameText" class="btn-custom-play-name m-0">Play</p>
-        </button>
-        <div id="messageContainer" class="text-play m-0 mt-1"></div>
+            <button id="startGame" class="btn btn-custom mt-2">
+                <p id="startGameText" class="btn-custom-play-name m-0">Play</p>
+            </button>
+            <div id="messageContainer" class="text-play m-0 mt-1"></div>
+        </div>
     </div>
-</div>
+{% endblock %}

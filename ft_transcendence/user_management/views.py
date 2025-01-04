@@ -13,14 +13,13 @@ from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationFo
 from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
 class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
-    template_name = "user_management/base_app.html"
     success_url = reverse_lazy("user_management:profile")
     
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
 class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/profile.html"
 
     def get(self, request, *args, **kwargs):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -30,7 +29,7 @@ class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
 
 
 class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/chat.html"
 
     def get(self, request, *args, **kwargs):
         friends = Friendship.objects.filter(
@@ -51,6 +50,17 @@ class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
         return super().get(request, *args, **kwargs)
     
 
+class UserSignInView(auth_views.LoginView):
+    template_name = "user_management/sign_in.html"
+    redirect_authenticated_user = True
+    # TODO: Change to homepage instead of password change page
+    success_url = reverse_lazy("user_management:homepage")
+    form_class = SignInAuthenticationForm
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
+    
 
 class UserSignUpView(generic_views.FormView):
     template_name = "user_management/sign_up.html"
@@ -78,22 +88,11 @@ class UserSignUpView(generic_views.FormView):
         context = self.get_context_data()
         return render(request, self.template_name, context)
 
-class UserSignInView(auth_views.LoginView):
-    template_name = "user_management/sign_in.html"
-    redirect_authenticated_user = True
-    # TODO: Change to homepage instead of password change page
-    success_url = reverse_lazy("user_management:homepage")
-    form_class = SignInAuthenticationForm
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
-        return render(request, self.template_name, context)
-    
 
 class UserChangePasswordView(
     auth_mixins.LoginRequiredMixin, auth_views.PasswordChangeView
 ):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/change_password.html"
     form_class = auth_forms.PasswordChangeForm
     success_url = reverse_lazy("user_management:homepage")
     form_class = CustomPasswordChangeForm
@@ -145,7 +144,7 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
         return render(request, self.template_name, context)
 
 class UserFriendsView(auth_mixins.LoginRequiredMixin, generic_views.View):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/friends.html"
 
     def get(self, request, *args, **kwargs):
         friend_request_form = FriendRequestForm()
@@ -235,7 +234,7 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
         return render(request, self.template_name, context)
     
 class UserUpdateInfoView(auth_mixins.LoginRequiredMixin, generic_views.View):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/update_info.html"
 
     def get(self, request, *args, **kwargs):
         user_update_form = TranscendenceUserUpdateForm(instance=request.user)
