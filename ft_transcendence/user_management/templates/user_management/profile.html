@@ -3,7 +3,7 @@
 {% block content %}
     <div class="row app-row justify-content-center gap-4 gap-md-5 gap-lg-5 px-3 px-md-4 px-lg-5">
         <div class="col-profile col col-12 col-md-4 col-lg-3 col-xl-2 p-0 d-flex flex-row flex-md-column align-items-center justify-content-center gap-4">
-            <img class="profile-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
+            <img class="profile-img rounded-circle border-0" src="{{ profile_picture }}">
             <div class="col col-5 col-md-12 p-0">
                 <div class="profile-div shadow-sm rounded-4">
                     <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">{{ user.username }}</p>
@@ -32,7 +32,7 @@
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game information</p>
                 <div class="p-3 px-lg-4">
                     <div class=" history-info-box d-flex flex-column gap-1">
-                        <p class="text-profile m-0">Online on: 03/11/2024 at 23:37</p>
+                        <p class="text-profile m-0">Online on: {{ last_login }} </p>
                         <p class="text-profile m-0">Games played: 3</p>
                         <p class="text-profile m-0">Total wins: 2</p>
                     </div>

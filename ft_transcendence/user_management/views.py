@@ -17,10 +17,20 @@ class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/profile.html"
 
     def get(self, request, *args, **kwargs):
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            context = self.get_context_data()
-            return render(request, "user_management/profile.html", context)
-        return super().get(request, *args, **kwargs)
+        user = request.user
+
+        last_login = None
+        if user.last_login:
+            last_login = user.last_login.strftime("%d/%m/%Y at %H:%M")
+        
+        profile_picture = user.profile_picture.url if user.profile_picture.url else "{% static 'assets/foto-perfil.png' %}"
+
+        context = {
+            "last_login": last_login,
+            "profile_picture": profile_picture,
+        }
+
+        return render(request, self.template_name, context)
 
 
 class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
