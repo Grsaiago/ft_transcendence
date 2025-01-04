@@ -165,7 +165,7 @@ class PongGame:
         self.winner: Optional[str] = None
         self.lock: asyncio.Lock = asyncio.Lock()
 
-    async def update_score(self, side: str) -> None:
+    def update_score(self, side: str) -> None:
         """
         Updates the score for the given side and checks if a player has won.
         """
@@ -223,10 +223,12 @@ class PongGame:
         if self.paddle_left.x <= self.ball.x <= self.paddle_left.x + self.paddle_left.width:
             if self.paddle_left.y <= self.ball.y <= self.paddle_left.y + self.paddle_left.height:
                 self.ball.bounce(X)
+                self.ball.x = self.paddle_left.x + self.paddle_left.width
 
         if self.paddle_right.x <= self.ball.x + self.ball.size <= self.paddle_right.x + self.paddle_right.width:
             if self.paddle_right.y <= self.ball.y <= self.paddle_right.y + self.paddle_right.height:
                 self.ball.bounce(X)
+                self.ball.x = self.paddle_right.x - self.ball.size
 
 
     def check_colisions(self) -> None:
