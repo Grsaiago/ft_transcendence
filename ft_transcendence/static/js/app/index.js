@@ -18,6 +18,9 @@ import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
 import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
 import Tournament from "./views/tournament.js";
+import SignInFormHandler from "./handlers/signInFormHandler.js";
+import SignUpFormHandler from "./handlers/signUpFormHandler.js";
+import LogoutFormHandler from "./handlers/logoutFormHandler.js";
 
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
@@ -33,6 +36,7 @@ var wSManager = new WebSocketManager();
 wSManager.chatManager.loadEventHandlers();
 
 export const navigateTo = (url) => {
+    
     //tratamento de url relativa para absoluta
     history.pushState(null, null, url);
     viewsRouter(url);
@@ -94,6 +98,9 @@ const handlersRouter = async (form) => {
         { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
         { formType: "createTournamentForm", handler: CreateTournamentHandler},
         { formType: "createRoomForm", handler: CreateRoomHandler},
+        { formType: "signInForm", handler: SignInFormHandler},
+        { formType: "signUpForm", handler: SignUpFormHandler},
+        { formType: "logoutForm", handler: LogoutFormHandler},
     ];
 
     let match = routes.find((route) => form.getAttribute('formType') === route.formType);

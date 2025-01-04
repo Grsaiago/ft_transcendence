@@ -3,7 +3,7 @@ from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.auth import views as auth_views
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
@@ -60,7 +60,7 @@ class UserSignUpView(generic_views.FormView):
 
     def form_valid(self, form):
         form.save()
-        return super().form_valid(form)
+        return JsonResponse({'status': 'success'}, status=200)
     
     def form_invalid(self, form):
         if form.has_error('username'):
@@ -84,13 +84,6 @@ class UserSignInView(auth_views.LoginView):
     # TODO: Change to homepage instead of password change page
     success_url = reverse_lazy("user_management:homepage")
     form_class = SignInAuthenticationForm
-
-    def get_success_url(self):
-        return self.success_url
-    
-    def form_invalid(self, form):
-        messages.error(self.request, "invalid username or password")
-        return self.render_to_response(self.get_context_data(form=form))
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data()

@@ -10,7 +10,13 @@
                         <p class="text-profile m-0 text-nowrap">{{ user.first_name }}</p>
                         <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" href="/update_info/" data-link>Update info</a>
                         <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" href="/change_password/" data-link>Change Password</a>
-                        <form class="d-inline" action="{% url 'user_management:logout' %}" method="post" style="width:auto;">
+                        <form 
+                        action="{% url 'user_management:logout' %}"
+                        formType="logoutForm"
+                        method="post"
+                        class="d-inline" 
+                        style="width:auto;"
+                        api-link>
                             {% csrf_token %}
                             <button type="submit"class="text-profile option m-0 p-0 text-nowrap cursor-pointer fw-bold ">Logout</button>
                         </form>

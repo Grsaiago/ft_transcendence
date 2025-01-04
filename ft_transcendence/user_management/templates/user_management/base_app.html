@@ -35,7 +35,11 @@
                     <div class="d-flex flex-row align-items-center gap-1">
                         <img class="menu-profile-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
                         <a class="menu-profile-username mt-4" href="/profile/" data-link>{{ user.username }}</a>
-                        <form action="{% url 'user_management:logout' %}" method="post">
+                        <form
+                        action="{% url 'user_management:logout' %}"
+                        formType="logoutForm"
+                        method="post"
+                        api-link>
                             {% csrf_token %}
                             <button class="menu-profile-logout btn btn-lg mb-4 p-0" type="submit">
                                 <i class="bi bi-x"></i>

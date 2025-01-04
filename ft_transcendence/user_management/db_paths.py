@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST, require_GET
@@ -23,6 +24,8 @@ from .forms import (
     TranscendenceUserUpdateForm,
     UnblockUserForm,
     CustomPasswordChangeForm,
+    SignInAuthenticationForm,
+    TranscendenceUserCreationForm,
 )
 
 MAX_USER_PFP_SIZE = 1 * 1024 * 1024
@@ -344,4 +347,36 @@ def change_password(request: HttpRequest):
         else:
             messages.error(request, "There was an error with your submission.")
         return HttpResponse(status=400) 
-   
+
+@require_POST
+def sign_in(request: HttpRequest):
+    form = SignInAuthenticationForm(data=request.POST)
+    
+    if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        return HttpResponse(status=200)
+    else:
+        if form.has_error():
+            messages.error(request, "Invalid username or password")
+        return HttpResponse(status=400) 
+    
+
+@require_POST
+def sign_up(request: HttpRequest):
+    form = TranscendenceUserCreationForm(data=request.POST)
+    
+    if form.is_valid():
+        form.save()
+        return HttpResponse(status=200)
+    else:
+        if form.has_error('username'):
+            messages.error(self.request, "The username is already taken.")
+
+        elif form.has_error('password2'):
+            messages.error(self.request, "The passwords do not match. Please try again.")
+
+        if not any(form.has_error(field) for field in ['username', 'first_name', 'password2']):
+            messages.error(self.request, "Please correct the errors.")
+        return HttpResponse(status=400) 
+
