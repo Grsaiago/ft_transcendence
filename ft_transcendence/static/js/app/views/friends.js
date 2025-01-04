@@ -170,7 +170,6 @@ export default class Profile extends AbstractView {
                     <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
                         <div class="d-flex flex-row align-items-center gap-3">
                             <div class="status-icon">
-                                <img class="friend-img rounded-circle border-0" src="/static/assets/foto-perfil.png">
                             </div>
                             <p class="friend-name m-0 mt-1" data-friend="${request.id}">
                                 ${request.username}
@@ -202,7 +201,6 @@ export default class Profile extends AbstractView {
                     <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
                         <div class="d-flex flex-row align-items-center gap-3">
                             <div class="status-icon">
-                                <img class="friend-img rounded-circle border-0" src="/static/assets/foto-perfil.png">
                             </div>
                             <p class="friend-name m-0 mt-1" data-friend="${user.id}">
                                 ${user.username}
