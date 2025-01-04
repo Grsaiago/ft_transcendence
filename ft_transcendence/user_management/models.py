@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, BooleanField
 
 # docuemntação dos parametros para os fields das models:
 # https://docs.djangoproject.com/en/5.1/ref/models/fields/#field-options
@@ -18,6 +18,9 @@ class TrUser(AbstractUser):
         help_text="Foto de perfil do usuário",
         null=True,
         blank=True
+    )
+    is_online = models.BooleanField(
+        default=False
     )
     updated_at = models.DateTimeField(auto_now=True)
 
