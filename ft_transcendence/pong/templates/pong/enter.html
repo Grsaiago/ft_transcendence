@@ -8,7 +8,8 @@
         {% if game_mode == GameMode.TOURNAMENT %}
         <div class="create-room-box-tournament rounded-4 p-2 m-2">
             <p class="enter-title m-0 mb-1">Create a tournament</p>
-            <input type="text" name="name" class="form-control rounded-5 border-0" placeholder="Choose a name" title="tournament-name" maxlength="50">
+            <label for="tournament-name"></label>
+            <input id="tournament-name" type="text" name="name" class="form-control rounded-5 border-0" placeholder="Choose a name" title="tournament-name" maxlength="50">
             
             <div class="d-flex justify-content-center gap-3">
                 <button class="btn btn-custom mt-2" type="submit" name="max_players" value="4">
