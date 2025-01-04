@@ -62,14 +62,25 @@ clean:
 	$(COMPOSE) down -v
 	@printf "\n$(GREEN)🧹 Limpeza concluída 🧹$(RESET)\n\n"
 
-.PHONY: fclean
-fclean: clean
-	-docker rm -f $$(docker ps -aq)
-	-docker rmi -f $$(docker images -aq)
-	-docker volume rm -f $$(docker volume ls -q)
-	-docker network rm -f $$(docker network ls -q)
-	@printf "\n$(YELLOW)💣 Apagou tudo 💣$(RESET)\n\n"
+.PHONY: remove_containers
+remove_containers:
+	-@docker container rm -f $$(docker container ls -aq --filter 'label=com.docker.compose.project=transcendence') 2> /dev/null
 
+.PHONY: remove_images
+remove_images:
+	-@docker image rm -f $$(docker image ls -q --filter 'label=com.docker.compose.project=transcendence') 2> /dev/null
+
+.PHONY: remove_volumes
+remove_volumes:
+	-@docker volume rm -f $$(docker volume ls -q --filter 'label=com.docker.compose.project=transcendence') 2> /dev/null
+
+.PHONY: remove_networks
+remove_networks:
+	-@docker network rm -f $$(docker network ls -q --filter 'label=com.docker.compose.project=transcendence') 2> /dev/null
+
+.PHONY: fclean
+fclean: clean remove_containers remove_images remove_volumes remove_networks
+	@printf "\n$(YELLOW)💣 Apagou tudo 💣$(RESET)\n\n"
 
 ascii_art:
 	@echo  ' _______   ______     ___       _______ .___________.    ___      .__   __.   ______  '
@@ -99,5 +110,6 @@ ascii_art:
 	@echo  '|  |\/|  |   /  /_\  \   |      /      /  /_\  \  |  | |_ |   /  /_\  \  |  |  |  |   '
 	@echo  '|  |  |  |  /  _____  \  |  |\  \----./  _____  \ |  |__| |  /  _____  \ |  `--`  |   '
 	@echo  '|__|  |__| /__/     \__\ | _| `._____/__/     \__\ \______| /__/     \__\ \______/    '
+	@sleep 2
 
 .PHONY: all up start down stop restart logs clean fclean clear re ascii_art
