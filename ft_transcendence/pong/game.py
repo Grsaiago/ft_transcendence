@@ -2,8 +2,8 @@ import random
 import asyncio
 from typing import Dict, Optional, TypedDict
 
-THICKNESS = float(15)
-BALL_SPEED = float(5)
+THICKNESS = float(15.0)
+BALL_SPEED = float(5.0)
 PADDLE_SPEED = float(BALL_SPEED * 2)
 X = "x"
 Y = "y"
@@ -220,24 +220,14 @@ class PongGame:
         """
         Checks if the ball hits the paddles and bounces it.
         """
-        if (
-            self.paddle_left.x
-            <= self.ball.x + self.ball.size / 2
-            <= self.paddle_left.x + self.paddle_left.width
-            and self.paddle_left.y
-            <= self.ball.y + self.ball.size / 2
-            <= self.paddle_left.y + self.paddle_left.height
-        ):
-            await self.ball.bounce(X)
-        if (
-            self.paddle_right.x
-            <= self.ball.x + self.ball.size /2
-            <= self.paddle_right.x + self.paddle_right.width
-            and self.paddle_right.y
-            <= self.ball.y + self.ball.size / 2
-            <= self.paddle_right.y + self.paddle_right.height
-        ):
-            await self.ball.bounce(X)
+        if self.paddle_left.x <= self.ball.x <= self.paddle_left.x + self.paddle_left.width:
+            if self.paddle_left.y <= self.ball.y <= self.paddle_left.y + self.paddle_left.height:
+                await self.ball.bounce(X)
+
+        if self.paddle_right.x <= self.ball.x + self.ball.size <= self.paddle_right.x + self.paddle_right.width:
+            if self.paddle_right.y <= self.ball.y <= self.paddle_right.y + self.paddle_right.height:
+                await self.ball.bounce(X)
+
 
     async def check_colisions(self) -> None:
         """
