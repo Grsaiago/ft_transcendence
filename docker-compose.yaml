@@ -55,6 +55,7 @@ services:
     volumes:
       - prometheus-data:/prometheus:rw
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./docker/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
     # Take this off when the app is in the docker network
     extra_hosts:
       - "host.docker.internal:host-gateway"
