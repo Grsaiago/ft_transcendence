@@ -12,12 +12,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm, TranscendenceUserUpdateForm
 from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
-class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
-    success_url = reverse_lazy("user_management:profile")
-    
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
 class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/profile.html"
 
@@ -54,7 +48,7 @@ class UserSignInView(auth_views.LoginView):
     template_name = "user_management/sign_in.html"
     redirect_authenticated_user = True
     # TODO: Change to homepage instead of password change page
-    success_url = reverse_lazy("user_management:homepage")
+    success_url = reverse_lazy("user_management:profile")
     form_class = SignInAuthenticationForm
 
     def get(self, request, *args, **kwargs):
@@ -94,7 +88,7 @@ class UserChangePasswordView(
 ):
     template_name = "user_management/change_password.html"
     form_class = auth_forms.PasswordChangeForm
-    success_url = reverse_lazy("user_management:homepage")
+    success_url = reverse_lazy("user_management:profile")
     form_class = CustomPasswordChangeForm
 
     def get(self, request, *args, **kwargs):

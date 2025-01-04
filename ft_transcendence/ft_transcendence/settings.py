@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
+from django.urls import reverse_lazy
 
 from dotenv import load_dotenv
 
@@ -144,7 +145,7 @@ AUTH_USER_MODEL = "user_management.TrUser"
 
 LOGIN_URL = "/sign_in"
 
-LOGIN_REDIRECT_URL = ""  # TODO: Colocar aqui o url da home
+LOGIN_REDIRECT_URL = reverse_lazy("user_management:profile") # TODO: Colocar aqui o url da home
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
