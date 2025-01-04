@@ -9,6 +9,10 @@ services:
     restart: always
     volumes:
       - pg-data:/var/lib/postgresql/data:rwx
+    networks:
+      - data-layer-network
+    expose:
+      - 5432
     ports:
       - "5432:5432"
     env_file:
@@ -29,6 +33,10 @@ services:
     restart: always
     volumes:
       - media-data:/app/ft_transcendence/media:rw
+    networks:
+      - logs-scrape-network
+      - metrics-scrape-network
+      - data-layer-network
     ports:
       - "443:443"
     env_file:
@@ -43,6 +51,10 @@ services:
     restart: always
     volumes:
       - redis-data:/data:rw
+    networks:
+      - data-layer-network
+    expose:
+      - 6379
     ports:
       - "6379:6379"
     depends_on:
@@ -56,9 +68,11 @@ services:
       - prometheus-data:/prometheus:rw
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./docker/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
-    # Take this off when the app is in the docker network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - metrics-scrape-network
+      - metrics-display-network
+    expose:
+      - 9090
     ports:
       - "9090:9090"
     depends_on:
@@ -72,6 +86,10 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana:rw
       - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
+    networks:
+      - metrics-display-network
+    expose:
+      - 3000
     ports:
       - "3000:3000"
     env_file:
@@ -126,3 +144,10 @@ volumes:
   grafana-data: {}
   prometheus-data: {}
   elasticsearch-data: {}
+
+networks:
+  metrics-scrape-network: {}
+  metrics-display-network: {}
+  logs-scrape-network: {}
+  logs-display-network: {}
+  data-layer-network: {}
