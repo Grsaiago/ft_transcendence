@@ -149,7 +149,7 @@ def unblock_user(request: HttpRequest):
 
 @require_GET
 @login_required
-def get_user_friends(request: HttpRequest):    
+def get_user_friends(request: HttpRequest):
     friends = Friendship.objects.filter(
         Q(first_user=request.user.id) | Q(second_user=request.user.id)
     )
@@ -161,7 +161,7 @@ def get_user_friends(request: HttpRequest):
         
         # Obtém as informações detalhadas do amigo
         friend_data = TrUser.objects.filter(id=friend.id).values(
-            'id', 'username', 'first_name', 'last_login'
+            'id', 'username', 'first_name', 'last_login', 'is_online'
         ).first()
 
         # Adiciona ao dicionário
@@ -171,6 +171,7 @@ def get_user_friends(request: HttpRequest):
                 "username": friend_data['username'],
                 "first_name": friend_data['first_name'],
                 "last_login": friend_data['last_login'],
+                "is_online": friend_data['is_online']
             })
     
     response = JsonResponse({"friends": friends_list})
