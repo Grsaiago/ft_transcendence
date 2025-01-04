@@ -207,6 +207,10 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
         if not user:
             raise Http404("User not found")
 
+        ast_login = None
+        if user['last_login']:
+            last_login = user['last_login'].strftime("%d/%m/%Y at %H:%M")
+
         is_blocked = BlockedUsers.objects.filter(
             blocker=request.user.id, blocked=user_id
         ).exists()
@@ -229,11 +233,12 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
                     "sent" if friend_request.sender_id == request.user.id else "received"
                 )
 
+
         context = {
             "user_id": user['id'],
             "username": user['username'],
             "first_name": user['first_name'],
-            "last_login": user['last_login'],
+            "last_login": last_login,
             "is_blocked": is_blocked,
             "is_friend": is_friend,
             "friend_request": friendship_status,
