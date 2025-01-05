@@ -125,8 +125,9 @@ export default class Room extends AbstractView {
         startButton.style.display = "block";
     }
 
-    handleRedirectTournament(redirect) {
-        window.location.href = redirect; //navigateTo
+    handleRedirectTournament(event) {
+        log.info("redirect url:", event.detail)
+        window.location.href = event.detail; //navigateTo
     }
 
     //CanvasFocus Event Handlers
