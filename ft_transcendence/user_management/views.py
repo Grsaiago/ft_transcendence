@@ -23,7 +23,7 @@ class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
         if user.last_login:
             last_login = user.last_login.strftime("%d/%m/%Y at %H:%M")
         
-        profile_picture = user.profile_picture.url if user.profile_picture else "{% static 'assets/foto-perfil.png' %}"
+        profile_picture = user.profile_picture.url if user.profile_picture else '/media/user/profile_pictures/foto-perfil-default.png'
 
         context = {
             "last_login": last_login,
@@ -229,7 +229,7 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
                     "sent" if friend_request.sender_id == request.user.id else "received"
                 )
 
-        profile_picture = settings.MEDIA_URL + user['profile_picture'] if user['profile_picture'] else "{% static 'assets/foto-perfil.png' %}"
+        profile_picture = settings.MEDIA_URL + user['profile_picture'] if user['profile_picture'] else settings.MEDIA_URL + 'user/profile_pictures/foto-perfil-default.png'
 
         context = {
             "user_id": user['id'],
