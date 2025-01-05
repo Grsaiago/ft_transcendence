@@ -197,7 +197,7 @@ button {
     background-color: var(--cor-2);
     height: 196px;
     overflow: hidden;
-    min-width: 195px;
+    min-width: 220px;
     max-width: 340px;
 }
 
@@ -224,6 +224,11 @@ button {
 
 .col-friends.friends {
     height: 180px;
+}
+
+.col-friends.friends.unselected {
+    height: 420px;
+    width: 300px;
 }
 
 .col-chat {
@@ -254,7 +259,11 @@ button {
 }
 
 .friends-box.friends {
-    height: 82px;
+    height: 68px;
+}
+
+.friends-box.friends.unselected {
+    height: 300px;
 }
 
 .friends-box::-webkit-scrollbar {
@@ -589,7 +598,7 @@ button {
     background-color: var(--cor-6);
 }
 
-@media (min-width: 574px) {
+@media (min-width: 520px) {
     .app-container {
         min-height: calc(100vh - 126px);
     }

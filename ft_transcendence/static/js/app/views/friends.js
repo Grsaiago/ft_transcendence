@@ -273,6 +273,12 @@ export default class Profile extends AbstractView {
         }
         console.log("Friend ID: ", friendId);
         this.highlightSelectedFriend(friendElement);
+        const friendsColumn = document.querySelector('.col-friends.friends');
+        friendsColumn.classList.remove('unselected');
+        const friendsBoxes = document.querySelectorAll('.friends-box.friends');
+        friendsBoxes.forEach(box => {
+            box.classList.remove('unselected');
+        });
         this.loadUserDetail(friendId);
     }
 

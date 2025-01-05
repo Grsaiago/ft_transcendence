@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
     <div class="row app-row justify-content-center px-3 px-md-4 px-lg-4 gap-3 gap-md-4 gap-lg-5" id="friends-page">
-        <div class="col-friends friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 rounded-4">
+        <div class="col-friends friends unselected col col-4 col-md-3 col-lg-3 col-xl-2 p-0 rounded-4">
             <div class=" rounded-top-4 d-flex flex-row align-items-center justify-content-center gap-0">
                 <p id="title-friends-friend" class="title-friends selected col col-6 rounded-top-start-4 text-center m-0 p-2 text-nowrap cursor-pointer selected">Friends</p>
                 <p id="title-friends-search" class="title-friends col col-6 rounded-top-end-4 text-center m-0 p-2 text-nowrap cursor-pointer">Search</p>
@@ -11,13 +11,13 @@
             <div class="div-friend px-2 px-lg-3 pt-1 pb-2 pb-lg-3">
                 <a class="refresh-icon-tag text-decoration-none d-flex flex-row justify-content-center gap-2" href="/friends/" data-link>
                     <p class="text-profile m-0" style="font-weight: 500; pointer-events: none;">Refresh page</p>
-                    <i class="refresh-icon bi bi-arrow-clockwise "></i>
+                    <i class="bi bi-arrow-clockwise " style="pointer-events: none; font-size: 15px;"></i>
                 </a>
                 <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
                     <input type="text" class="form-control rounded-5 border-0" placeholder="search friend" id="friends-input">
                     <i class="search-icon mx-2 mb-1 bi bi-search"></i>
                 </div>
-                <div class="friends-box friends d-flex flex-column justify-content-start overflow-y-auto" id='friends-tab'>
+                <div class="friends-box friends unselected d-flex flex-column justify-content-start overflow-y-auto" id='friends-tab'>
                 {% comment %} Server Side Rendering Code {% endcomment %}
                 {% comment %} {% for friend in current_friends %}
                     <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5">
@@ -41,15 +41,13 @@
             <div class="div-search px-2 px-lg-3 pt-1 pb-2 pb-lg-3">
                 <a class="refresh-icon-tag text-decoration-none d-flex flex-row justify-content-center gap-2" href="/friends/" data-link>
                     <p class="text-profile m-0" style="font-weight: 500; pointer-events: none;">Refresh page</p>
-                    <i class="refresh-icon bi bi-arrow-clockwise "></i>
+                    <i class="bi bi-arrow-clockwise " style="pointer-events: none; font-size: 15px;"></i>
                 </a>
                 <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
                     <input type="text" class="form-control rounded-5 border-0" placeholder="search user" id="search-input">
                     <i class="search-icon mx-2 mb-1 bi bi-search"></i>
                 </div>
-                <div class="friends-box friends d-flex flex-column justify-content-start overflow-y-auto" id='search-tab'>
-
-
+                <div class="friends-box friends unselected d-flex flex-column justify-content-start overflow-y-auto" id='search-tab'>
                     {% comment %} {% if pending_friend_requests %}
                     <div style="display: flex; align-items: center; gap: 5px;">
                         <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
