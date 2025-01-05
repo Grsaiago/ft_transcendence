@@ -15,7 +15,7 @@ from .models import GameMode, Match, PongRoom, Tournament, TournamentParticipant
 
 logger = logging.getLogger(__name__)
 
-class PongSelectGameMode(TemplateView):
+class PongSelectGameMode(LoginRequiredMixin, TemplateView):
     template_name = "../../user_management/templates/user_management/base_app.html"
 
     def get(self, request, *args, **kwargs):
@@ -42,7 +42,7 @@ class PongSelectGameMode(TemplateView):
             return redirect("pong:pongenter", game_mode=game_mode)
 
 
-class PongEnterView(TemplateView):
+class PongEnterView(LoginRequiredMixin, TemplateView):
     template_name = "../../user_management/templates/user_management/base_app.html"
 
     def get_context_data(self, **kwargs):
