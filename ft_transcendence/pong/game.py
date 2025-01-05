@@ -4,6 +4,7 @@ from typing import Dict, Optional, TypedDict
 
 THICKNESS = float(15.0)
 BALL_SPEED = float(5.0)
+MAX_SPEED = float(12.0)
 PADDLE_SPEED = float(BALL_SPEED * 2)
 X = "x"
 Y = "y"
@@ -54,6 +55,7 @@ class Ball:
         self.size: float = float(THICKNESS)
         self.center: float = float(self.size / 2)
         self.base_speed: float = BALL_SPEED
+        self.max_speed: float = MAX_SPEED
         self.x_start: float = float(width / 2) - self.center
         self.y_start: float = float(height / 2) - self.center
         self.y_min_start: int = 6 * THICKNESS
@@ -80,6 +82,8 @@ class Ball:
         if direction == X:
             self.x_speed *= -1
             self.x_speed *= 1.1
+            if self.x_speed > self.max_speed:
+                self.x_speed = self.max_speed
         elif direction == Y:
             self.y_speed *= -1
 
@@ -90,7 +94,6 @@ class Ball:
         self.x = self.x_start
         self.y = float(random.randint(int(self.y_min_start), int(self.y_max_start)))
         self.x_speed = self.base_speed
-        # self.y_speed = self.base_speed
         if random.randint(0, 1) == 0:
             self.bounce(X)
         angle = random.choice([0,1,2])
