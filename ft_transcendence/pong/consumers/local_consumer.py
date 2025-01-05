@@ -1,4 +1,7 @@
+import asyncio
 from django.core.cache import cache
+
+from typing import Optional
 
 from .base_consumer import (
     BasePongConsumer,
@@ -16,6 +19,17 @@ class LocalPongConsumer(BasePongConsumer):
     Inherits from BasePongConsumer.
     """
 
+    async def connect(self) -> None:
+        """
+        Handles the WebSocket connection event.
+        Initializes local game-specific variables..
+        """
+        await super().connect()
+
+        # Initialize variables that will be used after join_room
+        self.current_player_id: Optional[int] = None
+        self.ready_lock = asyncio.Lock()
+
     async def handle_join_room(self, data: ClientMessage) -> None:
         """
         Handles the 'join_room' message from the client.
@@ -25,9 +39,23 @@ class LocalPongConsumer(BasePongConsumer):
         """
         try:
             self.room_id = data["room_id"]
-            await self.add_to_group(self.room_id)
-            await self.initialize_game_data(data["width"], data["height"])
-            await self.worker_initialize_game()
+
+            async with self.ready_lock:
+                self.current_player_id = cache.get(
+                    f"{self.room_group_name}_current_player_id", None
+                )
+
+                if self.current_player_id:
+                    await self.add_to_group(self.room_id)
+                    await self.send_spectator_mode("You are joining as a spectador.")
+                else:
+                    self.current_player_id = self.scope['user'].id
+                    cache.set(f"{self.room_group_name}_current_player_id", self.current_player_id)
+
+                    await self.add_to_group(self.room_id)
+                    await self.initialize_game_data(data["width"], data["height"])
+                    await self.worker_initialize_game()
+                    logger.info(f"User {self.scope['user']} joined as main player.")
         except Exception as e:
             await self.send_error("Failed to join room.")
             logger.exception(f"Failed to handle join_room: {e}")
@@ -75,25 +103,41 @@ class LocalPongConsumer(BasePongConsumer):
         Performs any necessary cleanup operations.
         """
         try:
+            async with self.ready_lock:
+                if self.current_player_id == self.scope['user'].id:
+                    # Send a message to the worker to finish the game
+                    await self.channel_layer.send(
+                        "pong_update_channel",
+                        {
+                            "type": "finish_game",
+                            "room_id": str(self.room_id),
+                        },
+                    )
+                    # send message to group
+                    if self.room_group_name:
+                        await self.channel_layer.group_send(
+                            self.room_group_name,
+                            {
+                                "type": "send_message",
+                                "message": "The game has ended. The main player has disconnected.",
+                                "message_type": "main_player_exited",   
+                            },
+                        )
+                    # Delete game data
+                    cache.delete(f"{self.room_group_name}_game_data")
+                    cache.delete(f"{self.room_group_name}_current_player_id")
+                    # Set room inactive
+                    await self.set_room_inactive()
+                    logger.info(
+                        f"Game finished and cleaned up for room {self.room_group_name}"
+                    )
+
             if self.room_group_name:
-                # Send a message to the worker to finish the game
-                await self.channel_layer.send(
-                    "pong_update_channel",
-                    {
-                        "type": "finish_game",
-                        "room_id": str(self.room_id),
-                    },
-                )
                 # Remove the user from the group
                 await self.channel_layer.group_discard(
                     self.room_group_name, self.channel_name
                 )
-                # Delete game data
-                cache.delete(f"{self.room_group_name}_game_data")
-                await self.set_room_inactive()
-                logger.info(
-                    f"Game finished and cleaned up for room {self.room_group_name}"
-                )
+
         except Exception as e:
             await self.send_error("Failed to finish game.")
             logger.exception(f"Failed to finish game: {e}")

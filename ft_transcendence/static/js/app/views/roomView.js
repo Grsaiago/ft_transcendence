@@ -130,6 +130,14 @@ export default class Room extends AbstractView {
         window.location.href = event.detail; //navigateTo
     }
 
+    handleSpectatorMsg(event) {
+        console.log("Spectator msg received")
+        const spectadorContainer = document.getElementById("spectadorContainer");
+        spectadorContainer.textContent = `${event.detail}`;
+        const startButton = document.getElementById("startGame");
+        startButton.style.display = "none";
+    }
+
     //CanvasFocus Event Handlers
 
     handleFocus() {
@@ -145,6 +153,8 @@ export default class Room extends AbstractView {
         document.addEventListener('GameStarted', this.handleGameHasStarted);
         document.addEventListener('Winner', this.handleWinner);
         document.addEventListener('RedirectTournament', this.handleRedirectTournament);
+        document.addEventListener('SpectatorMsg', this.handleSpectatorMsg);
+
     }
 
     bindMovementHandlers() {
@@ -178,5 +188,6 @@ export default class Room extends AbstractView {
         document.removeEventListener('GameStarted', this.handleGameHasStarted);
         document.removeEventListener('Winner', this.handleWinner);
         document.removeEventListener('RedirectTournament', this.handleRedirectTournament);
+        document.removeEventListener('SpectatorMsg', this.handleSpectatorMsg);
     }
 }
