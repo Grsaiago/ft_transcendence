@@ -90,9 +90,16 @@ class Ball:
         self.x = self.x_start
         self.y = float(random.randint(int(self.y_min_start), int(self.y_max_start)))
         self.x_speed = self.base_speed
-        self.y_speed = self.base_speed
+        # self.y_speed = self.base_speed
         if random.randint(0, 1) == 0:
             self.bounce(X)
+        angle = random.choice([0,1,2])
+        if angle == 0:
+            self.y_speed = 1.2 * self.base_speed
+        elif angle == 1:
+            self.y_speed = self.base_speed
+        elif angle == 2:
+            self.y_speed = 0.8 * self.base_speed
 
 
 class Paddle:
