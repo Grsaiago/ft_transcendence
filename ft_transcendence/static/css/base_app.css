@@ -207,6 +207,12 @@ button {
     height: 380px;
 }
 
+
+.col-room-tournament {
+    background-color: var(--cor-2);
+    overflow: hidden;
+}
+
 .col-tournament {
     background-color: var(--cor-2);
     overflow: hidden;
@@ -251,6 +257,17 @@ button {
 .friends-box {
     height: 106px;
     overflow-y: auto;
+}
+
+
+.form-player {
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    background-color: var(--cor-6);
+    margin-right: 3px;
+    padding: 0 10px;
 }
 
 .friends-box.friends {
