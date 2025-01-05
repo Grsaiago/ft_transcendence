@@ -46,6 +46,16 @@ class LocalPongConsumer(BasePongConsumer):
                     f"{self.room_group_name}_current_player_id", None
                 )
 
+                # Verifica se a sala está ativa no banco de dados
+                room = await self.get_room_by_id(self.room_id)
+                if not room.is_active:
+                    await self.send_alert_message("Room is inactive.")
+                    logger.info(f"User {self.scope['user']} attempted to join an inactive room {self.room_id}.")
+                    if self.room_group_name:
+                        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+                    await self.close()
+                    return
+
                 if self.current_player_id:
                     await self.send_alert_message("Room is already occupied.")
                     logger.info(f"User {self.scope['user']} attempted to join an occupied room {self.room_id}.")
