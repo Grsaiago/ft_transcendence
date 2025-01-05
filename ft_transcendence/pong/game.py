@@ -79,6 +79,7 @@ class Ball:
         """
         if direction == X:
             self.x_speed *= -1
+            self.x_speed *= 1.1
         elif direction == Y:
             self.y_speed *= -1
 
