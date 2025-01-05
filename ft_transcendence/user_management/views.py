@@ -23,7 +23,7 @@ class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
         if user.last_login:
             last_login = user.last_login.strftime("%d/%m/%Y at %H:%M")
         
-        profile_picture = user.profile_picture.url if user.profile_picture.url else "{% static 'assets/foto-perfil.png' %}"
+        profile_picture = user.profile_picture.url if user.profile_picture else "{% static 'assets/foto-perfil.png' %}"
 
         context = {
             "last_login": last_login,
