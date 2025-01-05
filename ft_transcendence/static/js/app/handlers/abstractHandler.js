@@ -8,6 +8,7 @@ export default class AbstractHandler {
     async postForm(form) {
         const formData = new FormData(form);
         const data = new URLSearchParams(formData);
+        console.log("postForm called")
 
         return fetch(form.action, {
             method: form.method,

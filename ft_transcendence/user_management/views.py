@@ -3,34 +3,38 @@ from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import mixins as auth_mixins
 from django.contrib.auth import views as auth_views
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 
 from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm, TranscendenceUserUpdateForm
 from .models import BlockedUsers, FriendRequest, Friendship, TrUser
 
-class HomepageView(LoginRequiredMixin, generic_views.TemplateView):
-    template_name = "user_management/base_app.html"
-    success_url = reverse_lazy("user_management:profile")
-    
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
 class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/profile.html"
 
     def get(self, request, *args, **kwargs):
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            context = self.get_context_data()
-            return render(request, "user_management/profile.html", context)
-        return super().get(request, *args, **kwargs)
+        user = request.user
+
+        last_login = None
+        if user.last_login:
+            last_login = user.last_login.strftime("%d/%m/%Y at %H:%M")
+        
+        profile_picture = user.profile_picture.url if user.profile_picture else '/media/user/profile_pictures/foto-perfil-default.png'
+
+        context = {
+            "last_login": last_login,
+            "profile_picture": profile_picture,
+        }
+
+        return render(request, self.template_name, context)
 
 
 class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/chat.html"
 
     def get(self, request, *args, **kwargs):
         friends = Friendship.objects.filter(
@@ -38,7 +42,10 @@ class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
         )
 
         current_friends = {
-            (entry.first_user if entry.first_user != request.user else entry.second_user).username: entry.chat_room_id
+            (entry.first_user if entry.first_user != request.user else entry.second_user).username: {
+                'chat_room_id': entry.chat_room_id,
+                'is_online': entry.first_user.is_online if entry.first_user != request.user else entry.second_user.is_online
+            }
             for entry in friends
         }
 
@@ -51,16 +58,27 @@ class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
         return super().get(request, *args, **kwargs)
     
 
+class UserSignInView(auth_views.LoginView):
+    template_name = "user_management/sign_in.html"
+    redirect_authenticated_user = True
+    # TODO: Change to homepage instead of password change page
+    success_url = reverse_lazy("user_management:profile")
+    form_class = SignInAuthenticationForm
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
+    
 
 class UserSignUpView(generic_views.FormView):
-    template_name = "user_management/base_sign.html"
+    template_name = "user_management/sign_up.html"
     form_class = TranscendenceUserCreationForm
     # TODO: Change to homepage instead of password change page
     success_url = reverse_lazy("user_management:sign_in")
 
     def form_valid(self, form):
         form.save()
-        return super().form_valid(form)
+        return JsonResponse({'status': 'success'}, status=200)
     
     def form_invalid(self, form):
         if form.has_error('username'):
@@ -75,38 +93,16 @@ class UserSignUpView(generic_views.FormView):
         return self.render_to_response(self.get_context_data(form=form))
     
     def get(self, request, *args, **kwargs):
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            context = self.get_context_data()
-            return render(request, "user_management/sign_up.html", context)
-        return super().get(request, *args, **kwargs)
+        context = self.get_context_data()
+        return render(request, self.template_name, context)
 
-class UserSignInView(auth_views.LoginView):
-    template_name = "user_management/base_sign.html"
-    redirect_authenticated_user = True
-    # TODO: Change to homepage instead of password change page
-    success_url = reverse_lazy("user_management:homepage")
-    form_class = SignInAuthenticationForm
-
-    def get_success_url(self):
-        return self.success_url
-    
-    def form_invalid(self, form):
-        messages.error(self.request, "invalid username or password")
-        return self.render_to_response(self.get_context_data(form=form))
-
-    def get(self, request, *args, **kwargs):
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            context = self.get_context_data()
-            return render(request, "user_management/sign_in.html", context)
-        return super().get(request, *args, **kwargs)
-    
 
 class UserChangePasswordView(
     auth_mixins.LoginRequiredMixin, auth_views.PasswordChangeView
 ):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/change_password.html"
     form_class = auth_forms.PasswordChangeForm
-    success_url = reverse_lazy("user_management:homepage")
+    success_url = reverse_lazy("user_management:profile")
     form_class = CustomPasswordChangeForm
 
     def get(self, request, *args, **kwargs):
@@ -156,7 +152,7 @@ class UserFriendListView(auth_mixins.LoginRequiredMixin, generic_views.View):
         return render(request, self.template_name, context)
 
 class UserFriendsView(auth_mixins.LoginRequiredMixin, generic_views.View):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/friends.html"
 
     def get(self, request, *args, **kwargs):
         friend_request_form = FriendRequestForm()
@@ -201,11 +197,15 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
             raise Http404("User ID not provided")
         
         user = TrUser.objects.filter(id=user_id).values(
-            'id', 'username', 'first_name', 'last_login'
+            'id', 'username', 'first_name', 'last_login', 'profile_picture'
         ).first()
         
         if not user:
             raise Http404("User not found")
+
+        last_login = None
+        if user['last_login']:
+            last_login = user['last_login'].strftime("%d/%m/%Y at %H:%M")
 
         is_blocked = BlockedUsers.objects.filter(
             blocker=request.user.id, blocked=user_id
@@ -229,19 +229,23 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
                     "sent" if friend_request.sender_id == request.user.id else "received"
                 )
 
+        profile_picture = settings.MEDIA_URL + user['profile_picture'] if user['profile_picture'] else settings.MEDIA_URL + 'user/profile_pictures/foto-perfil-default.png'
+
         context = {
             "user_id": user['id'],
             "username": user['username'],
             "first_name": user['first_name'],
-            "last_login": user['last_login'],
+            "last_login": last_login,
             "is_blocked": is_blocked,
             "is_friend": is_friend,
             "friend_request": friendship_status,
+            "profile_picture": profile_picture,
         }
+
         return render(request, self.template_name, context)
     
 class UserUpdateInfoView(auth_mixins.LoginRequiredMixin, generic_views.View):
-    template_name = "user_management/base_app.html"
+    template_name = "user_management/update_info.html"
 
     def get(self, request, *args, **kwargs):
         user_update_form = TranscendenceUserUpdateForm(instance=request.user)

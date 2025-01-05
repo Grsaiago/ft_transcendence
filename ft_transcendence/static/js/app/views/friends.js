@@ -24,7 +24,7 @@ export default class Profile extends AbstractView {
             console.log('Friends html fetched. Returning...');
             return html;
         }
-        catch(error) {
+        catch (error) {
             console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
@@ -45,7 +45,7 @@ export default class Profile extends AbstractView {
             console.log('Friends html fetched. Returning...');
             return html;
         }
-        catch(error) {
+        catch (error) {
             console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
@@ -83,24 +83,32 @@ export default class Profile extends AbstractView {
         catch (error) {
             console.error('Failed to fetch friends list: ', error);
         }
-    
+
         if (jsonData.friends && jsonData.friends.length > 0) {
             jsonData.friends.forEach(friend => {
                 // Create the friend container div
                 const friendDiv = document.createElement('div');
                 friendDiv.className = 'friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5';
-    
+
                 // Create the inner left content (status icon + name)
                 const leftContentDiv = document.createElement('div');
                 leftContentDiv.className = 'd-flex flex-row align-items-center gap-3';
-    
+
                 const statusIconDiv = document.createElement('div');
                 statusIconDiv.className = 'status-icon';
 
-                const imgElement = document.createElement('img');
-                imgElement.className = 'friend-img rounded-circle border-0';
-                imgElement.src = '/static/assets/foto-perfil.png';
-                statusIconDiv.appendChild(imgElement);
+                //const imgElement = document.createElement('img');
+                //imgElement.className = 'friend-img rounded-circle border-0';
+                //imgElement.src = '/static/assets/foto-perfil.png';
+                //statusIconDiv.appendChild(imgElement);
+                //
+                // Ícone de acordo com o status online da pessoa
+                const iconElement = document.createElement('i');
+                iconElement.className = 'bi bi-circle-fill'; // Classe para o ícone
+                // Adicionando a cor com base em is_online
+                friend.is_online ? iconElement.style.color = 'green' : iconElement.style.color = 'red';
+                // Adicionando o ícone ao contêiner
+                statusIconDiv.appendChild(iconElement);
                 const friendNameP = document.createElement('p');
                 friendNameP.className = 'friend-name m-0 mt-1';
                 friendNameP.dataset.friend = friend.id; //desnecessario??
@@ -139,14 +147,14 @@ export default class Profile extends AbstractView {
             console.error('Failed to fetch friends list: ', error);
         }
         const friendsBox = document.getElementById('search-tab');
-    
+
         // Clear existing content in the friends box
         friendsBox.innerHTML = '';
-    
+
         // Separate pending friend requests and all users
         const pendingRequests = usersData.users.filter(user => user.pending_friend_request);
         const allUsers = usersData.users;
-    
+
         // Generate HTML for pending friend requests if any
         const pendingHeader = `
             <div style="display: flex; align-items: center; gap: 5px;">
@@ -156,13 +164,12 @@ export default class Profile extends AbstractView {
         `;
         friendsBox.insertAdjacentHTML('beforeend', pendingHeader);
         if (pendingRequests.length > 0) {
-    
+
             pendingRequests.forEach(request => {
                 const requestHtml = `
                     <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
                         <div class="d-flex flex-row align-items-center gap-3">
                             <div class="status-icon">
-                                <img class="friend-img rounded-circle border-0" src="/static/assets/foto-perfil.png">
                             </div>
                             <p class="friend-name m-0 mt-1" data-friend="${request.id}">
                                 ${request.username}
@@ -178,7 +185,7 @@ export default class Profile extends AbstractView {
             `;
             friendsBox.insertAdjacentHTML('beforeend', noPendingRequests);
         }
-    
+
         // Generate HTML for all users
         if (allUsers.length > 0) {
             const usersHeader = `
@@ -188,13 +195,12 @@ export default class Profile extends AbstractView {
                 </div>
             `;
             friendsBox.insertAdjacentHTML('beforeend', usersHeader);
-    
+
             allUsers.forEach(user => {
                 const userHtml = `
                     <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
                         <div class="d-flex flex-row align-items-center gap-3">
                             <div class="status-icon">
-                                <img class="friend-img rounded-circle border-0" src="/static/assets/foto-perfil.png">
                             </div>
                             <p class="friend-name m-0 mt-1" data-friend="${user.id}">
                                 ${user.username}
@@ -223,7 +229,7 @@ export default class Profile extends AbstractView {
         titleFriends.addEventListener("click", this.handleTabSwitch);
         titleSearch.addEventListener("click", this.handleTabSwitch);
 
-       //search events
+        //search events
         const searchBarInput = document.getElementById('search-input');
         searchBarInput.addEventListener('keydown', this.handleSearchEnterKey);
         const friendsBarInput = document.getElementById('friends-input');
@@ -244,7 +250,7 @@ export default class Profile extends AbstractView {
 
     bindFriendListClickEvent() {
         const friendElements = document.querySelectorAll('[data-friend]');
-       
+
         friendElements.forEach(friendElement => {
             friendElement.addEventListener('click', this.handleFriendClick);
         });
@@ -274,7 +280,7 @@ export default class Profile extends AbstractView {
         const tab = event.target.textContent.trim().toLowerCase();
         this.toggleTabs(tab);
     }
-    
+
     handleSearchEnterKey(event, tab) {
         if (event.key === 'Enter') {
             if (event.currentTarget.id === 'friends-input') {
@@ -284,7 +290,7 @@ export default class Profile extends AbstractView {
             }
         }
     }
-    
+
     handleFriendsSearch() {
         const messageInputDom = document.getElementById('friends-input');
         if (!messageInputDom) {
@@ -299,9 +305,9 @@ export default class Profile extends AbstractView {
         messageInputDom.value = '';
         this.renderFriendsList(this.getFriendsList());
     }
-    
+
     handleUserSearch() {
-    const messageInputDom = document.getElementById('search-input');
+        const messageInputDom = document.getElementById('search-input');
         if (!messageInputDom) {
             console.error('Message input field not found.');
             return;
@@ -320,18 +326,18 @@ export default class Profile extends AbstractView {
         var friends = [];
         return friends;
     }
-    
+
     searchUsers() {
         //endpoint to get search results
         var users = [];
         return users;
     }
-    
+
     renderFriendsList(friends) {
         //render friends list based on friends array
         console.log("rendering friends list");
     }
-    
+
     renderUserSearch(users) {
         //render search results based on results array
         console.log("rendering user search results");
@@ -339,7 +345,7 @@ export default class Profile extends AbstractView {
 
 
     updateFriend(friendElement) {
-    
+
     }
 
     async toggleTabs(tab) {
@@ -347,11 +353,11 @@ export default class Profile extends AbstractView {
         const divSearch = document.querySelector('.div-search');
         const titleFriends = document.querySelector("#title-friends-friend");
         const titleSearch = document.querySelector("#title-friends-search");
-    
+
         if (tab === 'friends') {
             divFriend.style.display = 'block';
             divSearch.style.display = 'none';
-            titleSearch.classList.remove('selected'); 
+            titleSearch.classList.remove('selected');
             titleFriends.classList.add('selected');
             console.log("change tab to friends");
 

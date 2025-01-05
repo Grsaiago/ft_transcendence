@@ -8,7 +8,6 @@ from .views import (
     UserSignInView,
     UserLogoutView,
     UserSignUpView,
-    HomepageView,
     UserProfileView,
     UserChatView,
     UserFriendsView,
@@ -19,7 +18,7 @@ from .views import (
 app_name = "user_management"
 
 urlpatterns = [
-    path("", HomepageView.as_view(), name="homepage"),
+    path("", UserProfileView.as_view(), name="homepage"), # redundancia só por desencargo
     path("sign_up/", UserSignUpView.as_view(), name="sign_up"),
     path("sign_in/", UserSignInView.as_view(), name="sign_in"),
     path("logout/", UserLogoutView.as_view(), name="logout"),

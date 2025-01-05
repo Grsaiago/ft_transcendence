@@ -356,7 +356,14 @@ button {
     z-index: 1;
 }
 
+.refresh-icon-tag{
+    color: inherit;
+
+}
+
 .refresh-icon {
+    color: inherit;
+    pointer-events: none;
     font-size: 20px;
     text-shadow:
     0.3px 0 #fff,

@@ -12,7 +12,9 @@ from .db_paths import (
     get_user_friends,
     get_all_users,
     get_user_details,
-    change_password
+    change_password,
+    sign_in,
+    sign_up
 )
 
 app_name = "db-user_management"
@@ -30,5 +32,6 @@ urlpatterns = [
     path("user/friends/", get_user_friends, name="get_user_friends"),
     path("user/", get_all_users, name="get_all_users"),
     path("user/<int:user_id>/", get_user_details, name="get_user_details"),
-
+    path("sign-in/", sign_in, name="sign_in"),
+    path("sign-up/", sign_up, name="sign_up"),
 ]

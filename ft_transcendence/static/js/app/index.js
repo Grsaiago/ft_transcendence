@@ -1,4 +1,6 @@
 import Profile from "./views/profile.js";
+import Sign_in from "./views/sign_in.js";
+import Sign_up from "./views/sign_up.js";
 import Play from "./views/play.js";
 import EnterOnline from "./views/enter_online.js";
 import EnterTournament from "./views/enter_tournament.js";
@@ -16,6 +18,9 @@ import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
 import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
 import Tournament from "./views/tournament.js";
+import SignInFormHandler from "./handlers/signInFormHandler.js";
+import SignUpFormHandler from "./handlers/signUpFormHandler.js";
+import LogoutFormHandler from "./handlers/logoutFormHandler.js";
 
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
@@ -31,6 +36,7 @@ var wSManager = new WebSocketManager();
 wSManager.chatManager.loadEventHandlers();
 
 export const navigateTo = (url) => {
+    
     //tratamento de url relativa para absoluta
     history.pushState(null, null, url);
     viewsRouter(url);
@@ -43,13 +49,15 @@ const viewsRouter = async (url) => {
 
     const routes = [
         { path: "/profile/", view: Profile },
+        { path: "/sign_in/", view: Sign_in },
+        { path: "/sign_up/", view: Sign_up },
         { path: "/play/", view: Play },
         { path: "/enter/online/", view: EnterOnline },
         { path: "/enter/tournament/", view: EnterTournament },
         { path: "/chat/", view: Chat },
         { path: "/friends/", view: Friends },
         { path: "/change_password/", view: Change_password },
-        {path: "/update_info/", view: Update_info },
+        { path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
         { path: "/tournament/:id/", view: Tournament, regex: /^\/tournament\/\d+\/$/ },
     ];
@@ -68,7 +76,8 @@ const viewsRouter = async (url) => {
     }
 
     view = new match.view();
-    document.querySelector("#app").innerHTML = await view.getHtml(url);
+
+    document.body.innerHTML = await view.getHtml(url);
     await view.loadComponents();
     view.bindUIEventHandlers();
 
@@ -83,6 +92,9 @@ const handlersRouter = async (form) => {
         { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
         { formType: "createTournamentForm", handler: CreateTournamentHandler},
         { formType: "createRoomForm", handler: CreateRoomHandler},
+        { formType: "signInForm", handler: SignInFormHandler},
+        { formType: "signUpForm", handler: SignUpFormHandler},
+        { formType: "logoutForm", handler: LogoutFormHandler},
     ];
 
     let match = routes.find((route) => form.getAttribute('formType') === route.formType);

@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST, require_GET
@@ -23,6 +24,8 @@ from .forms import (
     TranscendenceUserUpdateForm,
     UnblockUserForm,
     CustomPasswordChangeForm,
+    SignInAuthenticationForm,
+    TranscendenceUserCreationForm,
 )
 
 MAX_USER_PFP_SIZE = 1 * 1024 * 1024
@@ -146,7 +149,7 @@ def unblock_user(request: HttpRequest):
 
 @require_GET
 @login_required
-def get_user_friends(request: HttpRequest):    
+def get_user_friends(request: HttpRequest):
     friends = Friendship.objects.filter(
         Q(first_user=request.user.id) | Q(second_user=request.user.id)
     )
@@ -158,7 +161,7 @@ def get_user_friends(request: HttpRequest):
         
         # Obtém as informações detalhadas do amigo
         friend_data = TrUser.objects.filter(id=friend.id).values(
-            'id', 'username', 'first_name', 'last_login'
+            'id', 'username', 'first_name', 'last_login', 'is_online'
         ).first()
 
         # Adiciona ao dicionário
@@ -168,6 +171,7 @@ def get_user_friends(request: HttpRequest):
                 "username": friend_data['username'],
                 "first_name": friend_data['first_name'],
                 "last_login": friend_data['last_login'],
+                "is_online": friend_data['is_online']
             })
     
     response = JsonResponse({"friends": friends_list})
@@ -338,10 +342,34 @@ def change_password(request: HttpRequest):
         return HttpResponse(status=200)
     else:
         if form.has_error('old_password'):
-            messages.error(request, "Invalid old password.")
+            messages.error(request, "Invalid old password")
         elif form.has_error('new_password2'):
-            messages.error(request, "Invalid new password.")
+            messages.error(request, "Invalid new password")
         else:
-            messages.error(request, "There was an error with your submission.")
+            messages.error(request, "There was an error with your submission")
         return HttpResponse(status=400) 
-   
+
+@require_POST
+def sign_in(request: HttpRequest):
+    form = SignInAuthenticationForm(data=request.POST)
+    
+    if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        return HttpResponse(status=200)
+    else:
+        messages.error(request, "Invalid username or password")
+        return HttpResponse(status=400) 
+
+
+@require_POST
+def sign_up(request: HttpRequest):
+    form = TranscendenceUserCreationForm(data=request.POST)
+    
+    if form.is_valid():
+        form.save()
+        return HttpResponse(status=200)
+    else:
+        messages.error(request, "There was an error with your registration")
+        return HttpResponse(status=400) 
+
