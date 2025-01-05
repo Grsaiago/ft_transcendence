@@ -21,42 +21,18 @@
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Players</p>
             </div>
             <div class="p-2 px-md-3">
+                {% for i in "12345678"|slice:":" %}
                 <div class="d-flex flex-row p-0 mb-2">
-                    <label id="player-name"></label>
-                    <input type="text" name="name" class="form-control form-player rounded-5 border-0 mr-2" placeholder="Choose a name" title="player-name" maxlength="20">
+                    <label for="player-{{ forloop.counter }}" id="player-name-{{ forloop.counter }}"></label>
+                    <input type="text" id="player-{{ forloop.counter }}" name="player-{{ forloop.counter }}" 
+                        class="form-control form-player rounded-5 border-0 mr-2" 
+                        placeholder="Choose a name" 
+                        title="player-name-{{ forloop.counter }}" maxlength="20">
                     <button class="btn btn-custom px-2">
-                        <p class="btn-custom-name-enter m-0">
-                            ok
-                        </p>
+                        <p class="btn-custom-name-enter m-0">ok</p>
                     </button>
                 </div>
-                <div class="d-flex flex-row p-0 mb-2">
-                    <label id="player-name"></label>
-                    <input type="text" name="name" class="form-control form-player rounded-5 border-0 mr-2" placeholder="Choose a name" title="player-name" maxlength="20">
-                    <button class="btn btn-custom px-2">
-                        <p class="btn-custom-name-enter m-0">
-                            ok
-                        </p>
-                    </button>
-                </div>
-                <div class="d-flex flex-row p-0 mb-2">
-                    <label id="player-name"></label>
-                    <input type="text" name="name" class="form-control form-player rounded-5 border-0 mr-2" placeholder="Choose a name" title="player-name" maxlength="20">
-                    <button class="btn btn-custom px-2">
-                        <p class="btn-custom-name-enter m-0">
-                            ok
-                        </p>
-                    </button>
-                </div>
-                <div class="d-flex flex-row p-0 mb-2">
-                    <label id="player-name"></label>
-                    <input type="text" name="name" class="form-control form-player rounded-5 border-0 mr-2" placeholder="Choose a name" title="player-name" maxlength="20">
-                    <button class="btn btn-custom px-2">
-                        <p class="btn-custom-name-enter m-0">
-                            ok
-                        </p>
-                    </button>
-                </div>
+                {% endfor %}
                 <div class="d-flex justify-content-center">
                     <button id="startTournament" class="btn btn-custom">
                         <p class="btn-custom-name-enter m-0">Start</p>
@@ -71,31 +47,40 @@
             <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Matches</p>
         </div>
         <div class="matches p-2 d-flex flex-column gap-1 gap-md-2">
+            <div id="quarter-finals">
+                <p class="enter-title m-0">Quarterfinals</p>
+                <div class="row d-flex justify-content-center gap-2">
+                    {% for i in "1234"|slice:":" %}
+                    <div class="create-room-box col col-5 rounded-4 px-2 d-flex justify-content-center">
+                        <div class="d-flex flex-column py-1 rounded-3" id="Quarter{{ forloop.counter }}">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Quarter{{ forloop.counter }}-p1">
+                                TBD
+                            </div>
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Quarter{{ forloop.counter }}-p2">
+                                TBD
+                            </div>
+                            <p class="text-tournament text-center m-0">waiting for game...</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
             <div id="semi-finals">
                 <p class="enter-title m-0">Semifinals</p>
                 <div class="row d-flex justify-content-center gap-2">
+                    {% for i in "12"|slice:":" %}
                     <div class="create-room-box col col-5 rounded-4 px-2 d-flex justify-content-center">
-                        <div class="d-flex flex-column py-1 rounded-3" id="Semi-1">
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-1-p1">
+                        <div class="d-flex flex-column py-1 rounded-3" id="Semi-{{ forloop.counter }}">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-{{ forloop.counter }}-p1">
                                 TBD
                             </div>
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-1-p2">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-{{ forloop.counter }}-p2">
                                 TBD
                             </div>
                             <p class="text-tournament text-center m-0">waiting for game...</p>
                         </div>
                     </div>
-                    <div class="create-room-box col col-5 rounded-4 px-2 d-flex justify-content-center">
-                        <div class="d-flex flex-column py-1 rounded-3" id="Semi-2">
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-2-p1">
-                                TBD
-                            </div>
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi-2-p2">
-                                TBD
-                            </div>
-                            <p class="text-tournament text-center m-0">waiting for game...</p>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
             <div id="final">
