@@ -497,16 +497,16 @@ button {
 }
 
 .title-play-mode {
-    font-size: 17px;
+    font-size: 16px;
 }
 
 .play-mode-btn {
     background-color: var(--cor-6);
     color: var(--cor-4);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 900;
-    height: 60px;
-    min-width: 176px;
+    height: 48px;
+    min-width: 168px;
     border: 2px solid transparent;
     padding: 0 16px;
 }
@@ -713,14 +713,18 @@ button {
         font-size: 16px;
     }
 
-    .title-play-mode {
+    /* .title-play-mode {
         font-size: 18px;
-    }
+    } */
     
     .play-mode-btn {
-        font-size: 16px;
-        height: 80px;
+        font-size: 14px;
+        height: 56px;
     }
+/*
+    .col-play-mode {
+        min-width: 390px;
+    } */
 
     .enter-box-background {
         height: 240px;
@@ -773,6 +777,16 @@ button {
     .title {
         font-size: 16px;
     }
+    
+    .title-play-mode {
+        font-size: 18px;
+    }
+    
+    .play-mode-btn {
+        font-size: 14px;
+        height: 76px;
+    }
+    
 
 }
 
@@ -802,15 +816,6 @@ button {
 
     .history-box {
         height: 200px;
-    }
-
-    .title-play-mode {
-        font-size: 20px;
-    }
-    
-    .play-mode-btn {
-        font-size: 18px;
-        height: 80px;
     }
 
     .enter-box-background {
