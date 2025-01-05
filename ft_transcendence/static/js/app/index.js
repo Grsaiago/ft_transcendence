@@ -16,6 +16,8 @@ import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
 import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
 import OnlineTournament from "./views/onlineTournamentView.js";
+import EnterLocalTournament from  "./views/enterLocalTournamentView.js"
+import LocalTournament from "./views/localTournamentView.js";
 
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
@@ -46,11 +48,13 @@ const viewsRouter = async (url) => {
         { path: "/play/", view: Play },
         { path: "/enter/online/", view: EnterOnline },
         { path: "/enter/tournament/", view: EnterTournament },
+        { path: "/enter/localtournament/", view: EnterLocalTournament },
         { path: "/chat/", view: Chat },
         { path: "/friends/", view: Friends },
         { path: "/change_password/", view: Change_password },
         {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
+        { path: "/localTournament/:num_players/:tourn_name/", view: LocalTournament, regex: /^\/localTournament\/\d+\/[a-zA-Z0-9\-_.~%]+\/$/ },
         { path: "/tournament/:id/", view: OnlineTournament, regex: /^\/tournament\/\d+\/$/ },
     ];
 

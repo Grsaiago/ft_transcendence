@@ -1,4 +1,5 @@
 from http.client import HTTPResponse
+from urllib.parse import unquote
 from django.http import JsonResponse
 import logging
 
@@ -153,6 +154,41 @@ class PongTournamentView(LoginRequiredMixin, DetailView):
     def post(self, request, *args, **kwargs):
         tournament = self.get_object()
         return redirect("pong:pongtournament", tournament_id=tournament.id)
+
+class PongEnterLocalTournamentView(LoginRequiredMixin, TemplateView):
+    template_name = "../../user_management/templates/user_management/base_app.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/enterLocalTournament.html")
+        return render(request, self.template_name)
+
+class PongLocalTournamentView(LoginRequiredMixin, TemplateView):
+    template_name = "../../user_management/templates/user_management/base_app.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        number_of_players = int(kwargs.get("num_players"))
+        tournament_name_encoded = kwargs.get("tournament_name")
+        tournament_name = unquote(tournament_name_encoded)
+
+        context["num_players"] = number_of_players
+        context["tourn_name"] = tournament_name
+
+        return context
+
+    def get(self, request, *args, **kwargs):
+        number_of_players = kwargs.get("num_players")
+        context = self.get_context_data(**kwargs)
+        if number_of_players == 4:
+            template_path = "pong/localTournament4p.html"
+        elif number_of_players == 8:
+            template_path = "pong/localTournament8p.html"
+        # else ADDERRORPAGE pagina de erro
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, template_path, context)
+        return render(request, self.template_name, context)
 
 
 def format_datetime(dt):

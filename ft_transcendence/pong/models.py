@@ -8,6 +8,7 @@ class GameMode(Enum):
     LOCAL = "local"
     ONLINE = "online"
     TOURNAMENT = "tournament"
+    LOCALTOURNAMENT = "local_tournament"
 
     @classmethod
     def choices(cls):
