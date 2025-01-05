@@ -353,46 +353,18 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         """
         await self.send(text_data=json.dumps({"type": "error", "message": message}))
 
-    async def send_spectator_mode(self, message: str ) -> None:
+    async def send_alert_message(self, message: str ) -> None:
         """
-        Send an spectator mode message to the client.
+        Send an alert message to the client.
 
         Args:
-            message (str): Message to send to the client about spectator mode.
+            message (str): Message to send alert erros.
         """
-        try:
-            await self.send(
-                text_data=json.dumps({
-                    "type": "spectator_mode",
-                    "message": message
-                })
-            )
-            logger.info(f"User {self.scope['user']} joined as spectator.")
-        except Exception as e:
-            logger.exception(f"Error setting spectator mode: {e}")
-            await self.send_error("Failed to set spectator mode.")
-
-    async def send_message(self, event: dict) -> None:
-        """
-        Sends a generic message to the client.
-
-        Args:
-            event (dict): The event containing the message data.
-                - type (str): The type of the message.
-                - message (str): The content of the message.
-        """
-        try:
-            message_type = event.get("type")
-            message = event.get("message", "No message provided.")
-            await self.send(
-                text_data=json.dumps({
-                    "type": message_type,
-                    "message": message
-                })
-            )
-        except Exception as e:
-            logger.exception(f"Error sending message: {e}")
-            await self.send_error("Failed to send a message.")
+        await self.send(text_data=json.dumps({
+                "type": "alert_message",
+                "message": message
+            })
+        )
 
     # abstract methods
     async def handle_join_room(self, data: ClientMessage) -> None:

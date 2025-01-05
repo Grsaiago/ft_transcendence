@@ -39,6 +39,7 @@ class LocalPongConsumer(BasePongConsumer):
         """
         try:
             self.room_id = data["room_id"]
+            await self.add_to_group(self.room_id)
 
             async with self.ready_lock:
                 self.current_player_id = cache.get(
@@ -46,16 +47,22 @@ class LocalPongConsumer(BasePongConsumer):
                 )
 
                 if self.current_player_id:
-                    await self.add_to_group(self.room_id)
-                    await self.send_spectator_mode("You are joining as a spectador.")
+                    await self.send_alert_message("Room is already occupied.")
+                    logger.info(f"User {self.scope['user']} attempted to join an occupied room {self.room_id}.")
+                    if self.room_group_name:
+                        # Remove the user from the group
+                        await self.channel_layer.group_discard(
+                            self.room_group_name, self.channel_name
+                        )
+                    await self.close()
+                    
                 else:
                     self.current_player_id = self.scope['user'].id
                     cache.set(f"{self.room_group_name}_current_player_id", self.current_player_id)
 
-                    await self.add_to_group(self.room_id)
                     await self.initialize_game_data(data["width"], data["height"])
                     await self.worker_initialize_game()
-                    logger.info(f"User {self.scope['user']} joined as main player.")
+                    logger.info(f"User {self.scope['user']} joined.")
         except Exception as e:
             await self.send_error("Failed to join room.")
             logger.exception(f"Failed to handle join_room: {e}")
@@ -113,16 +120,7 @@ class LocalPongConsumer(BasePongConsumer):
                             "room_id": str(self.room_id),
                         },
                     )
-                    # send message to group
-                    if self.room_group_name:
-                        await self.channel_layer.group_send(
-                            self.room_group_name,
-                            {
-                                "type": "send_message",
-                                "message": "The game has ended. The main player has disconnected.",
-                                "message_type": "main_player_exited",   
-                            },
-                        )
+
                     # Delete game data
                     cache.delete(f"{self.room_group_name}_game_data")
                     cache.delete(f"{self.room_group_name}_current_player_id")

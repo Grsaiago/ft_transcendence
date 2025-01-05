@@ -95,14 +95,10 @@ export default class PongRoomManager {
                 document.dispatchEvent(new CustomEvent('RedirectTournament', {detail: data.redirect}));
                 break
 
-            case "spectator_mode":
-                document.dispatchEvent(new CustomEvent('SpectatorMsg', {detail: data.message}));
+            case "alert_message":
+                document.dispatchEvent(new CustomEvent('AlertMsg', {detail: data.message}));
                 break
-
-            case "main_player_exited":
-                document.dispatchEvent(new CustomEvent('SpectatorMsg', {detail: data.message}));
-                break
-            
+        
             default:
                 log.error("Unknown message type:", data.type);
         }
