@@ -181,11 +181,11 @@ body {
     color: var(--cor-5);
 }
 
-.text-profile.option:hover {
+/* .text-profile.option:hover {
     font-weight: 900;
     color: var(--cor-4);
     cursor: pointer;
-}
+} */
 
 button {
     border: none;

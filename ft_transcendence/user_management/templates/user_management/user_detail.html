@@ -16,37 +16,39 @@
                         api-link>
                         {% csrf_token %}
                         <input type="hidden" name="first_user" value="{{ user_id }}">
-                        <button type="submit">
-                            <i class="remove-icon bi bi-person-dash-fill"></i>
+                        <button type="submit" class="p-0 cursor-pointer">
+                            <i class="remove-icon bi bi-person-dash-fill p-0"></i>
                         </button>
                         </form>
                     {% elif friend_request %}
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="add-friend-btn">Pending Request</a>
+                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap flex-grow-1" id="add-friend-btn">Pending Request</a>
                         {% if friend_request == "received" %}
-                            <form action="{% url 'db-user_management:refuse_friend_request' %}"
-                            formType="friendshipForm"
-                            method="post"
-                            style="display:inline"
-                            api-link>
-                            {% csrf_token %}
-                            <input type="hidden" name="sender" value="{{ user_id }}">
-                            <button type="submit" class="p-0 cursor-pointer">
-                            <i class="refuse-icon bi bi-x pe-1" style="color:brown; "></i>
-                            </button>
-                            </form>
+                        <form action="{% url 'db-user_management:refuse_friend_request' %}"
+                        formType="friendshipForm"
+                        method="post"
+                        style="display:inline"
+                        class="ms-auto"
+                        api-link>
+                        {% csrf_token %}
+                        <input type="hidden" name="sender" value="{{ user_id }}">
+                        <button type="submit" class="p-0 cursor-pointer">
+                            <i class="refuse-icon bi bi-x" style="color:brown; font-size: 18px; "></i>
+                        </button>
+                        </form>
                             <form action="{% url 'db-user_management:accept_friend_request' %}"
                             formType="friendshipForm"
                             method="post"
                             style="display:inline"
+                            class="ms-auto"
                             api-link>
                             {% csrf_token %}
                             <input type="hidden" name="sender" value="{{ user_id }}">
                             <button type="submit" class="p-0 cursor-pointer">
                                 <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
                             </button>
-                            </form>
+                        </form>
                         {% else %}
-                            <form action="{% url 'db-user_management:cancel_friend_request' %}"
+                        <form action="{% url 'db-user_management:cancel_friend_request' %}"
                             formType="friendshipForm"
                             method="post"
                             style="display:inline"
@@ -54,9 +56,9 @@
                             {% csrf_token %}
                             <input type="hidden" name="receiver" value="{{ user_id }}">
                             <button type="submit" class="p-0 cursor-pointer">
-                                <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 18px;"></i>
+                                <i class="refuse-icon bi bi-x" style="color:brown; font-size: 18px;"></i>
                             </button>
-                            </form>
+                        </form>
                         {% endif %}
                     {% else %}
                     <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Add friend</a>
@@ -66,7 +68,7 @@
                     api-link>
                     {% csrf_token %}
                     <input type="hidden" name="receiver" value="{{ user_id }}">
-                    <button type="submit">
+                    <button type="submit" class="p-0 cursor-pointer">
                         <i class="add-icon bi bi-person-plus-fill"></i>
                     </button>
                     </form>
@@ -83,7 +85,7 @@
                     {% csrf_token %}
                     <input type="hidden" name="blocked" value="{{ user_id }}">
                     <button type="submit" class="p-0 cursor-pointer">
-                        <i class="block-icon bi bi-ban"></i>
+                        <i class="block-icon bi bi-ban" style="color:green;"></i>
                     </button>
                     </form>
                 </div>
@@ -98,14 +100,14 @@
                     {% csrf_token %}
                     <input type="hidden" name="blocked" value="{{ user_id }}">
                     <button type="submit" class="p-0 cursor-pointer">
-                        <i class="block-icon bi bi-ban"></i>
+                        <i class="block-icon bi bi-ban" style="color:brown;"></i>
                     </button>
                     </form>
                 </div>
                 {% endif %}
                 <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                    <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" href="/chat/" data-link>Send message</a>
-                    <i class="bi bi-send-fill"></i>
+                    <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap">Send message</a>
+                    <i class="bi bi-send-fill" style="cursor: pointer;" href="/chat/" data-link></i>
                 </div>
             </div>
         </div>
