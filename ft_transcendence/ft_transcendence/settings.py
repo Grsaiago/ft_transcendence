@@ -89,7 +89,7 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             # Mudar isso depois pro host do container com redis
             "hosts": [("127.0.0.1", 6379)],
-            "capacity": 1000,  # Limite de mensagens por grupo
+            "capacity": 10000,  # Limite de mensagens por grupo
             "expiry": 60,  # Tempo de expiração de mensagens
         },
     },
