@@ -3,11 +3,13 @@
 {% block content %}
     <div class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-5">
         <div class="col-room col col-11 col-sm-9 col-md-8 col-lg-7 col-xl-6 p-0 rounded-4">
+            {% if game_mode == GameMode.TOURNAMENT %}
             <div class="title rounded-top-4 d-flex flex-row align-items-center justify-content-center">
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Rooms</p>
-                <i class="refresh-icon mb-1 bi bi-arrow-clockwise"></i>
+                <a class="refresh-icon-tag text-decoration-none" href="/enter/tournament/" data-link>
+                    <i class="refresh-icon mb-1 bi bi-arrow-clockwise"></i>
+                </a>
             </div>
-            {% if game_mode == GameMode.TOURNAMENT %}
             <div class="create-room-box rounded-4 p-2 m-2">
                 <form
                 action="{% url 'pong:pongenter' game_mode='tournament' %}"
@@ -60,6 +62,12 @@
             </div>
             
             {% else %}
+            <div class="title rounded-top-4 d-flex flex-row align-items-center justify-content-center">
+                <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Rooms</p>
+                <a class="refresh-icon-tag text-decoration-none" href="/enter/online/" data-link>
+                    <i class="refresh-icon mb-1 bi bi-arrow-clockwise"></i>
+                </a>
+            </div>
             <div class="create-room-box rounded-4 p-2 m-2">
                 <form
                 action="{% url 'pong:pongenter' game_mode='online' %}"
