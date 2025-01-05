@@ -17,6 +17,8 @@ WORKDIR /build
 
 COPY ./pyproject.toml ./poetry.lock /build/
 
+# add poetry's export plugin
+RUN poetry self add poetry-plugin-export
 RUN poetry export -f requirements.txt --without-hashes -o ./requirements.txt
 RUN poetry export -f constraints.txt --without-hashes -o ./constraints.txt
 
