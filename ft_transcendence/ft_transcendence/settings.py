@@ -98,7 +98,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             # Mudar isso depois pro host do container com redis
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("redis", 6379)],
             "capacity": 10000,  # Limite de mensagens por grupo
             "expiry": 60,  # Tempo de expiração de mensagens
         },
@@ -136,6 +136,12 @@ CACHES = {
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {  # Ensure this formatter is defined
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
         "logstash": {
             "level": "DEBUG",
@@ -143,13 +149,23 @@ LOGGING = {
             "host": "logstash", # change when django is inside docker network
             "port": 5044,        # Match the port from the Logstash configuration
         },
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
         "django": {
-            "handlers": ["logstash"],
+            "handlers": ["logstash", "console"],
             "level": "DEBUG",
             "propagate": True,
         },
+        "channels": {
+            "handlers": ["console", "logstash"],
+            "level": "DEBUG",
+            "propagate": True,
+        }
     },
 }
 
