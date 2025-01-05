@@ -342,11 +342,11 @@ def change_password(request: HttpRequest):
         return HttpResponse(status=200)
     else:
         if form.has_error('old_password'):
-            messages.error(request, "Invalid old password.")
+            messages.error(request, "Invalid old password")
         elif form.has_error('new_password2'):
-            messages.error(request, "Invalid new password.")
+            messages.error(request, "Invalid new password")
         else:
-            messages.error(request, "There was an error with your submission.")
+            messages.error(request, "There was an error with your submission")
         return HttpResponse(status=400) 
 
 @require_POST
@@ -358,10 +358,9 @@ def sign_in(request: HttpRequest):
         login(request, user)
         return HttpResponse(status=200)
     else:
-        if form.has_error():
-            messages.error(request, "Invalid username or password")
+        messages.error(request, "Invalid username or password")
         return HttpResponse(status=400) 
-    
+
 
 @require_POST
 def sign_up(request: HttpRequest):
@@ -371,13 +370,6 @@ def sign_up(request: HttpRequest):
         form.save()
         return HttpResponse(status=200)
     else:
-        if form.has_error('username'):
-            messages.error(self.request, "The username is already taken.")
-
-        elif form.has_error('password2'):
-            messages.error(self.request, "The passwords do not match. Please try again.")
-
-        if not any(form.has_error(field) for field in ['username', 'first_name', 'password2']):
-            messages.error(self.request, "Please correct the errors.")
+        messages.error(request, "There was an error with your registration")
         return HttpResponse(status=400) 
 
