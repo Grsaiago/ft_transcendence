@@ -4,8 +4,8 @@ name: transcendence
 services:
 
   db:
-    image: postgres:latest
     container_name: tr_db
+    image: postgres:latest
     restart: always
     volumes:
       - pg-data:/var/lib/postgresql/data:rwx
@@ -44,8 +44,8 @@ services:
       - redis
 
   redis:
-    image: redis:latest
     container_name: tr_redis
+    image: redis:latest
     restart: always
     volumes:
       - redis-data:/data:rw
@@ -57,8 +57,8 @@ services:
       - db
 
   prometheus:
-    image: prom/prometheus
     container_name: prometheus
+    image: prom/prometheus
     restart: always
     volumes:
       - prometheus-data:/prometheus:rw
@@ -95,8 +95,9 @@ services:
       - prometheus
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
     container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.2
+    restart: always
     env_file:
       - .env
     ulimits:
@@ -113,6 +114,21 @@ services:
       - "9200:9200"
     depends_on:
       - django
+
+  elasticinitializer:
+    container_name: elastic_initializer
+    build:
+      context: .
+      dockerfile: ./docker/elastic_initializer/Dockerfile
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - elasticsearch
+      - django
+    networks:
+      - logs-display-network # pra pingar o elastic
+      - logs-scrape-network # pra pingar o django
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.10.2
@@ -145,6 +161,7 @@ services:
       - .env
     depends_on:
       - elasticsearch
+      - logstash
 
 volumes:
   media-data: {}
