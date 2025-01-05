@@ -23,6 +23,23 @@ services:
       #   retries: 5
       #   start_period: 30s
 
+
+  django-worker:
+    container_name: django-worker
+    build:
+      context: .
+      dockerfile: ./docker/django-worker/Dockerfile
+    restart: always
+    networks:
+      - data-layer-network
+    expose:
+      - "6379"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
   django:
     container_name: django
     build:
@@ -42,6 +59,7 @@ services:
     depends_on:
       - db
       - redis
+      - django-worker
 
   redis:
     container_name: tr_redis
