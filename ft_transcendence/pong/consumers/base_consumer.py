@@ -63,28 +63,37 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         Only authenticated users can connect. Otherwise, the connection is closed.
         Initializes game data and accepts the connection.
         """
-        if self.scope["user"].is_anonymous:
-            await self.accept()
-            await self.send(
-                text_data=json.dumps(
-                    {"type": "not_auth", "message": "User not authenticated"}
+        try:
+            if self.scope["user"].is_anonymous:
+                await self.accept()
+                await self.send(
+                    text_data=json.dumps(
+                        {"type": "not_auth", "message": "User not authenticated"}
+                    )
                 )
-            )
-            await self.close()
-        else:
-            self.room_id: Optional[int] = None
-            self.room_group_name: Optional[str] = None
-            self.game_data: Dict[str, Union[int, float]] = {}
-            self.winner: Optional[str] = None
-            await self.accept()
+                await self.close()
+            else:
+                self.room_id: Optional[int] = None
+                self.room_group_name: Optional[str] = None
+                self.game_data: Dict[str, Union[int, float]] = {}
+                self.winner: Optional[str] = None
+                await self.accept()
+        except Exception as e:
+            logger.exception(f"Error during connection: {e}")
+            try:
+                await self.send_error("An error during connection occurred.")
+            finally:
+                await self.close()
 
     async def disconnect(self, close_code: int) -> None:
         """
         Handles the WebSocket disconnection event.
         Calls the finish_game method to perform any necessary cleanup.
         """
-        print("DISCONNECT")
-        await self.finish_game()
+        try:
+            await self.finish_game()
+        except Exception as e:
+            logger.exception(f"Error during disconnection: {e}")
 
     async def receive(self, text_data: str) -> None:
         """
@@ -103,13 +112,14 @@ class BasePongConsumer(AsyncWebsocketConsumer):
                 await self.handle_start_game()
             elif message_type in [MessageType.KEYDOWN, MessageType.KEYUP]:
                 key: Optional[str] = data_json["key"]
+                if key is None:
+                    await self.send_error("Key not provided")
+                    logger.warning(f"Missing 'key' in message: {data_json}")
+                    return
                 state: bool = (
                     message_type == MessageType.KEYDOWN
                 )  # True if 'keydown', False if 'keyup'
-                if key is not None:
-                    await self.handle_key_paddle_event(key, state)
-                else:
-                    await self.send_error("Key not provided")
+                await self.handle_key_paddle_event(key, state)
             else:
                 await self.send_error("Received an unknown message type.")
                 logger.warning(f"Unknown message type received: {message_type}")
@@ -132,7 +142,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         Returns:
             PongRoom: The PongRoom object corresponding to the room ID.
         """
-        return PongRoom.objects.select_related("tournament").get(id=self.room_id)
+        return PongRoom.objects.select_related("tournament").get(id=room_id)
 
     @sync_to_async
     def mark_room_as_inactive(self, room):
