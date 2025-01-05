@@ -4,18 +4,31 @@ import EnterOnline from "./views/enter_online.js";
 import EnterTournament from "./views/enter_tournament.js";
 import Chat from "./views/chat.js";
 import Friends from "./views/friends.js";
-import ChatManager from "./managers/ChatManager.js";
+import WebSocketManager from "./managers/WebSocketManager.js";
 import Change_password from "./views/change_password.js";
+import Update_info from "./views/update_info.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
 import userBlockFormsHandler from "./handlers/userBlockFormsHandler.js";
+import UpdateInfoFormsHandler from "./handlers/updateInfoFormHandler.js";
+import ChangePasswordFormsHandler from "./handlers/changePasswordFormHandler.js";
 import localGameFormsHandler from "./handlers/localGameFormHandler.js";
+import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
+import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
+import OnlineTournament from "./views/onlineTournamentView.js";
+
+const hostname = window.location.hostname;
+if (hostname === "www.transcendence.com") {
+    log.setLevel(log.levels.ERROR);
+} else {
+    log.setLevel(log.levels.DEBUG);
+}
 
 var view = null;
 
-var chatManager = new ChatManager();
+var wSManager = new WebSocketManager();
 
-chatManager.loadEventHandlers();
+wSManager.chatManager.loadEventHandlers();
 
 export const navigateTo = (url) => {
     //tratamento de url relativa para absoluta
@@ -24,6 +37,10 @@ export const navigateTo = (url) => {
 };
 
 const viewsRouter = async (url) => {
+    if (!url || typeof url !== "string") {
+        url = location.pathname;
+    }
+
     const routes = [
         { path: "/profile/", view: Profile },
         { path: "/play/", view: Play },
@@ -32,7 +49,9 @@ const viewsRouter = async (url) => {
         { path: "/chat/", view: Chat },
         { path: "/friends/", view: Friends },
         { path: "/change_password/", view: Change_password },
+        {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
+        { path: "/tournament/:id/", view: OnlineTournament, regex: /^\/tournament\/\d+\/$/ },
     ];
 
     let match = routes.find((route) =>  route.regex
@@ -40,14 +59,12 @@ const viewsRouter = async (url) => {
         : location.pathname === route.path);
 
     if (!match) {
-        match = {
-            route: routes[0],
-            isMatch: true
-        };
+        match = routes[0]
     }
 
     if (view) {
         view.removeUIEventHandlers();
+        view.unloadComponents();
     }
 
     view = new match.view();
@@ -62,6 +79,10 @@ const handlersRouter = async (form) => {
         { formType: "friendshipForm", handler: friendshipFormsHandler },
         { formType: "blockForm", handler: userBlockFormsHandler },
         { formType: "localGameForm", handler: localGameFormsHandler },
+        { formType: "updateInfoForm", handler: UpdateInfoFormsHandler},
+        { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
+        { formType: "createTournamentForm", handler: CreateTournamentHandler},
+        { formType: "createRoomForm", handler: CreateRoomHandler},
     ];
 
     let match = routes.find((route) => form.getAttribute('formType') === route.formType);
@@ -71,8 +92,8 @@ const handlersRouter = async (form) => {
     }
 
     const handler = new match.handler();
-    const jsonResponse = await handler.postForm(form);
-    const context = handler.getContext(form, jsonResponse);
+    const Response = await handler.postForm(form);
+    const context = handler.getContext(form, Response);
     await handler.updateUI(view, context);
 };
 
@@ -83,11 +104,12 @@ function submitForm(form) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-
     console.log("Página carregada, chamando routers()");
+    
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
+            console.log("data-link: " + e.target.href);
             navigateTo(e.target.href);
         }
 

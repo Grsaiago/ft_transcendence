@@ -7,7 +7,11 @@
         </div>
         {% if game_mode == GameMode.TOURNAMENT %}
         <div class="create-room-box rounded-4 p-2 m-2">
-            <form method="post">
+            <form
+            action="{% url 'pong:pongenter' game_mode='tournament' %}"
+            formType="createTournamentForm"
+            method="post"
+            api-link>
                 {% csrf_token %}
                 <div>
                     <p class="enter-title m-0">Create a room</p>
@@ -41,7 +45,7 @@
                     {% for t in tournaments %}
                     <div class="enter d-flex flex-row align-items-center justify-content-center gap-2 px-2 py-1 mb-1 mx-1 rounded-5">
                         <div class="d-flex flex-row align-items-center gap-3">
-                            <a class="enter-name m-0 mt-1 d-flex text-decoration-none" href="{% url 'pong:pongtournament' t.id %}">
+                            <a class="enter-name m-0 mt-1 d-flex text-decoration-none" href="/tournament/{{ t.id }}/" data-link>
                                 {{ t.name }} - max players: {{ t.max_players }}
                             </a>
                         </div>
@@ -55,7 +59,11 @@
         
         {% else %}
         <div class="create-room-box rounded-4 p-2 m-2">
-            <form method="post">
+            <form
+            action="{% url 'pong:pongenter' game_mode='online' %}"
+            formType="createRoomForm"
+            method="post"
+            api-link>
                 {% csrf_token %}
                 <div>
                 {% for field in form %}
@@ -84,7 +92,7 @@
                     {% for room in rooms %}
                     <div class="enter d-flex flex-row align-items-center justify-content-center gap-2 px-2 py-1 mb-1 mx-1 rounded-5">
                         <div class="d-flex flex-row align-items-center gap-3">
-                            <a class="enter-name m-0 mt-1 d-flex text-decoration-none" href="{% url 'pong:pongroom' room.id %}">
+                            <a class="enter-name m-0 mt-1 d-flex text-decoration-none" href="{% url 'pong:pongroom' room.id %}" data-link>
                                 {{ room.name }}
                             </a>
                         </div>

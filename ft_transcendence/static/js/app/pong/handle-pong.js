@@ -52,6 +52,7 @@ socket.onerror = (event) => {
 };
 
 //Event listeners - Start game button
+const startButtonText = document.getElementById("startGameText");
 const startButton = document.getElementById("startGame");
 startButton.addEventListener("click", () => {
   handleClickStartButton();
@@ -133,7 +134,8 @@ function handleKeyEvent(event, keyType) {
 }
 
 function handleGameHasStarted() {
-  startButton.style.display = "none";
+  startButton.classList.add("disabled");
+
   const messageContainer = document.getElementById("messageContainer");
   messageContainer.textContent = "Game has started!";
   log.info("Game has started!");
@@ -142,12 +144,12 @@ function handleGameHasStarted() {
 function handleWinner(winner) {
   const messageContainer = document.getElementById("messageContainer");
   messageContainer.textContent = `${winner} wins!`;
-  startButton.textContent = "Play Again!";
-  startButton.style.display = "block";
+  startButtonText.textContent = "Play Again";
+  startButton.classList.remove("disabled");
 }
 
 function handleRedirectTournament(redirect) {
-  window.location.href = redirect; //navigateTo
+  window.location.href = redirect;
 }
 
 function sendMessage(message) {

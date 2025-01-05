@@ -1,25 +1,26 @@
-export default class AbstractHandler {
+import AbstractHandler from "./abstractHandler.js";
+import { navigateTo } from "../index.js";
+
+export default class CreateRoomHandler extends AbstractHandler {
     constructor() {
-        if (this.constructor === AbstractHandler) {
-            throw new Error("AbstractHandler is an abstract class and cannot be instantiated directly.");
-        }
+        super();
+        this.updateUI = this.updateUI.bind(this);
     }
 
+
     async postForm(form) {
-        const formData = new FormData(form);
-        const data = new URLSearchParams(formData);
+        const formData = new FormData(form);    
 
         return fetch(form.action, {
             method: form.method,
-            body: data,
+            body: formData,
             headers: {
                 "X-Requested-With": "XMLHttpRequest",
-                "Content-Type": "application/x-www-form-urlencoded",
                 },
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("Success:", data);
+                    console.log("Success:", response);
                     return response;
                 } else {
                     console.error("Failed to submit form:", response.statusText);
@@ -33,7 +34,16 @@ export default class AbstractHandler {
             );
     }
 
-    async updateUI(_view, _context) { }
 
-    getContext() { }
+    async updateUI(view, context) {
+        view.bindUIEventHandlers();
+        if (context.ok)
+            navigateTo("/enter/online/");
+        else
+            console.log("erro ao criar a sala")
+    }
+
+    getContext(_form, response) {
+        return response;
+    }
 }

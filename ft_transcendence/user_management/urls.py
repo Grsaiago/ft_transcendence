@@ -12,7 +12,8 @@ from .views import (
     UserProfileView,
     UserChatView,
     UserFriendsView,
-    UserDetailView
+    UserDetailView,
+    UserUpdateInfoView
 )
 
 app_name = "user_management"
@@ -23,6 +24,7 @@ urlpatterns = [
     path("sign_in/", UserSignInView.as_view(), name="sign_in"),
     path("logout/", UserLogoutView.as_view(), name="logout"),
     path("change_password/", UserChangePasswordView.as_view(), name="change_password"),
+    path("update_info/", UserUpdateInfoView.as_view(), name="update_info"),
     path("friend_list/", UserFriendListView.as_view(), name="friend_list"),
     path("profile/", UserProfileView.as_view(), name="profile"),
     path("chat/", UserChatView.as_view(), name="chat"),

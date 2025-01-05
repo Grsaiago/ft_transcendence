@@ -30,27 +30,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     async def connect(self):
-        user_id = self.scope['user'].id
+        if self.scope['user'].is_anonymous:
+            await self.close()  # Close the connection if the user is anonymous
+            return
+        # extrair o userId
+        user: social_models.TrUser = self.scope['user'] 
+
+        # adicionar o usuário aos grupos
         groups_to_add: List[UUID] = await sync_to_async(list)(social_models.Friendship.objects.filter(
             Q(first_user=self.scope['user'])
             | Q(second_user=self.scope['user'])
         ).values_list('chat_room_id', flat=True))
-
         for group in groups_to_add:
             await self.add_to_group(str(group))
-        # criar o mapeamento user_id->channel
-        cache.set(f"user_channels:{user_id}", self.channel_name)
 
+        # criar o mapeamento user_id->channel
+        cache.set(f"user_channels:{user.id}", self.channel_name)
+
+        # colocar o usuário como online
+        await sync_to_async(self.update_user_online_status)(user, True)
         await self.accept()
 
 
     async def disconnect(self, code):
-        user_id = self.scope['user'].id
+        user = self.scope['user']
 
         for group in self.dynamic_groups:
             await self.remove_from_group(group)
         # deletar o mapeamento user_id->channel
-        cache.delete(f"user_channels:{user_id}")
+        cache.delete(f"user_channels:{user.id}")
+
+        # colocar o usuário como offine
+        await sync_to_async(self.update_user_online_status)(user, False)
 
 
     # aqui é quando o servidor recebe uma mensagem qualquer de um websocket
@@ -90,3 +101,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def add_to_group(self, group_id: str):
         await self.channel_layer.group_add(group_id, self.channel_name)
         self.dynamic_groups.append(group_id)
+
+    def update_user_online_status(self, user, online_status: bool):
+        user.is_online = online_status
+        user.save(update_fields=['is_online'])
+

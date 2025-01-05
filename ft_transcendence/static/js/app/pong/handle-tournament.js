@@ -1,22 +1,21 @@
 //Set environment
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
-  log.setLevel(log.levels.ERROR);
+    log.setLevel(log.levels.ERROR);
 } else {
-  log.setLevel(log.levels.DEBUG);
+    log.setLevel(log.levels.DEBUG);
 }
 
-//Get game data
 const gameData = document.getElementById("game-data");
+const username = gameData.dataset.username;
 const tournamentId = gameData.dataset.tournamentId;
 const gameMode = gameData.dataset.gameMode;
-const username = gameData.dataset.username;
 
 log.info("tournament_id:", tournamentId);
 log.info("game_mode:", gameMode);
 
 if (gameMode !== "tournament") {
-  log.error("Invalid game mode");
+    log.error("Invalid game mode");
 }
 
 //Websocket connection
@@ -46,6 +45,16 @@ joinButton.addEventListener("click", () => {
   handleClickJoinButton();
 });
 
+const playButtons = document.querySelectorAll('button[id*="Quarter"][id*="-btn"], button[id*="Semi"][id*="-btn"], button[id="Final-btn"]');
+playButtons.forEach((button) => {
+  button.addEventListener("click", (e) => {
+    e.preventDefault(); // Impede o comportamento padrão
+    const round = button.id.split('-')[0]; // Pega o nome da rodada (Quarter, Semi ou Final)
+    const roomId = button.id.split('-')[0].replace(/Quarter|Semi/, ''); // Remove 'Quarter' ou 'Semi' e deixa apenas o índice
+    redirectToMatch(roomId);
+  });
+});
+
 //Functions
 function handleSocketMessage(event) {
   const data = JSON.parse(event.data);
@@ -58,7 +67,8 @@ function handleSocketMessage(event) {
       break;
 
     case "joined":
-      joinButton.style.display = "none";
+      joinButton.classList.add("disabled");
+      joinButton.disabled = true;
       break;
 
     case "current_state":
@@ -106,7 +116,6 @@ function handleClickJoinButton() {
   sendMessage({
     type: "join_tournament"
   });
-  joinButton.style.display = "none";
 }
 
 function sendMessage(message) {
@@ -123,7 +132,7 @@ function updateTournamentUI(state) {
       participantElem.innerText = participant || `Player ${index + 1}`;
     }
   });
-
+  
   // Update match brackets
   state.matches.forEach((match) => {
     const player1Elem = document.getElementById(`${match.round}-p1`);
@@ -148,7 +157,7 @@ function updateTournamentUI(state) {
         buttonElem.style.display = "block";
         buttonElem.onclick = () => redirectToMatch(match.room_id);
       } else {
-        buttonElem.style.display = "none";
+        buttonElem.classList.add("disabled");
       }
     }
   });
@@ -156,7 +165,7 @@ function updateTournamentUI(state) {
 
 // Função para redirecionar para a partida
 function redirectToMatch(roomId) {
-  window.location.href = `/room/${roomId}/`; //navigateTo
+  window.location.href = `/room/${roomId}/`;
 }
 
 //function to display tournament message

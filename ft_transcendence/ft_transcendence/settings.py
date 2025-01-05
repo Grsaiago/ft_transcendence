@@ -98,7 +98,9 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             # Mudar isso depois pro host do container com redis
-            "hosts": [("redis", 6379)],
+            "hosts": [("127.0.0.1", 6379)],
+            "capacity": 10000,  # Limite de mensagens por grupo
+            "expiry": 60,  # Tempo de expiração de mensagens
         },
     },
 }
@@ -198,6 +200,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "prod_static_serve")
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "pong/static/pong",
 ]
 
 MEDIA_URL = "/media/"
