@@ -46,7 +46,7 @@ export default class PongRoomManager {
         };
         
         this.socket.onclose = (event) => {
-            log.info("WebSocket connection closed", event.code);
+            log.info("WebSocket connection closed (PongRoomManager)", event.code);
         };
         
         this.socket.onerror = (event) => {
@@ -92,7 +92,7 @@ export default class PongRoomManager {
                 break;
         
             case "redirect_tournament":
-                document.dispatchEvent(new CustomEvent('RedirectTournament'));
+                document.dispatchEvent(new CustomEvent('RedirectTournament', {detail: data.redirect}));
                 break
         
             default:
