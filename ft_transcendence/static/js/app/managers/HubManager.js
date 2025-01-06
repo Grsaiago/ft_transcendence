@@ -1,5 +1,5 @@
 export default class HubManager {
-    constructor () {
+    constructor() {
 
     }
 
@@ -12,7 +12,8 @@ export default class HubManager {
     }
 
     connectSocket() {
-        const socketUrl = `ws://${window.location.host}/ws/pong/tournament/${this.gameData.tournamentId}/`;
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        const socketUrl = `${protocol}://${window.location.host}/ws/pong/tournament/${this.gameData.tournamentId}/`;
         this.socket = new WebSocket(socketUrl);
     }
 
@@ -24,11 +25,11 @@ export default class HubManager {
         this.socket.onmessage = (event) => {
             this.handleSocketMessage(event);
         };
-          
+
         this.socket.onclose = (event) => {
             log.info("WebSocket connection closed (HubManager)", event.code);
         };
-          
+
         this.socket.onerror = (event) => {
             log.error("WebSocket connection error", event);
         };
@@ -37,7 +38,7 @@ export default class HubManager {
     joinTournament() {
         this.sendMessage({
             type: "join_tournament"
-          });
+        });
     }
 
     sendMessage(message) {
@@ -51,34 +52,34 @@ export default class HubManager {
         log.info("handleSocketMessage:", data);
 
         switch (data.type) {
-          case "not_auth":
-            alert(data.message);
-            this.socket.close();
-            break;
+            case "not_auth":
+                alert(data.message);
+                this.socket.close();
+                break;
 
-          case "joined":
-            document.dispatchEvent(new CustomEvent("joinedTournament"));
-            break;
+            case "joined":
+                document.dispatchEvent(new CustomEvent("joinedTournament"));
+                break;
 
-          case "current_state":
-            document.dispatchEvent(new CustomEvent("currentState", {detail: data}));
-            break;
+            case "current_state":
+                document.dispatchEvent(new CustomEvent("currentState", { detail: data }));
+                break;
 
-          case "tournament_message":
-            document.dispatchEvent(new CustomEvent("tournamentMessage", {detail: data}));
-            break;
+            case "tournament_message":
+                document.dispatchEvent(new CustomEvent("tournamentMessage", { detail: data }));
+                break;
 
-        //   case "tournament_advance":
-        //     log.info("tournament_advance messa received at HubManager")
-        //     document.dispatchEvent(new CustomEvent("tournamentAdvance", {detail: data}));
-        //     break;
-      
-          case "error":
-            document.dispatchEvent(new CustomEvent("Error", {detail: data}));
-            break;
-      
-          default:
-            log.error("Invalid message type:", data.type);
+            //   case "tournament_advance":
+            //     log.info("tournament_advance messa received at HubManager")
+            //     document.dispatchEvent(new CustomEvent("tournamentAdvance", {detail: data}));
+            //     break;
+
+            case "error":
+                document.dispatchEvent(new CustomEvent("Error", { detail: data }));
+                break;
+
+            default:
+                log.error("Invalid message type:", data.type);
         }
     }
 }

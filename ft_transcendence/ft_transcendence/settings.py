@@ -217,7 +217,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "prod_static_serve")
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    BASE_DIR / "pong/static/pong",
 ]
 
 MEDIA_URL = "/media/"

@@ -1,9 +1,9 @@
 //Set environment
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
-    log.setLevel(log.levels.ERROR);
+  log.setLevel(log.levels.ERROR);
 } else {
-    log.setLevel(log.levels.DEBUG);
+  log.setLevel(log.levels.DEBUG);
 }
 
 const gameData = document.getElementById("game-data");
@@ -15,11 +15,12 @@ log.info("tournament_id:", tournamentId);
 log.info("game_mode:", gameMode);
 
 if (gameMode !== "tournament") {
-    log.error("Invalid game mode");
+  log.error("Invalid game mode");
 }
 
 //Websocket connection
-const socketUrl = `ws://${window.location.host}/ws/pong/tournament/${tournamentId}/`;
+const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+const socketUrl = `${protocol}://${window.location.host}/ws/pong/tournament/${tournamentId}/`;
 const socket = new WebSocket(socketUrl);
 
 //Websocket
@@ -132,7 +133,7 @@ function updateTournamentUI(state) {
       participantElem.innerText = participant || `Player ${index + 1}`;
     }
   });
-  
+
   // Update match brackets
   state.matches.forEach((match) => {
     const player1Elem = document.getElementById(`${match.round}-p1`);

@@ -26,10 +26,11 @@ log.info("game_mode:", gameMode);
 //Websocket connection
 let socketUrl;
 
+const protocol = window.location.protocol === "https:" ? "wss" : "ws";
 if (gameMode === "tournament") {
-  socketUrl = `ws://${window.location.host}/ws/pong/tournament_match/${roomId}/`;
+  socketUrl = `${protocol}://${window.location.host}/ws/pong/tournament_match/${roomId}/`;
 } else {
-  socketUrl = `ws://${window.location.host}/ws/pong/${gameMode}/`;
+  socketUrl = `${protocol}://${window.location.host}/ws/pong/${gameMode}/`;
 }
 
 const socket = new WebSocket(socketUrl);
