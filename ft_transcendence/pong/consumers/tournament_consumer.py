@@ -69,7 +69,18 @@ class TournamentPongConsumer(OnlinePongConsumer):
 
                     if self.ready_players == 2:
                         room = await self.get_room_by_id(self.room_id)
+                        self.match_id = cache.get(
+                            f"{self.room_group_name}_match_id", None
+                        )
                         match = await self.get_first_match_by_room(room)
+
+                        self.had_a_match = cache.get(
+                            f"{self.room_group_name}_had_a_match", False
+                        )
+                        self.had_a_match = True
+                        self.had_a_match = cache.set(
+                            f"{self.room_group_name}_had_a_match", self.had_a_match
+                        )
 
                         if not match:
                             raise Exception("No match found for the given room.")

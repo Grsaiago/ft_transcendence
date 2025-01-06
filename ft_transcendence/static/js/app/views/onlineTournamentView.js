@@ -11,7 +11,7 @@ export default class OnlineTournament extends AbstractView {
         this.handleJoinedTournament = this.handleJoinedTournament.bind(this);
         this.handleCurrentState = this.handleCurrentState.bind(this);
         this.handleTournamentMessage = this.handleTournamentMessage.bind(this);
-        this.handleTournamentAdvance = this.handleTournamentAdvance.bind(this);
+        this.handleTournamentError = this.handleTournamentError.bind(this);
     }
 
     async getHtml(url) {
@@ -95,9 +95,13 @@ export default class OnlineTournament extends AbstractView {
         this.updateTournamentUI(event.detail.state);
     }
 
-    handleTournamentAdvance(event) {
-        log.info("tournament_advance:", data);
-        this.updateTournamentUI(event.detail.state);
+
+    handleTournamentError(event) {
+        log.info("tournament_error:", event.detail);
+        const tournamentStatusMsg = document.getElementById("messageContainer");
+        if (tournamentStatusMsg) {
+          tournamentStatusMsg.innerText = event.detail;
+        }
     }
 
     updateTournamentUI(state) {
@@ -158,7 +162,7 @@ export default class OnlineTournament extends AbstractView {
         document.addEventListener('joinedTournament', this.handleJoinedTournament);
         document.addEventListener('currentState', this.handleCurrentState);
         document.addEventListener('tournamentMessage', this.handleTournamentMessage);
-        document.addEventListener('tournamentAdvance', this.handleTournamentAdvance);
+        document.addEventListener('Error', this.handleTournamentError);
     }
 
 }

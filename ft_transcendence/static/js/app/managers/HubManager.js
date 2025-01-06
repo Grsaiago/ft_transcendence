@@ -68,13 +68,9 @@ export default class HubManager {
             document.dispatchEvent(new CustomEvent("tournamentMessage", {detail: data}));
             break;
 
-        //   case "tournament_advance":
-        //     log.info("tournament_advance messa received at HubManager")
-        //     document.dispatchEvent(new CustomEvent("tournamentAdvance", {detail: data}));
-        //     break;
-      
+    
           case "error":
-            document.dispatchEvent(new CustomEvent("Error", {detail: data}));
+            document.dispatchEvent(new CustomEvent("Error", {detail: data.message}));
             break;
       
           default:
