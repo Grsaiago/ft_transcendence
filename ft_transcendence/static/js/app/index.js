@@ -54,7 +54,7 @@ const viewsRouter = async (url) => {
         { path: "/change_password/", view: Change_password },
         {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
-        { path: "/localTournament/:num_players/:tourn_name/", view: LocalTournament, regex: /^\/localTournament\/\d+\/[a-zA-Z0-9\-_.~%]+\/$/ },
+        { path: "/localTournament/:num_players/", view: LocalTournament, regex: /^\/localTournament\/\d+\/$/ },
         { path: "/tournament/:id/", view: OnlineTournament, regex: /^\/tournament\/\d+\/$/ },
     ];
 

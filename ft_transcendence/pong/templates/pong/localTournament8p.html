@@ -1,5 +1,5 @@
 {% load static %}
-<div class="app-row d-flex flex-column flex-md-row justify-content-center gap-2 gap-md-4 px-3 px-md-4 px-lg-5">
+<div id="div-status" class="app-row d-flex flex-column flex-md-row justify-content-center gap-2 gap-md-4 px-3 px-md-4 px-lg-5">
     <div class="col col-12 col-md-4 d-flex flex-row flex-md-column gap-3 d-flex justify-content-center"
     id="game-data"
     data-tournament-id="{{ tournament.id }}"
@@ -10,7 +10,7 @@
                 <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Tournament</p>
             </div>
             <div class="p-3">
-                <p class="text-tournament m-0 text-nowrap">Name: {{ tourn_name }}</p>
+                <p class="text-tournament m-0 text-nowrap" id="tourn-name">Name: </p>
                 <p class="text-tournament m-0 text-nowrap">Max Players:
                     <span id="maxPlayersValue">8</span>
                 </p>
@@ -119,5 +119,21 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="div-game" class="row app-row justify-content-center gap-4 gap-md-5 px-3 px-md-4 px-lg-5 d-none">
+    <div class="section_pong d-flex justify-content-center align-items-center flex-column"
+    id="game-data"
+    data-room-id="{{ room.id }}"
+    data-game-mode="{{ game_mode }}">
+
+
+        <canvas id="pongCanvas" width="650" height="480" tabindex="0"></canvas>
+
+        <button id="startGame" class="btn btn-custom mt-2">
+            <p id="startGameText" class="btn-custom-play-name m-0">Play</p>
+        </button>
+        <div id="messageContainer" class="text-play m-0 mt-1"></div>
     </div>
 </div>

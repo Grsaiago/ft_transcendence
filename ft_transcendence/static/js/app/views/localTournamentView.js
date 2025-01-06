@@ -1,4 +1,5 @@
 import LocalTournamentManager from "../managers/localTournamentManager.js";
+import PongRoomManager from "../managers/PongRoomManager.js";
 import AbstractView from "./abstractView.js";
 
 export default class LocalTournament extends AbstractView {
@@ -6,9 +7,12 @@ export default class LocalTournament extends AbstractView {
         super();
         this.setTitle("Local Tournament");
 
+        this.localTournamentManager = new LocalTournamentManager();
+
         this.handleStartFormSubmit = this.handleStartFormSubmit.bind(this);
         this.updateMatchesUI = this.updateMatchesUI.bind(this);
-        this.playButon1Handler = this.playButon1Handler.bind(this);
+        this.playBtnHandler = this.playBtnHandler.bind(this);
+        this.startGameBtnHandler = this.startGameBtnHandler.bind(this);
         this.playButon3Handler = this.playButon3Handler.bind(this);
         this.playButon2Handler = this.playButon2Handler.bind(this);
         this.playButon4Handler = this.playButon4Handler.bind(this);
@@ -34,12 +38,23 @@ export default class LocalTournament extends AbstractView {
         }
     }
 
+    loadComponents() {
+        document.getElementById("tourn-name").innerText = 'Name: ' + this.localTournamentManager.name;
+    }
+
+    unloadComponents() {
+    }
+
     bindUIEventHandlers() {
         console.log('Loading enter event handlers...');
         document.getElementById("tournamentForm").addEventListener("submit", this.handleStartFormSubmit);
         
         this.bindLocalTournamentManagerEvents();
-        this.bindPlayButtonEventHandlers();
+        this.bindButtonEventHandlers();
+    }
+
+    removeUIEventHandlers() {
+        console.log('Removing enter event handlers...');
     }
 
     bindLocalTournamentManagerEvents() {
@@ -47,21 +62,44 @@ export default class LocalTournament extends AbstractView {
         document.addEventListener('tournamentChampion', this.handleChampion);
     }
 
-    bindPlayButtonEventHandlers() {
-        document.getElementById("btn-Match1").addEventListener("click", this.playButon1Handler)
-        document.getElementById("btn-Match3").addEventListener("click", this.playButon3Handler)
-        document.getElementById("btn-Match2").addEventListener("click", this.playButon2Handler)
-        document.getElementById("btn-Match4").addEventListener("click", this.playButon4Handler)
-        document.getElementById("btn-Match5").addEventListener("click", this.playButon5Handler)
-        document.getElementById("btn-Match6").addEventListener("click", this.playButon6Handler)
-        document.getElementById("btn-Match7").addEventListener("click", this.playButon7Handler)
+    bindButtonEventHandlers() {
+        document.getElementById("btn-Match1").addEventListener("click", this.playBtnHandler);
+        document.getElementById("btn-Match3").addEventListener("click", this.playButon3Handler);
+        document.getElementById("btn-Match2").addEventListener("click", this.playButon2Handler);
+        document.getElementById("btn-Match4").addEventListener("click", this.playButon4Handler);
+        document.getElementById("btn-Match5").addEventListener("click", this.playButon5Handler);
+        document.getElementById("btn-Match6").addEventListener("click", this.playButon6Handler);
+        document.getElementById("btn-Match7").addEventListener("click", this.playButon7Handler);
+        document.getElementById("startGame").addEventListener("click", this.startGameBtnHandler);
     }
 
-    playButon1Handler() {
-        console.log("Buton 1 test handler");
+    playBtnHandler() {
+        console.log("Buton play test handler");
         const match = this.localTournamentManager.matches.find(m => m.matchId === 'Match1');
         console.log(match['Match1-p1']);
-        this.localTournamentManager.updateMatchesOnWinner('Match1', match['Match1-p1']);
+
+        this.switchDiv('game');
+
+        // this.localTournamentManager.updateMatchesOnWinner('Match1', match['Match1-p1']);
+    }
+
+    startGameBtnHandler() {
+        const startGameBtn = document.getElementById("startGame");
+        startGameBtn.classList.add("d-none");
+    }
+
+    switchDiv(div) {
+        const gameDiv = document.getElementById('div-game');
+        const statusDiv = document.getElementById('div-status');
+
+        if (div == 'game') {
+            statusDiv.classList.add("d-none");
+            gameDiv.classList.remove("d-none");
+        }
+        if (div == 'status') {
+            gameDiv.classList.add("d-none");
+            statusDiv.classList.remove("d-none");
+        }
     }
 
     playButon3Handler() {
@@ -129,11 +167,38 @@ export default class LocalTournament extends AbstractView {
     }
 
     startTournament(playersNames) {
-        this.localTournamentManager = new LocalTournamentManager(playersNames);
-        this.localTournamentManager.createMatches();
-        console.log(this.localTournamentManager.matches);
+        this.initGame();
+        this.localTournamentManager.startTournament(playersNames);
 
         this.deactivateStartButton();
+        this.updateMatchesUI();
+    }
+
+    initGame()
+    {
+        this.pongRoomManager = new PongRoomManager();
+
+        this.loadGameData();
+
+        this.pongRoomManager.createGame();
+
+        console.log('PongRoomManager Created.')
+
+        // this.pongRoomManager.connectSocket();
+
+        // this.pongRoomManager.loadSocketEventHandlers();
+    }
+
+    loadGameData() {
+        //Get canvas and context
+        const canvas = document.getElementById("pongCanvas");
+        const context = canvas.getContext("2d");
+    
+        //Get game info
+        this.roomId = 42;
+        this.gameMode = "LOCAL";
+
+        this.pongRoomManager.setGameData(context, canvas.width, canvas.height, this.roomId, this.gameMode);
     }
 
     updateMatchesUI() {
@@ -171,7 +236,7 @@ export default class LocalTournament extends AbstractView {
                 matchBtn.classList.remove("d-none");
                 matchBtn.disabled = false;
             } else if (match.status === "finished" && match.winner) {
-                statusText.textContent = `Winner for ${match.matchId} set to ${match.winner}`;
+                statusText.textContent = `Winner: ${match.winner}`;
                 statusText.classList.remove("d-none");
                 matchBtn.classList.add("d-none");
                 matchBtn.disabled = true;
@@ -232,9 +297,5 @@ export default class LocalTournament extends AbstractView {
         inputs.forEach(input => {
             input.classList.remove("is-invalid");
         });
-    }
-
-    removeUIEventHandlers() {
-        console.log('Removing enter event handlers...');
     }
 }

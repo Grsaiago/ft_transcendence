@@ -1,8 +1,18 @@
 export default class LocalTournamentManager {
-    constructor (participants) {
+    constructor () {
+        if (LocalTournamentManager.instance) {
+            return LocalTournamentManager.instance;
+        }
 
+        console.log("Tournament instantiated!");
+        this.status = 'Unstarted';
+        LocalTournamentManager.instance = this;
+    }
+
+    startTournament(participants) {
         this.participants = participants;
-        console.log("Tournament created!/\nParcitipants: ", participants)
+        this.status = 'Started';
+        this.createMatches();
     }
 
     createMatches() {
@@ -14,7 +24,7 @@ export default class LocalTournamentManager {
     
         const totalMatches = totalPlayers - 1; // Total matches for a single-elimination tournament
         const rounds = Math.log2(totalPlayers); // Total rounds (log2 of total players)
-    
+
         this.matches = [];
         let currentRoundMatches = []; // Matches in the current round
     
@@ -46,8 +56,6 @@ export default class LocalTournamentManager {
             }
             currentRoundMatches = nextRoundMatches;
         }
-
-        document.dispatchEvent(new CustomEvent("match_status_updated"));
     }
 
     updateMatchesOnWinner(matchId, winner) {
@@ -85,6 +93,8 @@ export default class LocalTournamentManager {
         document.dispatchEvent(new CustomEvent("match_status_updated"));
 
         if (this.isFinalMatch(matchId)) {
+            this.status='finished';
+            this.winner='winner';
             this.dispatchChampionEvent(winner);
         }
     }

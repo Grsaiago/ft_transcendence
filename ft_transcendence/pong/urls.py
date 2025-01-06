@@ -8,7 +8,7 @@ urlpatterns = [
     path("enter/localtournament/", views.PongEnterLocalTournamentView.as_view(), name="pongenterlocaltournament"),
     path("enter/<str:game_mode>/", views.PongEnterView.as_view(), name="pongenter"),
     path("room/<int:room_id>/", views.PongRoomView.as_view(), name="pongroom"),
-    path("localTournament/<int:num_players>/<str:tournament_name>/", views.PongLocalTournamentView.as_view(), name="pongenterlocaltournament"),
+    path("localTournament/<int:num_players>/", views.PongLocalTournamentView.as_view(), name="pongenterlocaltournament"),
     path(
         "tournament/<int:tournament_id>/",
         views.PongTournamentView.as_view(),

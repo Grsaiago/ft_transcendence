@@ -1,10 +1,12 @@
 import { navigateTo } from "../index.js";
+import LocalTournamentManager from "../managers/localTournamentManager.js";
 import AbstractView from "./abstractView.js";
 
 export default class EnterLocalTournament extends AbstractView {
     constructor() {
         super();
         this.setTitle("Create Local Tournament");
+        this.localTournamentManager = new LocalTournamentManager();
     }
 
     async getHtml() {
@@ -29,13 +31,8 @@ export default class EnterLocalTournament extends AbstractView {
         const tournamentInput = document.getElementById("tournament-name");
         const buttons = document.querySelectorAll(".btn-custom");
 
-        const sanitizeInput = (input) => {
-            return encodeURIComponent(input);
-        };
-
-        const redirectTo = (maxPlayers, tournamentName) => {
-            const sanitizedTournamentName = sanitizeInput(tournamentName);
-            const url = `/localTournament/${maxPlayers}/${sanitizedTournamentName}/`;
+        const redirectTo = (maxPlayers) => {
+            const url = `/localTournament/${maxPlayers}/`;
             console.log(`Redirecting to: ${url}`);
             navigateTo(url);
         };
@@ -46,12 +43,15 @@ export default class EnterLocalTournament extends AbstractView {
                 const maxPlayers = button.getAttribute("value");
                 const tournamentName = tournamentInput.value;
 
+                this.localTournamentManager.name = tournamentName;
+                this.localTournamentManager.num_of_players = maxPlayers;
+
                 if (!tournamentName.trim()) {
                     alert("Please enter a tournament name!");
                     return;
                 }
 
-                redirectTo(maxPlayers, tournamentName);
+                redirectTo(maxPlayers);
             });
         });
     }

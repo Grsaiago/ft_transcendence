@@ -19,7 +19,7 @@ export default class localGameFormsHandler extends AbstractHandler {
                     "X-Requested-With": "XMLHttpRequest",
                 },
             });
-    
+
             if (!response.ok) {
                 console.error("Failed to submit form:", response.statusText);
                 throw new Error(response.statusText);
