@@ -31,12 +31,7 @@ if (hostname === "www.transcendence.com") {
 
 var view = null;
 
-var wSManager = new WebSocketManager();
-
-wSManager.chatManager.loadEventHandlers();
-
 export const navigateTo = (url) => {
-    
     //tratamento de url relativa para absoluta
     history.pushState(null, null, url);
     viewsRouter(url);

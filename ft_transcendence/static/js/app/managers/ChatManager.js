@@ -5,30 +5,42 @@ export default class ChatManager {
         }
 
         this.chatHistory = new Map();
-        this.chatSocket = this.initializeSocket();
-
-        this.handleMessage = this.handleMessage.bind(this);
+        this.chatSocket = this.tryConnectToChatSocket();
 
         ChatManager.instance = this; // Enforce singleton pattern
     }
 
-    initializeSocket() {
-        const chatScoket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/chat/'
-        );
+    tryConnectToChatSocket() {
+        if (!this.chatSocket) {
+            try {
+                this.chatSocket = new WebSocket(
+                    'ws://'
+                    + window.location.host
+                    + '/ws/chat/'
+                );
+                this.loadEventHandlers()
+                this.handleMessage = this.handleMessage.bind(this);
+                console.log("socket connected");
+            } catch(err) {
+                this.chatSocket = null;
+                console.log("Couldn't connect to chat websocket, will try again latter.");
+            }
+        }
+        return;
+    }
 
-        return chatScoket;
+    disconnectChatSocket() {
+        if (this.chatSocket) {
+            this.chatSocket.close();
+            this.chatSocket = undefined;
+        }
+        console.log("close socket");
+        return;
     }
 
     loadEventHandlers() {
         console.log('Loading chat manager event handlers...');
         this.chatSocket.addEventListener("message", this.handleMessage);
-        this.chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-            // Try to reconnect
-        };
     }
 
     handleMessage(event) {

@@ -1,9 +1,13 @@
 import AbstractView from "./abstractView.js";
+import ChatManager from "../managers/ChatManager.js";
 
 export default class Profile extends AbstractView {
     constructor() {
         super();
         this.setTitle("Profile");
+        // tenta conectar o socket de chat
+        const chatManager = new ChatManager();
+        chatManager.tryConnectToChatSocket();
 
         this.handleFriendClick = this.handleFriendClick.bind(this);
         this.updateFriend = this.updateFriend.bind(this);
