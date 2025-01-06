@@ -53,7 +53,7 @@ class TournamentPongConsumer(OnlinePongConsumer):
         In tournament mode, the game only starts when both players are ready, and the match ID is fetched from the database.
         """
         try:
-            if not self.is_spectator and not self.is_ready:
+            if not self.is_ready:
                 async with self.ready_lock:
                     self.ready_players = cache.get(
                         f"{self.room_group_name}_ready_players", 0
@@ -179,6 +179,7 @@ class TournamentPongConsumer(OnlinePongConsumer):
 
         alive_count = await self.get_alive_count(tournament)
         if alive_count == 1:
+            tournament.winner = winner
             await self.finalize_tournament(tournament)
         else:
             bracket_mapping = await self.get_bracket_mapping(tournament)

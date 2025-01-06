@@ -101,6 +101,14 @@ export default class OnlineTournament extends AbstractView {
     }
 
     updateTournamentUI(state) {
+        //update status and winner
+        const tournamentStatus = document.getElementById("statusParagraph");
+        const tournamentWinner = document.getElementById("winnerParagraph");
+        if (tournamentStatus)
+            tournamentStatus.innerText = `Status: ${state.status}`;
+        if (tournamentWinner)
+            tournamentWinner.innerText = `Winner: ${state.winner}`;
+
         // Update participant slots
         state.participants.forEach((participant, index) => {
           const participantElem = document.getElementById(`participant-${index}`);

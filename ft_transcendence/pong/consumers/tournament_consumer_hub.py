@@ -38,7 +38,6 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                 self.tournament_group_name, self.channel_name
             )
             await self.accept()
-            await self.send_current_state_to_self()
             await self.update_and_send_state_to_group()
             logger.info(
                 f"User {self.user.username} connected to tournament {self.tournament_id}: {self.tournament_group_name}"
@@ -66,7 +65,8 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
     # Database methods
     @sync_to_async
     def get_tournament(self) -> Tournament:
-        return Tournament.objects.get(id=self.tournament_id)
+        #preciso trazer junto o winner para pegar o username
+         return Tournament.objects.select_related('winner').get(id=self.tournament_id)
 
     @sync_to_async
     def get_participants(self, tournament: Tournament) -> list:
@@ -97,6 +97,10 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
     @sync_to_async
     def save_match(self, match: Match) -> None:
         match.save()
+    
+    @sync_to_async
+    def get_tournament_winner(self, tournament: Tournament) -> TrUser:  
+        return tournament.winner.username if tournament.winner else ""
 
     # handlers
     async def join_tournament_db(self) -> str:
@@ -226,6 +230,7 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
         participants = await self.get_participants(tournament)
         participant_list = [p.player.username for p in participants]
         matches = await self.get_matches(tournament)
+        status = "active" if tournament.is_active else "finished"
 
         matches_info = []
         for match in matches:
@@ -247,14 +252,19 @@ class TournamentConsumerHub(AsyncWebsocketConsumer):
                     "round": round_name,
                 }
             )
+        
+        # Determine the winner of the tournament
+        tournament_winner = await self.get_tournament_winner(tournament)   
+
         return {
             "type": "current_state",
             "tournament_id": tournament.id,
             "tournament_name": tournament.name,
             "participants": participant_list,
             "max_players": tournament.max_players,
-            "is_active": tournament.is_active,
+            "status": status,
             "matches": matches_info,
+            "winner": tournament_winner,
         }
 
     # Methods to send messages to the group

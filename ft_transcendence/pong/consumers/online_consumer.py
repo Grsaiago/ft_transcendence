@@ -137,7 +137,7 @@ class OnlinePongConsumer(BasePongConsumer):
                     return
                 
                 # check if the room already has 2 players
-                if len(self.players_data) >= 2:
+                if len(self.players_data) >= 2 and self.scope["user"].id not in self.players_data:
                     await self.send_alert_message({"message": "Room is full."})
                     logger.info(f"User {self.scope['user']} attempted to join a full room {self.room_id}.")
                     if self.room_group_name:

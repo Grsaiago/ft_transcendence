@@ -133,6 +133,7 @@ class PongTournamentView(LoginRequiredMixin, DetailView):
         tournament = self.object
         participants = TournamentParticipant.objects.filter(tournament=tournament)
         context["user"] = self.request.user
+        context["status"] = "active" if tournament.is_active else "finished"
         context["participants_slots"] = range(tournament.max_players)
         context["quarter_slots"] = (
             list(range(1, 5)) if tournament.max_players == 8 else []
