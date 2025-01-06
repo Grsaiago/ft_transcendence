@@ -181,11 +181,11 @@ body {
     color: var(--cor-5);
 }
 
-.text-profile.option:hover {
+/* .text-profile.option:hover {
     font-weight: 900;
     color: var(--cor-4);
     cursor: pointer;
-}
+} */
 
 button {
     border: none;
@@ -197,7 +197,7 @@ button {
     background-color: var(--cor-2);
     height: 196px;
     overflow: hidden;
-    min-width: 195px;
+    min-width: 220px;
     max-width: 340px;
 }
 
@@ -224,6 +224,11 @@ button {
 
 .col-friends.friends {
     height: 180px;
+}
+
+.col-friends.friends.unselected {
+    height: 420px;
+    width: 300px;
 }
 
 .col-chat {
@@ -254,7 +259,11 @@ button {
 }
 
 .friends-box.friends {
-    height: 82px;
+    height: 68px;
+}
+
+.friends-box.friends.unselected {
+    height: 300px;
 }
 
 .friends-box::-webkit-scrollbar {
@@ -356,7 +365,14 @@ button {
     z-index: 1;
 }
 
+.refresh-icon-tag{
+    color: inherit;
+
+}
+
 .refresh-icon {
+    color: inherit;
+    pointer-events: none;
     font-size: 20px;
     text-shadow:
     0.3px 0 #fff,
@@ -582,7 +598,7 @@ button {
     background-color: var(--cor-6);
 }
 
-@media (min-width: 574px) {
+@media (min-width: 520px) {
     .app-container {
         min-height: calc(100vh - 126px);
     }

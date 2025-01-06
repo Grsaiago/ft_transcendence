@@ -4,10 +4,12 @@ import ChatManager from "../managers/ChatManager.js";
 export default class Chat extends AbstractView {
     constructor() {
         super();
-        this.setTitle("Chat");
+        // tenta conectar o socket de chat
         this.chatManager = new ChatManager();
-        this.currentChatId = null;
+        this.chatManager.tryConnectToChatSocket();
 
+        this.setTitle("Chat");
+        this.currentChatId = null;
         this.handleMessageUI = this.handleMessageUI.bind(this);
         this.atualizaChat = this.atualizaChat.bind(this);
         this.handleChatChange = this.handleChatChange.bind(this);

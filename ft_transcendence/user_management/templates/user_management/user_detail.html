@@ -1,115 +1,117 @@
 {% load static %}
 <div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4" id="profile-pic">
-    <img class="profile-img friends rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
-        <div class="profile-div shadow-sm rounded-4 w-100">
-            <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap" friend-id>{{ username }}</p>
-            <div class="profile-box p-3 px-lg-4">
-                <div class="profile-box d-flex flex-column gap-1">
-                    <p class="text-profile m-0 text-nowrap" friend-name>{{ first_name }}</p>
-                    <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                        {% if is_friend %}
-                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Remove friend</a>
-                            <form action="{% url 'db-user_management:remove_friendship' %}"
+    <img class="profile-img friends rounded-circle border-0" src="{{ profile_picture }}">
+    <div class="profile-div shadow-sm rounded-4 w-100">
+        <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap" friend-id>{{ username }}</p>
+        <div class="profile-box p-3 px-lg-4">
+            <div class="profile-box d-flex flex-column gap-1">
+                <p class="text-profile m-0 text-nowrap" friend-name>{{ first_name }}</p>
+                <div class="d-flex flex-row align-items-center justify-content-between gap-2">
+                    {% if is_friend %}
+                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Remove friend</a>
+                        <form action="{% url 'db-user_management:remove_friendship' %}"
+                        formType="friendshipForm"
+                        method="post"
+                        style="display:inline"
+                        api-link>
+                        {% csrf_token %}
+                        <input type="hidden" name="first_user" value="{{ user_id }}">
+                        <button type="submit" class="p-0 cursor-pointer">
+                            <i class="remove-icon bi bi-person-dash-fill p-0"></i>
+                        </button>
+                        </form>
+                    {% elif friend_request %}
+                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap flex-grow-1" id="add-friend-btn">Pending Request</a>
+                        {% if friend_request == "received" %}
+                        <form action="{% url 'db-user_management:refuse_friend_request' %}"
+                        formType="friendshipForm"
+                        method="post"
+                        style="display:inline"
+                        class="ms-auto"
+                        api-link>
+                        {% csrf_token %}
+                        <input type="hidden" name="sender" value="{{ user_id }}">
+                        <button type="submit" class="p-0 cursor-pointer">
+                            <i class="refuse-icon bi bi-x" style="color:brown; font-size: 18px; "></i>
+                        </button>
+                        </form>
+                            <form action="{% url 'db-user_management:accept_friend_request' %}"
+                            formType="friendshipForm"
+                            method="post"
+                            style="display:inline"
+                            class="ms-auto"
+                            api-link>
+                            {% csrf_token %}
+                            <input type="hidden" name="sender" value="{{ user_id }}">
+                            <button type="submit" class="p-0 cursor-pointer">
+                                <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
+                            </button>
+                        </form>
+                        {% else %}
+                        <form action="{% url 'db-user_management:cancel_friend_request' %}"
                             formType="friendshipForm"
                             method="post"
                             style="display:inline"
                             api-link>
                             {% csrf_token %}
-                            <input type="hidden" name="first_user" value="{{ user_id }}">
-                            <button type="submit">
-                                <i class="remove-icon bi bi-person-dash-fill"></i>
+                            <input type="hidden" name="receiver" value="{{ user_id }}">
+                            <button type="submit" class="p-0 cursor-pointer">
+                                <i class="refuse-icon bi bi-x" style="color:brown; font-size: 18px;"></i>
                             </button>
-                            </form>
-                        {% elif friend_request %}
-                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="add-friend-btn">Pending Request</a>
-                            {% if friend_request == "received" %}
-                                <form action="{% url 'db-user_management:refuse_friend_request' %}"
-                                formType="friendshipForm"
-                                method="post"
-                                style="display:inline"
-                                api-link>
-                                {% csrf_token %}
-                                <input type="hidden" name="sender" value="{{ user_id }}">
-                                <button type="submit" class="p-0 cursor-pointer">
-                                <i class="refuse-icon bi bi-x pe-1" style="color:brown; "></i>
-                                </button>
-                                </form>
-                                <form action="{% url 'db-user_management:accept_friend_request' %}"
-                                formType="friendshipForm"
-                                method="post"
-                                style="display:inline"
-                                api-link>
-                                {% csrf_token %}
-                                <input type="hidden" name="sender" value="{{ user_id }}">
-                                <button type="submit" class="p-0 cursor-pointer">
-                                    <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
-                                </button>
-                                </form>
-                            {% else %}
-                                <form action="{% url 'db-user_management:cancel_friend_request' %}"
-                                formType="friendshipForm"
-                                method="post"
-                                style="display:inline"
-                                api-link>
-                                {% csrf_token %}
-                                <input type="hidden" name="receiver" value="{{ user_id }}">
-                                <button type="submit" class="p-0 cursor-pointer">
-                                    <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 18px;"></i>
-                                </button>
-                                </form>
-                            {% endif %}
-                        {% else %}
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Add friend</a>
-                        <form action="{% url 'db-user_management:send_friend_request' %}"
-                        formType="friendshipForm"
-                        method="post"
-                        api-link>
-                        {% csrf_token %}
-                        <input type="hidden" name="receiver" value="{{ user_id }}">
-                        <button type="submit">
-                            <i class="add-icon bi bi-person-plus-fill"></i>
-                        </button>
                         </form>
                         {% endif %}
-                    </div>
-                    {% if is_blocked %}
-                    <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Unblock user</a>
-                        <form action="{% url 'db-user_management:unblock_user' %}"
-                        formType="blockForm"
-                        method="post"
-                        style="display:inline"
-                        api-link>
-                        {% csrf_token %}
-                        <input type="hidden" name="blocked" value="{{ user_id }}">
-                        <button type="submit" class="p-0 cursor-pointer">
-                            <i class="block-icon bi bi-ban"></i>
-                        </button>
-                        </form>
-                    </div>
                     {% else %}
-                    <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Block user</a>
-                        <form action="{% url 'db-user_management:block_user' %}"
-                        formType="blockForm"
-                        method="post"
-                        style="display:inline"
-                        api-link>
-                        {% csrf_token %}
-                        <input type="hidden" name="blocked" value="{{ user_id }}">
-                        <button type="submit" class="p-0 cursor-pointer">
-                            <i class="block-icon bi bi-ban"></i>
-                        </button>
-                        </form>
-                    </div>
+                    <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Add friend</a>
+                    <form action="{% url 'db-user_management:send_friend_request' %}"
+                    formType="friendshipForm"
+                    method="post"
+                    api-link>
+                    {% csrf_token %}
+                    <input type="hidden" name="receiver" value="{{ user_id }}">
+                    <button type="submit" class="p-0 cursor-pointer">
+                        <i class="add-icon bi bi-person-plus-fill"></i>
+                    </button>
+                    </form>
                     {% endif %}
-                    <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                        <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap">Send message</a>
-                        <i class="bi bi-send-fill"></i>
-                    </div>
                 </div>
+                {% if is_blocked %}
+                <div class="d-flex flex-row align-items-center justify-content-between gap-2">
+                    <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Unblock user</a>
+                    <form action="{% url 'db-user_management:unblock_user' %}"
+                    formType="blockForm"
+                    method="post"
+                    style="display:inline"
+                    api-link>
+                    {% csrf_token %}
+                    <input type="hidden" name="blocked" value="{{ user_id }}">
+                    <button type="submit" class="p-0 cursor-pointer">
+                        <i class="block-icon bi bi-ban" style="color:green;"></i>
+                    </button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="d-flex flex-row align-items-center justify-content-between gap-2">
+                    <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Block user</a>
+                    <form action="{% url 'db-user_management:block_user' %}"
+                    formType="blockForm"
+                    method="post"
+                    style="display:inline"
+                    api-link>
+                    {% csrf_token %}
+                    <input type="hidden" name="blocked" value="{{ user_id }}">
+                    <button type="submit" class="p-0 cursor-pointer">
+                        <i class="block-icon bi bi-ban" style="color:brown;"></i>
+                    </button>
+                    </form>
+                </div>
+                {% endif %}
+                    <a class="text-decoration-none text-nowrap d-flex flex-row align-items-center justify-content-between gap-2" href="/chat/" data-link>
+                        <p class="text-profile option m-0 text-decoration-none text-nowrap">Send message</p>
+                        <i class="bi bi-send-fill" style="cursor: pointer;"></i>
+                    </a>
             </div>
         </div>
+    </div>
 </div>
 
 <div class="col-history col col-10 col-md-4 col-lg-4 p-0 d-flex flex-column justify-content-center gap-3 gap-md-4" id="profile-stats">

@@ -1,186 +1,196 @@
+{% extends 'user_management/base_app.html' %}
 {% load static %}
-<div class="row app-row justify-content-center px-3 px-md-4 px-lg-4 gap-3 gap-md-4 gap-lg-5" id="friends-page">
-    <div class="col-friends friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 rounded-4">
-        <div class=" rounded-top-4 d-flex flex-row align-items-center justify-content-center gap-0">
-            <p id="title-friends-friend" class="title-friends selected col col-6 rounded-top-start-4 text-center m-0 p-2 text-nowrap cursor-pointer selected">Friends</p>
-            <p id="title-friends-search" class="title-friends col col-6 rounded-top-end-4 text-center m-0 p-2 text-nowrap cursor-pointer">Search</p>
-        </div>
-        <div class="div-friend p-2 p-lg-3">
-            <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
-                <input type="text" class="form-control rounded-5 border-0" placeholder="search friend" id="friends-input">
-                <i class="search-icon mx-2 mb-1 bi bi-search"></i>
+{% block content %}
+    <div class="row app-row justify-content-center px-3 px-md-4 px-lg-4 gap-3 gap-md-4 gap-lg-5" id="friends-page">
+        <div class="col-friends friends unselected col col-4 col-md-3 col-lg-3 col-xl-2 p-0 rounded-4">
+            <div class=" rounded-top-4 d-flex flex-row align-items-center justify-content-center gap-0">
+                <p id="title-friends-friend" class="title-friends selected col col-6 rounded-top-start-4 text-center m-0 p-2 text-nowrap cursor-pointer selected">Friends</p>
+                <p id="title-friends-search" class="title-friends col col-6 rounded-top-end-4 text-center m-0 p-2 text-nowrap cursor-pointer">Search</p>
+                
             </div>
-            <div class="friends-box friends d-flex flex-column justify-content-start overflow-y-auto" id='friends-tab'>
-            {% comment %} Server Side Rendering Code {% endcomment %}
-            {% comment %} {% for friend in current_friends %}
-                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5">
-                    <div class="d-flex flex-row align-items-center gap-3">
-                        <div class="status-icon">
-                            <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
-                        </div>
-                        <p class="friend-name m-0 mt-1" data-friend="{{ friend }}">
-                            {{ friend }}
-                        </p>
-                    </div>
-                    <i class="info-icon mt-1 bi bi-info-circle"></i>
+            <div class="div-friend px-2 px-lg-3 pt-1 pb-2 pb-lg-3">
+                <a class="refresh-icon-tag text-decoration-none d-flex flex-row justify-content-center gap-2" href="/friends/" data-link>
+                    <p class="text-profile m-0" style="font-weight: 500; pointer-events: none;">Refresh page</p>
+                    <i class="bi bi-arrow-clockwise " style="pointer-events: none; font-size: 15px;"></i>
+                </a>
+                <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
+                    <input type="text" class="form-control rounded-5 border-0" placeholder="search friend" id="friends-input">
+                    <i class="search-icon mx-2 mb-1 bi bi-search"></i>
                 </div>
-                {% empty %}
-                <p class="no-friend-msg my-4 text-nowrap d-flex justify-content-center">You have no friends!</p>
-                {% endfor %} {% endcomment %}
-            </div>
-        </div>
-
-
-        <div class="div-search p-2 p-lg-3">
-            <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
-                <input type="text" class="form-control rounded-5 border-0" placeholder="search user" id="search-input">
-                <i class="search-icon mx-2 mb-1 bi bi-search"></i>
-            </div>
-            <div class="friends-box friends d-flex flex-column justify-content-start overflow-y-auto" id='search-tab'>
-
-
-                {% comment %} {% if pending_friend_requests %}
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
-                    <p class="text-profile m-0  px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests</p>
-                </div>
-                        {% for pending_request in pending_friend_requests %}
-                                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
-                                    <div class="d-flex flex-row align-items-center gap-3">
-                                        <div class="status-icon">
-                                            <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
-                                        </div>
-                                        <p class="friend-name m-0 mt-1" data-friend="{{ pending_request.sender.username }}">
-                                            {{ pending_request.sender.username }} | {{ pending_request.receiver.username }}
-                                        </p>
-                                    </div>
-                                    {% comment %} <div>
-                                        {% comment %} <form action="{% url 'db-user_management:accept_friend_request' %}"
-                                        id="accept-friend-pending_request"
-                                        method="post"
-                                        style="display:inline"
-                                        api-link>
-                                        {% csrf_token %}
-                                        <input type="hidden" name="sender" value="{{ pending_request.sender.id }}">
-                                        <button type="submit" class="p-0 cursor-pointer">
-                                            <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
-                                        </button>
-                                        </form>
-                                        <form action="{% url 'db-user_management:refuse_friend_request' %}"
-                                        id="refuse-friend-pending_request"
-                                        method="post"
-                                        style="display:inline"
-                                        api-link>
-                                        {% csrf_token %}
-                                        <input type="hidden" name="sender" value="{{ pending_request.sender.id }}">
-                                        <button type="submit" class="p-0 cursor-pointer">
-                                            <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
-                                        </button>
-                                        </form>
-                                </div>
-                        {% empty %}
-                            <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No pending requests</p>
-                        {% endfor %}
-                {% endif %}
-                {% if all_users %}
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
-                    <p class="text-profile m-0  px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">All Users</p>
-                </div>
-                    {% for user in all_users %}
-                        <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
-                            <div class="d-flex flex-row align-items-center gap-3">
-                                <div class="status-icon">
-                                    <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
-                                </div>
-                                <p class="friend-name m-0 mt-1" data-friend="{{ user.id }}">
-                                    {{ user.username }}
-                                </p>
+                <div class="friends-box friends unselected d-flex flex-column justify-content-start overflow-y-auto" id='friends-tab'>
+                {% comment %} Server Side Rendering Code {% endcomment %}
+                {% comment %} {% for friend in current_friends %}
+                    <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 px-2 py-1 mb-1 me-1 rounded-5">
+                        <div class="d-flex flex-row align-items-center gap-3">
+                            <div class="status-icon">
+                                <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
                             </div>
+                            <p class="friend-name m-0 mt-1" data-friend="{{ friend }}">
+                                {{ friend }}
+                            </p>
                         </div>
+                        <i class="info-icon mt-1 bi bi-info-circle"></i>
+                    </div>
                     {% empty %}
-                        <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No other user. What a shit game site.</p>
-                    {% endfor %}
-                {% endif %}
-                {% comment %} {% if sent_friend_requests %}
+                    <p class="no-friend-msg my-4 text-nowrap d-flex justify-content-center">You have no friends!</p>
+                    {% endfor %} {% endcomment %}
+                </div>
+            </div>
+
+
+            <div class="div-search px-2 px-lg-3 pt-1 pb-2 pb-lg-3">
+                <a class="refresh-icon-tag text-decoration-none d-flex flex-row justify-content-center gap-2" href="/friends/" data-link>
+                    <p class="text-profile m-0" style="font-weight: 500; pointer-events: none;">Refresh page</p>
+                    <i class="bi bi-arrow-clockwise " style="pointer-events: none; font-size: 15px;"></i>
+                </a>
+                <div class="search d-flex flex-row align-items-center rounded-5 mb-2">
+                    <input type="text" class="form-control rounded-5 border-0" placeholder="search user" id="search-input">
+                    <i class="search-icon mx-2 mb-1 bi bi-search"></i>
+                </div>
+                <div class="friends-box friends unselected d-flex flex-column justify-content-start overflow-y-auto" id='search-tab'>
+                    {% comment %} {% if pending_friend_requests %}
                     <div style="display: flex; align-items: center; gap: 5px;">
                         <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
-                        <p class="text-profile m-0 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests sent</p>
+                        <p class="text-profile m-0  px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests</p>
                     </div>
-                    {% for pending_sent_request in sent_friend_requests %}
+                            {% for pending_request in pending_friend_requests %}
+                                    <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
+                                        <div class="d-flex flex-row align-items-center gap-3">
+                                            <div class="status-icon">
+                                                <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
+                                            </div>
+                                            <p class="friend-name m-0 mt-1" data-friend="{{ pending_request.sender.username }}">
+                                                {{ pending_request.sender.username }} | {{ pending_request.receiver.username }}
+                                            </p>
+                                        </div>
+                                        {% comment %} <div>
+                                            {% comment %} <form action="{% url 'db-user_management:accept_friend_request' %}"
+                                            id="accept-friend-pending_request"
+                                            method="post"
+                                            style="display:inline"
+                                            api-link>
+                                            {% csrf_token %}
+                                            <input type="hidden" name="sender" value="{{ pending_request.sender.id }}">
+                                            <button type="submit" class="p-0 cursor-pointer">
+                                                <i class="accept-icon bi bi-check-lg" style="color:green; font-size: 18px;"></i>
+                                            </button>
+                                            </form>
+                                            <form action="{% url 'db-user_management:refuse_friend_request' %}"
+                                            id="refuse-friend-pending_request"
+                                            method="post"
+                                            style="display:inline"
+                                            api-link>
+                                            {% csrf_token %}
+                                            <input type="hidden" name="sender" value="{{ pending_request.sender.id }}">
+                                            <button type="submit" class="p-0 cursor-pointer">
+                                                <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
+                                            </button>
+                                            </form>
+                                    </div>
+                            {% empty %}
+                                <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No pending requests</p>
+                            {% endfor %}
+                    {% endif %}
+                    {% if all_users %}
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
+                        <p class="text-profile m-0  px-1 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">All Users</p>
+                    </div>
+                        {% for user in all_users %}
                             <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
                                 <div class="d-flex flex-row align-items-center gap-3">
                                     <div class="status-icon">
                                         <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
                                     </div>
-                                    <p class="friend-name m-0 mt-1" data-friend="{{ pending_sent_request.sender.username }}">
-                                        {{ pending_sent_request.receiver.username }}
+                                    <p class="friend-name m-0 mt-1" data-friend="{{ user.id }}">
+                                        {{ user.username }}
                                     </p>
                                 </div>
-                                <div>
-                                    {% comment %} <form action="{% url 'db-user_management:cancel_friend_request' %}"
-                                    id="cancel-friend-request"
-                                    method="post"
-                                    style="display:inline"
-                                    api-link>
-                                    {% csrf_token %}
-                                    <input type="hidden" name="receiver" value="{{ pending_sent_request.receiver.id }}">
-                                    <button type="submit" class="p-0 cursor-pointer">
-                                        <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
-                                    </button>
-                                    </form>
-                                </div>
                             </div>
-                    {% endfor %}  {% endcomment %}
+                        {% empty %}
+                            <p class="text-profile m-0 text-center" style="font-size: 14px; font-weight: 400;">No other user. What a shit game site.</p>
+                        {% endfor %}
+                    {% endif %}
+                    {% comment %} {% if sent_friend_requests %}
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <hr style="flex-grow: 1; border: none; border-top: 1px solid #333; margin: 0;">
+                            <p class="text-profile m-0 text-center" style="font-size: 11px; font-weight: 300; margin: 0; color: #333">Pending requests sent</p>
+                        </div>
+                        {% for pending_sent_request in sent_friend_requests %}
+                                <div class="friend d-flex flex-row align-items-center justify-content-between gap-2 ps-2 py-1 mb-1 me-1 rounded-5">
+                                    <div class="d-flex flex-row align-items-center gap-3">
+                                        <div class="status-icon">
+                                            <img class="friend-img rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
+                                        </div>
+                                        <p class="friend-name m-0 mt-1" data-friend="{{ pending_sent_request.sender.username }}">
+                                            {{ pending_sent_request.receiver.username }}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        {% comment %} <form action="{% url 'db-user_management:cancel_friend_request' %}"
+                                        id="cancel-friend-request"
+                                        method="post"
+                                        style="display:inline"
+                                        api-link>
+                                        {% csrf_token %}
+                                        <input type="hidden" name="receiver" value="{{ pending_sent_request.receiver.id }}">
+                                        <button type="submit" class="p-0 cursor-pointer">
+                                            <i class="refuse-icon bi bi-x pe-1" style="color:brown; font-size: 20px;"></i>
+                                        </button>
+                                        </form>
+                                    </div>
+                                </div>
+                        {% endfor %}  {% endcomment %}
+                </div>
             </div>
         </div>
-    </div>
 
-    {% comment %} Friends Detail View {% endcomment %}
-    {% comment %} <div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4" id="profile-pic">
-        <img class="profile-img friends rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
-            <div class="profile-div shadow-sm rounded-4 w-100">
-                <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap" friend-id>None</p>
-                <div class="profile-box p-3 px-lg-4">
-                    <div class="profile-box d-flex flex-column gap-1">
-                        <p class="text-profile m-0 text-nowrap" friend-name>None</p>
-                        <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Remove friend</a>
-                            //<i class="add-icon bi bi-person-plus-fill"></i>
-                            <i class="remove-icon bi bi-person-dash-fill"></i>
-                        </div>
-                        <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Block user</a>
-                            <i class="block-icon bi bi-ban"></i>
-                        </div>
-                        <div class="d-flex flex-row align-items-center justify-content-between gap-2">
-                            <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap">Send message</a>
-                            <i class="bi bi-send-fill"></i>
+        {% comment %} Friends Detail View {% endcomment %}
+        {% comment %} <div class="col-profile friends col col-4 col-md-3 col-lg-3 col-xl-2 p-0 d-flex flex-column align-items-center justify-content-center gap-3 gap-md-4" id="profile-pic">
+            <img class="profile-img friends rounded-circle border-0" src="{% static 'assets/foto-perfil.png' %}">
+                <div class="profile-div shadow-sm rounded-4 w-100">
+                    <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap" friend-id>None</p>
+                    <div class="profile-box p-3 px-lg-4">
+                        <div class="profile-box d-flex flex-column gap-1">
+                            <p class="text-profile m-0 text-nowrap" friend-name>None</p>
+                            <div class="d-flex flex-row align-items-center justify-content-between gap-2">
+                                <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" id="remove-friend-btn">Remove friend</a>
+                                //<i class="add-icon bi bi-person-plus-fill"></i>
+                                <i class="remove-icon bi bi-person-dash-fill"></i>
+                            </div>
+                            <div class="d-flex flex-row align-items-center justify-content-between gap-2">
+                                <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap" >Block user</a>
+                                <i class="block-icon bi bi-ban"></i>
+                            </div>
+                            <div class="d-flex flex-row align-items-center justify-content-between gap-2">
+                                <a class="text-profile option m-0 cursor-pointer text-decoration-none text-nowrap">Send message</a>
+                                <i class="bi bi-send-fill"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-    </div>
-    
-    <div class="col-history col col-10 col-md-4 col-lg-4 p-0 d-flex flex-column justify-content-center gap-3 gap-md-4" id="profile-stats">
-        <div class="history-info shadow-sm rounded-4">
-            <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game information</p>
-            <div class="p-3 px-lg-4">
-                <div class=" history-info-box d-flex flex-column gap-1">
-                    <p class="text-profile m-0 text-nowrap">Online on: 03/11/2024 at 23:37</p>
-                    <p class="text-profile m-0 text-nowrap">Games played: 3</p>
-                    <p class="text-profile m-0 text-nowrap">Total wins: 2</p>
-                </div>
-            </div>
         </div>
         
-        <div class="history shadow-sm rounded-4">
-            <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game history</p>
-            <div class="py-3 px-2">
-                <div class="history-box d-flex flex-column gap-1 align-items-center justify-content-center overflow-y-auto">
-                    <p class="text-profile text-center px-2 m-0">You haven't played any games yet.</p>
+        <div class="col-history col col-10 col-md-4 col-lg-4 p-0 d-flex flex-column justify-content-center gap-3 gap-md-4" id="profile-stats">
+            <div class="history-info shadow-sm rounded-4">
+                <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game information</p>
+                <div class="p-3 px-lg-4">
+                    <div class=" history-info-box d-flex flex-column gap-1">
+                        <p class="text-profile m-0 text-nowrap">Online on: 03/11/2024 at 23:37</p>
+                        <p class="text-profile m-0 text-nowrap">Games played: 3</p>
+                        <p class="text-profile m-0 text-nowrap">Total wins: 2</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div> {% endcomment %}
-</div>
+            
+            <div class="history shadow-sm rounded-4">
+                <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game history</p>
+                <div class="py-3 px-2">
+                    <div class="history-box d-flex flex-column gap-1 align-items-center justify-content-center overflow-y-auto">
+                        <p class="text-profile text-center px-2 m-0">You haven't played any games yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div> {% endcomment %}
+    </div>
+{% endblock %}

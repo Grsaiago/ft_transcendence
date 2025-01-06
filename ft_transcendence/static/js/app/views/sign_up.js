@@ -1,25 +1,24 @@
 import AbstractView from "./abstractView.js";
 
-export default class Sign_in extends AbstractView {
+export default class Sign_up extends AbstractView {
     constructor() {
         super();
-        this.setTitle("Sign_in");
+        this.setTitle("Sign_up");
     }
 
     async getHtml() {
         try {
-            const response = await fetch('/sign_in/', {
+            const response = await fetch('/sign_up/', {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             });
             const html = await response.text();
-            console.log(html);
             return html;
         }
         catch(error) {
             console.error('Failed to fetch page: ', error);
-            return "<p>Error loading login page</p>";
+            return "<p>Error loading register page</p>";
         }
     }
 }

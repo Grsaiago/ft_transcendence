@@ -16,8 +16,7 @@ from .models import GameMode, Match, PongRoom, Tournament, TournamentParticipant
 logger = logging.getLogger(__name__)
 
 class PongSelectGameMode(TemplateView):
-    template_name = "../../user_management/templates/user_management/base_app.html"
-
+    template_name = "pong/play.html"
     def get(self, request, *args, **kwargs):
         context = {"GameMode": GameMode.as_dict()}
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -43,7 +42,7 @@ class PongSelectGameMode(TemplateView):
 
 
 class PongEnterView(TemplateView):
-    template_name = "../../user_management/templates/user_management/base_app.html"
+    template_name = "pong/enter.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -98,7 +97,7 @@ class PongEnterView(TemplateView):
 
 class PongRoomView(LoginRequiredMixin, TemplateView):
     
-    template_name = "../../user_management/templates/user_management/base_app.html"
+    template_name = "pong/room.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -123,7 +122,7 @@ class PongRoomView(LoginRequiredMixin, TemplateView):
 
 class PongTournamentView(LoginRequiredMixin, DetailView):
     model = Tournament
-    template_name = "../../user_management/templates/user_management/base_app.html"
+    template_name = "pong/tournament.html"
     context_object_name = "tournament"
     pk_url_kwarg = "tournament_id"
 

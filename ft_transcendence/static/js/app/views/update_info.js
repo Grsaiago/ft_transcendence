@@ -1,9 +1,11 @@
-
 import AbstractView from "./abstractView.js";
+import ChatManager from "../managers/ChatManager.js";
 
 export default class Update_info extends AbstractView {
     constructor() {
         super();
+        const chatManager = new ChatManager();
+        chatManager.tryConnectToChatSocket();
         this.setTitle("Update_info");
     }
 

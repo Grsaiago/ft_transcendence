@@ -1,5 +1,6 @@
 import AbstractView from "./abstractView.js";
 import PongRoomManager from "../managers/PongRoomManager.js";
+import ChatManager from "../managers/ChatManager.js";
 
 export default class Room extends AbstractView {
     constructor() {
@@ -7,11 +8,13 @@ export default class Room extends AbstractView {
         this.setTitle("Room");
         this.pongRoomManager = new PongRoomManager();
         this.isCanvasFocused = true;
-
         this.handleFocus = this.handleFocus.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
         this.handleKeyEvent = this.handleKeyEvent.bind(this);
         this.handleClickStartButton = this.handleClickStartButton.bind(this);
+        // tenta conectar o socket de chat
+        const chatManager = new ChatManager();
+        chatManager.tryConnectToChatSocket();
     }
 
     async getHtml(url) {
