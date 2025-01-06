@@ -178,7 +178,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
             if cached_data is not None:
                 self.game_data = cached_data
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-            logger.info(f"Consumer added to group {self.room_group_name}")
+            logger.info(f"{self.scope['user']} added to group {self.room_group_name}")
         except Exception as e:
             await self.send_error("Failed to add to group.")
             logger.exception(f"Failed to add to group: {e}")
@@ -353,7 +353,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         """
         await self.send(text_data=json.dumps({"type": "error", "message": message}))
 
-    async def send_alert_message(self, message: str ) -> None:
+    async def send_alert_message(self, event) -> None:
         """
         Send an alert message to the client.
 
@@ -362,7 +362,7 @@ class BasePongConsumer(AsyncWebsocketConsumer):
         """
         await self.send(text_data=json.dumps({
                 "type": "alert_message",
-                "message": message
+                "message": event["message"]
             })
         )
 
