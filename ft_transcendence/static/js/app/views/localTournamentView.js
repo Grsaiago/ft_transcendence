@@ -147,20 +147,39 @@ export default class LocalTournament extends AbstractView {
             // Update player 1 and player 2 names
             const player1Div = document.getElementById(`${match.matchId}-p1`);
             const player2Div = document.getElementById(`${match.matchId}-p2`);
+            const statusText = document.getElementById(`status-${match.matchId}`);
+            const matchBtn = document.getElementById(`btn-${match.matchId}`);
 
             if (player1Div) player1Div.textContent = match[`${match.matchId}-p1`] || "TBD";
             if (player2Div) player2Div.textContent = match[`${match.matchId}-p2`] || "TBD";
 
             // Update match button
-            const matchBtn = document.getElementById(`btn-${match.matchId}`);
-            if (matchBtn) {
-                if (match.status === "ready") {
-                    matchBtn.textContent = "Start";
-                    matchBtn.disabled = false;
-                } else if (match.status === "finished" && match.winner) {
-                    matchBtn.textContent = `Finished! Winner: ${match.winner}`;
-                    matchBtn.disabled = true;
-                }
+            // if (matchBtn) {
+            //     if (match.status === "ready") {
+            //         matchBtn.textContent = "Start";
+            //         matchBtn.disabled = false;
+            //     } else if (match.status === "finished" && match.winner) {
+            //         matchBtn.textContent = `Finished! Winner: ${match.winner}`;
+            //         matchBtn.disabled = true;
+            //     }
+            // }
+
+
+
+            if (match.status === "ready") {
+                statusText.classList.add("d-none");
+                matchBtn.classList.remove("d-none");
+                matchBtn.disabled = false;
+            } else if (match.status === "finished" && match.winner) {
+                statusText.textContent = `Winner for ${match.matchId} set to ${match.winner}`;
+                statusText.classList.remove("d-none");
+                matchBtn.classList.add("d-none");
+                matchBtn.disabled = true;
+            } else {
+                statusText.textContent = "waiting for game...";
+                statusText.classList.remove("d-none");
+                matchBtn.classList.add("d-none");
+                matchBtn.disabled = true;
             }
         });
     }
@@ -171,9 +190,14 @@ export default class LocalTournament extends AbstractView {
 
     deactivateStartButton() {
         const startButton = document.getElementById("startTournament");
+        const startTournamentText = document.getElementById("startTournamentText");
+        
         if (startButton) {
-            startButton.disabled = true; // Disable the button
-            startButton.innerHTML = "<p class='btn-custom-name-enter m-0'>Tournament Started!</p>"; // Update the text
+            startButton.style.display = "none"; // Esconde o botão
+            startButton.disabled = true;
+        }
+        if (startTournamentText) {
+            startTournamentText.classList.remove("d-none"); // Exibe o texto
         }
     }
 

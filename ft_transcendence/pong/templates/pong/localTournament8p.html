@@ -25,15 +25,18 @@
                 <form id="tournamentForm">
                 {% for i in "12345678"|slice:":" %}
                 <div class="d-flex flex-row p-0 mb-2">
-                    <label for="player-{{ forloop.counter }}" id="player-name-{{ forloop.counter }}"></label>
-                    <input type="text" id="player-{{ forloop.counter }}" name="player-{{ forloop.counter }}" 
+                    <label for="player-{{ i }}" id="player-name-{{ i }}"></label>
+                    <input type="text" id="player-{{ i }}" name="player-{{ i }}" 
                         class="form-control form-player rounded-5 border-0 mr-2" 
                         placeholder="Choose a name" 
-                        title="player-name-{{ forloop.counter }}" maxlength="20" required>
+                        title="player-name-{{ i }}" maxlength="20" required>
                 </div>
                 {% endfor %}
                 <p id="p-warn" class="text-tournament m-0 text-nowrap" style="color: red; text-align: center;"></p>
                 <div class="d-flex justify-content-center">
+                    <p class="text-tournament status-game text-center m-0 d-none" id="startTournamentText">
+                        Tournament started!
+                    </p>
                     <button id="startTournament" class="btn btn-custom">
                         <p class="btn-custom-name-enter m-0">Start</p>
                     </button>
@@ -53,15 +56,18 @@
                 <div class="row d-flex justify-content-center gap-2">
                     {% for i in "1234"|slice:":" %}
                     <div class="create-room-box col col-5 rounded-4 px-2 d-flex justify-content-center">
-                        <div class="d-flex flex-column py-1 rounded-3" id="Match{{ forloop.counter }}">
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Match{{ forloop.counter }}-p1">
+                        <div class="d-flex flex-column py-1 rounded-3" id="Match{{ i }}">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Match{{ i }}-p1">
                                 TBD
                             </div>
-                            <div class="text-tournament text-center m-0 text-nowrap" id="Match{{ forloop.counter }}-p2">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Match{{ i }}-p2">
                                 TBD
                             </div>
-                            <button id="btn-Match{{ forloop.counter }}" class="btn btn-custom py-1 px-2" disabled="">
-                                <p class="btn-custom-name-enter m-0">Waiting for players...</p>
+                            <p class="text-tournament status-game text-center m-0" id="status-Match{{ i }}">
+                                waiting for game...
+                            </p>
+                            <button id="btn-Match{{ i }}" class="btn btn-custom py-1 px-2 d-none" disabled="">
+                                <p class="btn-custom-name-enter m-0">start</p>
                             </button>
                         </div>
                     </div>
@@ -80,8 +86,11 @@
                             <div class="text-tournament text-center m-0 text-nowrap" id="Match{{ i }}-p2">
                                 TBD
                             </div>
-                            <button id="btn-Match{{ i }}" class="btn btn-custom py-1 px-2" disabled="">
-                                <p class="btn-custom-name-enter m-0">Waiting for players...</p>
+                            <p class="text-tournament status-game text-center m-0" id="status-Match{{ i }}">
+                                waiting for game...
+                            </p>
+                            <button id="btn-Match{{ i }}" class="btn btn-custom py-1 px-2 d-none" disabled="">
+                                <p class="btn-custom-name-enter m-0">start</p>
                             </button>
                         </div>
                     </div>
@@ -99,17 +108,15 @@
                             <div class="text-tournament text-center m-0 text-nowrap" id="Match7-p2">
                                 TBD
                             </div>
-                            <button id="btn-Match7" class="btn btn-custom py-1 px-2" disabled="">
-                                <p class="btn-custom-name-enter m-0">Waiting for players...</p>
+                            <p class="text-tournament status-game text-center m-0" id="status-Match7">
+                                waiting for game...
+                            </p>
+                            <button id="btn-Match7" class="btn btn-custom py-1 px-2 d-none" disabled="">
+                                <p class="btn-custom-name-enter m-0">start</p>
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="d-flex justify-content-center">
-                <button class="btn btn-custom py-1 px-2" id="play-btn">
-                    <p class="btn-custom-name-enter m-0">Play</p>
-                </button>
             </div>
         </div>
     </div>
