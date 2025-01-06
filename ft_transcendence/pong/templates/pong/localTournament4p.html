@@ -14,6 +14,7 @@
                 <p class="text-tournament m-0 text-nowrap">Max Players:
                     <span id="maxPlayersValue">4</span>
                 </p>
+                <p class="text-tournament m-0 text-nowrap">Winner: </p>
             </div>
         </div>
         <div class="col-tournament p-0 rounded-4">
@@ -27,7 +28,7 @@
                     <input type="text" id="player-{{ forloop.counter }}" name="player-{{ forloop.counter }}" 
                         class="form-control form-player rounded-5 border-0 mr-2" 
                         placeholder="Choose a name" 
-                        title="player-name-{{ forloop.counter }}" maxlength="20">
+                        title="player-name-{{ forloop.counter }}" maxlength="20" required>
                     <button class="btn btn-custom px-2">
                         <p class="btn-custom-name-enter m-0">ok</p>
                     </button>
