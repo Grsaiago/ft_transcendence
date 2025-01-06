@@ -23,6 +23,18 @@ services:
       #   retries: 5
       #   start_period: 30s
 
+  redis:
+    container_name: tr_redis
+    image: redis:latest
+    restart: always
+    volumes:
+      - redis-data:/data:rw
+    networks:
+      - data-layer-network
+    expose:
+      - "6379"
+    depends_on:
+      - db
 
   django-worker:
     container_name: django-worker
@@ -47,32 +59,23 @@ services:
       dockerfile: ./docker/django/Dockerfile
     restart: always
     volumes:
-      - media-data:/app/ft_transcendence/media:rw
+      - media-files:/app/ft_transcendence/media:rw
     networks:
       - data-layer-network
       - metrics-scrape-network
       - logs-scrape-network
+      - serve-network
+    # TODO: Take off the ports directive
     ports:
-      - "443:443"
+      - "8000:8000"
+    expose:
+      - "8000" # so nginx can ping it
     env_file:
       - .env
     depends_on:
       - db
       - redis
       - django-worker
-
-  redis:
-    container_name: tr_redis
-    image: redis:latest
-    restart: always
-    volumes:
-      - redis-data:/data:rw
-    networks:
-      - data-layer-network
-    expose:
-      - "6379"
-    depends_on:
-      - db
 
   prometheus:
     container_name: prometheus
@@ -133,20 +136,23 @@ services:
     depends_on:
       - django
 
-  elasticinitializer:
-    container_name: elastic_initializer
+  initializer:
+    container_name: initializer
     build:
       context: .
-      dockerfile: ./docker/elastic_initializer/Dockerfile
+      dockerfile: ./docker/initializer/Dockerfile
+    restart: on-failure
+    volumes:
+      - static-files:/var/www/django/static/:rw
+      - media-files:/var/www/django/media/:rw
+    networks:
+      - logs-display-network # pra pingar o elastic
+      - data-layer-network # pra pingar o django
     env_file:
       - .env
-    restart: on-failure
     depends_on:
       - elasticsearch
       - django
-    networks:
-      - logs-display-network # pra pingar o elastic
-      - logs-scrape-network # pra pingar o django
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.10.2
@@ -181,13 +187,34 @@ services:
       - elasticsearch
       - logstash
 
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    container_name: nginx
+    networks:
+      - serve-network
+    ports:
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static-files:/var/www/django/static/:ro
+      - media-files:/var/www/django/media/:ro
+    env_file:
+      - .env
+    depends_on:
+      - django
+      - django-worker
+      - initializer
+
 volumes:
-  media-data: {}
   pg-data: {}
   redis-data: {}
   grafana-data: {}
   prometheus-data: {}
   elasticsearch-data: {}
+  static-files: {}
+  media-files: {}
 
 networks:
   metrics-scrape-network: {}
@@ -195,3 +222,4 @@ networks:
   data-layer-network: {}
   logs-display-network: {}
   logs-scrape-network: {}
+  serve-network: {}

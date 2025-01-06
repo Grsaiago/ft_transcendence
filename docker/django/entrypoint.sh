@@ -13,4 +13,4 @@ echo "Collecting static files..."
 # Exec into Daphne to run the server, this replaces the shell with the Daphne process
 # ensuring that signals received by the container are captured by the daphne server
 echo "Starting Daphne server..."
-exec daphne -e ssl:443:privateKey=/cert/key.pem:certKey=/cert/cert.pem ft_transcendence.asgi:application
+exec daphne -b 0.0.0.0 -p 8000 ft_transcendence.asgi:application

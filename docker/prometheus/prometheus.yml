@@ -7,8 +7,6 @@ rule_files:
 
 scrape_configs:
   - job_name: 'django-metrics'
-    scheme: https
-    tls_config:
-      insecure_skip_verify: true # ignora o fato do certificado ser auto assinado
+    scheme: http
     static_configs:
-      - targets: ['django:443']
+      - targets: ['django:8000']

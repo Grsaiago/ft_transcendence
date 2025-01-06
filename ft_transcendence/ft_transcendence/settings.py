@@ -33,19 +33,15 @@ SECRET_KEY = "django-insecure-(9rdnj=ey@s4$gzno%968@$yi4+@0wadwzp#r%9z5&%n2r1+q9
 DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() in ('true', '1', 't', 'yes')
 
 ALLOWED_HOSTS = ['*']
-
-# Tls support
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost https://localhost').split()
 # Application definition
 
 INSTALLED_APPS = [
     "daphne",
     "whitenoise.runserver_nostatic",
     "channels",
+    "corsheaders",
     "user_management.apps.UserManagementConfig",
     "chat.apps.ChatConfig",
     "django_prometheus",
@@ -61,6 +57,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusBeforeMiddleware',
     "django.middleware.locale.LocaleMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -213,7 +210,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-STATIC_ROOT = os.path.join(BASE_DIR, "prod_static_serve")
+# a url onde ele vai jogar os arquivos estestáticos compilados
+STATIC_ROOT =  os.getenv("STATIC_SERVE_DIR", "compiled_static")
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -222,8 +220,6 @@ STATICFILES_DIRS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
