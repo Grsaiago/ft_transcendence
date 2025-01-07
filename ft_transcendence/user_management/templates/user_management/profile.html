@@ -25,8 +25,8 @@
             <div class="p-3 px-lg-4">
                 <div class=" history-info-box d-flex flex-column gap-1">
                     <p class="text-profile m-0">Online on: 03/11/2024 at 23:37</p>
-                    <p class="text-profile m-0">Games played: 3</p>
-                    <p class="text-profile m-0">Total wins: 2</p>
+                    <p class="text-profile m-0 text-nowrap">Matches (won/played): {{ user_game_stats.total_wins }} / {{ user_game_stats.total_matches }}</p>
+                    <p class="text-profile m-0 text-nowrap">Tournaments (won/played): {{ user_game_stats.total_tournament_wins }} / {{ user_game_stats.total_tournaments }}</p>
                 </div>
             </div>
         </div>
