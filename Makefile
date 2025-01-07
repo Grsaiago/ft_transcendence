@@ -4,7 +4,7 @@ BLUE := $(shell printf "\033[34m")
 MAGENTA := $(shell printf "\033[35m")
 RESET := $(shell printf "\033[0m")
 
-COMPOSE = docker-compose
+COMPOSE = docker compose
 NAME = 'Transcendence das Minas \(e Saiago\)'
 
 .PHONY: all
