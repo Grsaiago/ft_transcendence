@@ -20,6 +20,8 @@ import EnterLocalTournament from  "./views/enterLocalTournamentView.js"
 import LocalTournament from "./views/localTournamentView.js";
 import localTournamentMatchFormsHandler from "./handlers/localTournamentMatchFormHandler.js";
 import LocalTournamentRoomView from "./views/localTournamentRoomView.js";
+import matchHistoryView from "./views/matchHistoryView.js";
+import tournamentHistoryView from "./views/tournamentHistoryView.js";
 
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
@@ -59,6 +61,9 @@ const viewsRouter = async (url) => {
         { path: "/localTournament/room/:id/", view: LocalTournamentRoomView, regex: /^\/localTournament\/room\/\d+\/$/ },
         { path: "/localTournament/:num_players/", view: LocalTournament, regex: /^\/localTournament\/\d+\/$/ },
         { path: "/tournament/:id/", view: OnlineTournament, regex: /^\/tournament\/\d+\/$/ },
+        { path: "/matchhistory/:id/", view: matchHistoryView, regex: /^\/matchhistory\/\d+\/$/ },
+        { path: "/tournamenthistory/:id/", view: tournamentHistoryView, regex: /^\/tournamenthistory\/\d+\/$/ },
+
     ];
 
     let match = routes.find((route) =>  route.regex

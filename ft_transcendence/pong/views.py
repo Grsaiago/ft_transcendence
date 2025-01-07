@@ -259,3 +259,31 @@ class UserHistoryView(LoginRequiredMixin, View):
             "tournaments": tournament_history,
         }
         return JsonResponse(data)
+
+
+class UserMatchHistoryView(LoginRequiredMixin, View):
+    template_name = "../../user_management/templates/user_management/base_app.html"
+    
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            
+        }
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/match_history.html", context)
+        return render(request, self.template_name, context)
+    
+class UserTournamentHistoryView(LoginRequiredMixin, View):
+    template_name = "../../user_management/templates/user_management/base_app.html"
+
+
+    def get(self, request, *args, **kwargs):
+        user_id = kwargs.get("user_id")
+        
+        context = {
+            "user_id":user_id
+        }
+        
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/tournament_history.html", context)
+        return render(request, self.template_name, context)

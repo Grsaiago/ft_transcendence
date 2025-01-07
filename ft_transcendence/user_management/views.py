@@ -253,3 +253,4 @@ class UserUpdateInfoView(auth_mixins.LoginRequiredMixin, generic_views.View):
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return render(request, "user_management/update_info.html", context)
         return render(request, self.template_name, context)
+    
