@@ -602,6 +602,30 @@ button {
     background-color: var(--cor-6);
 }
 
+#match-history {
+    max-height: 300px; /* Set the desired max height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-right: 10px; /* Add padding to prevent scrollbars from overlapping content */
+    background-color: #ffffff;
+    font-family: 'LT Galaxy Reverse', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+}
+
+.scrollable-container::-webkit-scrollbar {
+    width: 8px; /* Customize scrollbar width */
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+    background-color: #888; /* Customize scrollbar thumb color */
+    border-radius: 4px; /* Rounded scrollbar edges */
+}
+
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Change color on hover */
+}
+
 @media (min-width: 574px) {
     .app-container {
         min-height: calc(100vh - 126px);
