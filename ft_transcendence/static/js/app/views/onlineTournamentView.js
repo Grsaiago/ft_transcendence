@@ -70,13 +70,14 @@ export default class OnlineTournament extends AbstractView {
     handleClickJoinButton() {
         this.hubManager.joinTournament();
     }
-
+    
     //HubManager Events Handlers
-
+    
     handleJoinedTournament() {
         const joinButton = document.getElementById("joinTournament");
-        joinButton.style.display = "none";
-        console.log("inscrito")
+        if (joinButton) {
+            console.log("inscrito");
+        }
     }
 
     handleTournamentMessage(event) {
@@ -126,11 +127,26 @@ export default class OnlineTournament extends AbstractView {
           const player1Elem = document.getElementById(`${match.round}-p1`);
           const player2Elem = document.getElementById(`${match.round}-p2`);
           const playLinkElem = document.getElementById(`${match.round}-btn`);
+          const statusElem = document.getElementById(`status-${match.round}`);
 
           if (player1Elem)
             player1Elem.innerText = match.player1 !== "TBD" ? match.player1 : "TBD";
           if (player2Elem)
             player2Elem.innerText = match.player2 !== "TBD" ? match.player2 : "TBD";
+
+          if (statusElem) {
+            if (match.finished) {
+                // Partida concluída: exibir o vencedor
+                statusElem.innerText = `Winner: ${match.winner || "Unknown"}`;
+                statusElem.classList.remove("d-none");
+            } else {
+                // Partida em andamento ou aguardando jogadores
+                statusElem.innerText = "waiting for game...";
+                if (playLinkElem && !match.finished) {
+                    statusElem.classList.remove("d-none");
+                }
+            }
+          }
 
           if (playLinkElem) {
             if (
@@ -139,10 +155,12 @@ export default class OnlineTournament extends AbstractView {
               match.player1 !== "TBD" &&
               match.player2 !== "TBD"
             ) {
-              playLinkElem.style.display = "block";
-              playLinkElem.setAttribute('href', `/room/${match.room_id}/`);
+                playLinkElem.style.display = "block";
+                playLinkElem.setAttribute('href', `/room/${match.room_id}/`);
+                statusElem.classList.add("d-none");
             } else {
-              playLinkElem.style.display = "none";
+                playLinkElem.style.display = "none";
+                statusElem.classList.remove("d-none");
             }
           }
         });

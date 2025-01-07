@@ -73,7 +73,12 @@
                             <div class="text-tournament text-center m-0 text-nowrap" id="Quarter{{ i }}-p2">
                                 TBD
                             </div>
-                            <a class="btn-custom-name-enter m-0" id="Quarter{{ i }}-btn" data-link>Play</a>
+                            <p class="text-tournament status-game text-center m-0 d-none" id="status-Quarter{{ i }}">
+                                waiting for game...
+                            </p>
+                            <a class="btn-custom m-0 text-decoration-none rounded-2" id="Quarter{{ i }}-btn" data-link>
+                                <p class="btn-custom-name-enter m-0 p-1 text-decoration-none text-center" style="font-size: 9px; pointer-events: none;">Play</p>
+                            </a>
                         </div>
                     </div>
                     {% endfor %}
@@ -92,7 +97,12 @@
                             <div class="text-tournament text-center m-0 text-nowrap" id="Semi{{ i }}-p2">
                                 TBD
                             </div>
-                            <a class="btn-custom-name-enter m-0" id="Semi{{ i }}-btn" data-link>Play</a>
+                            <p class="text-tournament status-game text-center m-0 d-none" id="status-Semi{{ i }}">
+                                waiting for game...
+                            </p>
+                            <a class="btn-custom m-0 text-decoration-none rounded-2" id="Semi{{ i }}-btn" data-link>
+                                <p class="btn-custom-name-enter m-0 p-1 text-decoration-none text-center" style="font-size: 9px; pointer-events: none;">Play</p>
+                            </a>
                         </div>
                     </div>
                     {% endfor %}
@@ -109,14 +119,19 @@
                             <div class="text-tournament text-center m-0 text-nowrap" id="Final-p2">
                                 TBD
                             </div>
-                                <a class="btn-custom-name-enter m-0" id="Final-btn" data-link>Play</a>
+                            <p class="text-tournament status-game text-center m-0 d-none" id="status-Final">
+                                waiting for game...
+                            </p>
+                            <a class="btn-custom m-0 text-decoration-none rounded-2" id="Final-btn" data-link>
+                                <p class="btn-custom-name-enter m-0 p-1 text-decoration-none text-center" style="font-size: 9px; pointer-events: none;">Play</p>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-matches col col-12 col-md-7 p-0 rounded-4">
-        <div id="messageContainer" class="text-play m-0 mt-1"></div>
-    </div>
+</div>
+<div class="d-flex justify-content-center">
+    <div id="messageContainer" class="text-play m-0 mt-2"></div>
 </div>

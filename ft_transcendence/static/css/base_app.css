@@ -446,6 +446,7 @@ button {
     0.3px -0.3px 0.1em #fff,
     -0.3px 0.3px 0.1em #fff,
     0.3px 0.3px 0.1em #fff;
+    text-decoration: none;
 }
 
 .btn-custom-name {
@@ -460,6 +461,12 @@ button {
     font-size: 10px;
 }
 
+.btn-custom-name-enter:hover {
+    color: #fff;
+    font-family: "Arcade Rounded", sans-serif;
+    font-size: 10px;
+    text-decoration: none;
+}
 
 .btn-custom-play {
     background-color: var(--cor-4);
