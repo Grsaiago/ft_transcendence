@@ -4,7 +4,6 @@ export default class LocalTournamentManager {
             return LocalTournamentManager.instance;
         }
 
-        console.log("Tournament instantiated!");
         this.status = 'Unstarted';
         LocalTournamentManager.instance = this;
     }
@@ -73,14 +72,12 @@ export default class LocalTournamentManager {
         const match = this.matches.find(m => m.matchId === matchId);
     
         if (!match) {
-            console.error(`Match with ID ${matchId} not found.`);
             return;
         }
     
         // Update the winner and status
         match.winner = winner;
         match.status = "Finished";
-        console.log(`Winner for ${matchId} set to ${winner}.`);
     
         // Update dependent matches
         this.matches.forEach(nextMatch => {
@@ -95,7 +92,6 @@ export default class LocalTournamentManager {
                 // If both players are now defined, mark the match as ready
                 if (nextMatch[`${nextMatch.matchId}-p1`] && nextMatch[`${nextMatch.matchId}-p2`]) {
                     nextMatch.status = "ready";
-                    console.log(`Match ${nextMatch.matchId} is now ready.`);
                 }
             }
         });
@@ -113,14 +109,12 @@ export default class LocalTournamentManager {
         const match = this.matches.find(m => m.matchId === match_id);
 
         if (!match) {
-            console.error(`Match with ID ${match_id} not found.`);
             return;
         }
 
         // Update the match with the room_id and mark it as ready
         match.roomId = room_id;
 
-        console.log(`Match ${match_id} registered with room ID: ${room_id}`);
     }
 
     isFinalMatch(matchId) {

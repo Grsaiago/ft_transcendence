@@ -27,11 +27,9 @@ export default class LocalTournamentRoomView extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('Room html fetched. Returning...');
             return html;
         }
         catch(error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading Room page</p>";
         }
     }
@@ -40,7 +38,6 @@ export default class LocalTournamentRoomView extends AbstractView {
         this.initGame();
         this.match = this.localTournamentManager.matches.find(m => m.roomId == this.pongRoomManager.gameData.roomId);
         if (!this.match) {
-            console.error(`Match not found for room ID: ${roomId}`);
             return;
         }
         this.displayPlayers();
@@ -65,7 +62,6 @@ export default class LocalTournamentRoomView extends AbstractView {
             player1Element.classList.remove("d-none");
             player2Element.classList.remove("d-none");
         } else {
-            console.error(`Player elements not found for room ID: ${roomId}`);
         }
     }
 
@@ -148,25 +144,30 @@ export default class LocalTournamentRoomView extends AbstractView {
     //PongRoom Events Handlers
 
     handleGameHasStarted() {
-        console.log("GameStarted received")
         const startButton = document.getElementById("startGame");
-        startButton.style.display = "none";
+        if (startButton) {
+            startButton.style.display = "none";
+        }
         const messageContainer = document.getElementById("messageContainer");
-        messageContainer.textContent = "Game has started!";
-        log.info("Game has started!");
+        if (messageContainer) {
+            messageContainer.textContent = "Game has started!";
+        }
     }
 
     handleWinner(event) {
-        console.log("Winner received")
         const messageContainer = document.getElementById("messageContainer");
         const winnerName = this.getWinnerName(event.detail);
         this.localTournamentManager.updateMatchesOnWinner(this.match.matchId, winnerName);
         const startButton = document.getElementById("startGame");
-        messageContainer.textContent = `${winnerName} wins!`;
-        startButton.removeEventListener("click", this.handleClickStartButton);
-        startButton.addEventListener("click", this.handleClickStartButtonReturn);
-        startButton.textContent = "Back to Tournament!";
-        startButton.style.display = "block";
+        if (messageContainer) {
+            messageContainer.textContent = `${winnerName} wins!`;
+        }
+        if (startButton) {
+            startButton.removeEventListener("click", this.handleClickStartButton);
+            startButton.addEventListener("click", this.handleClickStartButtonReturn);
+            startButton.textContent = "Back to Tournament!";
+            startButton.style.display = "block";
+        }
     }
 
     getWinnerName(playerPosition) {
@@ -177,7 +178,6 @@ export default class LocalTournamentRoomView extends AbstractView {
     }
 
     handleRedirectTournament(event) {
-        log.info("redirect url:", event.detail)
     }
 
     //CanvasFocus Event Handlers
@@ -204,13 +204,17 @@ export default class LocalTournamentRoomView extends AbstractView {
 
     bindStartButtonHandler() {
         const startButton = document.getElementById("startGame");
-        startButton.addEventListener("click", this.handleClickStartButton);
+        if (startButton) {
+            startButton.addEventListener("click", this.handleClickStartButton);
+        }
     }
 
     bindCanvasFocusEvents() {
         const canvas = document.getElementById("pongCanvas");
-        canvas.addEventListener("focus", this.handleFocus);
-        canvas.addEventListener("blur", this.handleBlur);
+        if (canvas) {
+            canvas.addEventListener("focus", this.handleFocus);
+            canvas.addEventListener("blur", this.handleBlur);
+        }
     }
 
     //Unbinders
@@ -221,8 +225,10 @@ export default class LocalTournamentRoomView extends AbstractView {
 
     unbindStartButtonHandler() {
         const startButton = document.getElementById("startGame");
-        startButton.removeEventListener("click", this.handleClickStartButton);
-        startButton.removeEventListener("click", this.handleClickStartButtonReturn);
+        if (startButton) {
+            startButton.removeEventListener("click", this.handleClickStartButton);
+            startButton.removeEventListener("click", this.handleClickStartButtonReturn);
+        }
     }
 
     unbindPongRoomEventHandlers() {

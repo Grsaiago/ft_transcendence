@@ -21,10 +21,8 @@ export default class ChatManager {
                 );
                 this.loadEventHandlers()
                 this.handleMessage = this.handleMessage.bind(this);
-                console.log("socket connected");
             } catch (err) {
                 this.chatSocket = null;
-                console.log("Couldn't connect to chat websocket, will try again latter.");
             }
         }
         return;
@@ -35,17 +33,14 @@ export default class ChatManager {
             this.chatSocket.close();
             this.chatSocket = undefined;
         }
-        console.log("close socket");
         return;
     }
 
     loadEventHandlers() {
-        console.log('Loading chat manager event handlers...');
         this.chatSocket.addEventListener("message", this.handleMessage);
     }
 
     handleMessage(event) {
-        console.log("handleMessage() called");
         try {
             var data = JSON.parse(event.data);
             let messageInfo = {
@@ -55,7 +50,6 @@ export default class ChatManager {
             this.atualizaHistorico(messageInfo);
             document.dispatchEvent(new CustomEvent('chatMessageReceived', { detail: messageInfo.chat_id }));
         } catch (err) {
-            console.error("Error parsing WebSocket message: ", err);
         }
     };
 

@@ -18,7 +18,6 @@ export default class CreateTournamentHandler extends AbstractHandler {
         if (maxPlayers) {
             formData.append('max_players', maxPlayers); // Adiciona ao FormData
         } else {
-            console.error("Erro: max_players não foi selecionado");
         }
 
         return fetch(form.action, {
@@ -30,15 +29,12 @@ export default class CreateTournamentHandler extends AbstractHandler {
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("Success:", response);
                     return response;
                 } else {
-                    console.error("Failed to submit form:", response.statusText);
                     return response;
                 }
             })
             .catch(error => {
-                console.error("Error:", error);
                 throw error;
             }
             );
@@ -49,8 +45,6 @@ export default class CreateTournamentHandler extends AbstractHandler {
         view.bindUIEventHandlers();
         if (context.ok)
             navigateTo("/enter/tournament/");
-        else
-            console.log("erro ao criar torneio")
     }
 
     getContext(_form, response) {

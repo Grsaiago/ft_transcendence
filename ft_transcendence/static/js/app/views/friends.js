@@ -25,11 +25,9 @@ export default class Profile extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('Friends html fetched. Returning...');
             return html;
         }
         catch (error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
     }
@@ -46,11 +44,9 @@ export default class Profile extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('Friends html fetched. Returning...');
             return html;
         }
         catch (error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
     }
@@ -82,10 +78,8 @@ export default class Profile extends AbstractView {
                 }
             });
             jsonData = await response.json();
-            console.log('Friends list fetched: ', jsonData);
         }
         catch (error) {
-            console.error('Failed to fetch friends list: ', error);
         }
 
         if (jsonData.friends && jsonData.friends.length > 0) {
@@ -145,10 +139,8 @@ export default class Profile extends AbstractView {
                 }
             });
             usersData = await response.json();
-            console.log('Friends list fetched: ', usersData);
         }
         catch (error) {
-            console.error('Failed to fetch friends list: ', error);
         }
         const friendsBox = document.getElementById('search-tab');
 
@@ -223,7 +215,6 @@ export default class Profile extends AbstractView {
     }
 
     bindUIEventHandlers() {
-        console.log('Loading friends event handlers...');
 
         this.bindFriendListClickEvent();
 
@@ -241,7 +232,6 @@ export default class Profile extends AbstractView {
     }
 
     removeUIEventHandlers() {
-        console.log('Removing friends event handlers...');
 
         const friendsBox = document.querySelector(".friends-box");
         friendsBox.removeEventListener("click", this.handleFriendClick);
@@ -261,21 +251,17 @@ export default class Profile extends AbstractView {
     }
 
     handleFriendClick(event) {
-        console.log("handleFriendClick() called");
 
         const friendElement = event.target.closest("[data-friend]");
         if (!friendElement) {
-            console.warn("No friend element found.");
             return;
         }
 
         this.unhighlightPreviousFriend();
         const friendId = friendElement.dataset.friend;
         if (!friendId) {
-            console.error("Friend ID is missing in dataset");
             return;
         }
-        console.log("Friend ID: ", friendId);
         this.highlightSelectedFriend(friendElement);
         const friendsColumn = document.querySelector('.col-friends.friends');
         friendsColumn.classList.remove('unselected');
@@ -304,11 +290,9 @@ export default class Profile extends AbstractView {
     handleFriendsSearch() {
         const messageInputDom = document.getElementById('friends-input');
         if (!messageInputDom) {
-            console.error('Message input field not found.');
             return;
         }
         const message = messageInputDom.value;
-        console.log('Sending message: ', message);
         if (!message) {
             return;
         }
@@ -319,11 +303,9 @@ export default class Profile extends AbstractView {
     handleUserSearch() {
         const messageInputDom = document.getElementById('search-input');
         if (!messageInputDom) {
-            console.error('Message input field not found.');
             return;
         }
         const message = messageInputDom.value;
-        console.log('Sending message: ', message);
         if (!message) {
             return;
         }
@@ -345,12 +327,10 @@ export default class Profile extends AbstractView {
 
     renderFriendsList(friends) {
         //render friends list based on friends array
-        console.log("rendering friends list");
     }
 
     renderUserSearch(users) {
         //render search results based on results array
-        console.log("rendering user search results");
     }
 
 
@@ -369,7 +349,6 @@ export default class Profile extends AbstractView {
             divSearch.style.display = 'none';
             titleSearch.classList.remove('selected');
             titleFriends.classList.add('selected');
-            console.log("change tab to friends");
 
             this.unhighlightPreviousFriend();
 
@@ -379,7 +358,6 @@ export default class Profile extends AbstractView {
             divSearch.style.display = 'block';
             titleFriends.classList.remove('selected');
             titleSearch.classList.add('selected');
-            console.log("change tab to search");
 
             this.unhighlightPreviousFriend();
             await this.loadUsersList();

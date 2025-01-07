@@ -20,15 +20,12 @@ export default class CreateRoomHandler extends AbstractHandler {
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("Success:", response);
                     return response;
                 } else {
-                    console.error("Failed to submit form:", response.statusText);
                     return response;
                 }
             })
             .catch(error => {
-                console.error("Error:", error);
                 throw error;
             }
             );
@@ -39,8 +36,6 @@ export default class CreateRoomHandler extends AbstractHandler {
         view.bindUIEventHandlers();
         if (context.ok)
             navigateTo("/enter/online/");
-        else
-            console.log("erro ao criar a sala")
     }
 
     getContext(_form, response) {

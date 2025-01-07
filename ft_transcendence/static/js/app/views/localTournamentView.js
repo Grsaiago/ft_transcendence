@@ -23,11 +23,9 @@ export default class LocalTournament extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('Room html fetched. Returning...');
             return html;
         }
         catch(error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading Room page</p>";
         }
     }
@@ -42,7 +40,6 @@ export default class LocalTournament extends AbstractView {
     }
 
     bindUIEventHandlers() {
-        console.log('Loading enter event handlers...');
         document.getElementById("tournamentForm").addEventListener("submit", this.handleStartFormSubmit);
         
         this.bindLocalTournamentManagerEvents();
@@ -50,7 +47,6 @@ export default class LocalTournament extends AbstractView {
     }
 
     removeUIEventHandlers() {
-        console.log('Removing enter event handlers...');
     }
 
     updateUI() {
@@ -74,7 +70,6 @@ export default class LocalTournament extends AbstractView {
     lockForm() {
         const form = document.getElementById("tournamentForm");
         if (!form) {
-            console.error("Tournament form not found.");
             return;
         }
     
@@ -87,7 +82,6 @@ export default class LocalTournament extends AbstractView {
     writePlayersNames() {
         const form = document.getElementById("tournamentForm");
         if (!form) {
-            console.error("Tournament form not found.");
             return;
         }
     
@@ -144,7 +138,6 @@ export default class LocalTournament extends AbstractView {
         this.localTournamentManager.matches.forEach((match) => {
             const matchDiv = document.getElementById(match.matchId); // Get the match container by ID
             if (!matchDiv) {
-                console.warn(`Match container with ID ${match.matchId} not found.`);
                 return;
             }
 

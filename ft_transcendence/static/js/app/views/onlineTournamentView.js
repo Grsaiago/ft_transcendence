@@ -22,11 +22,9 @@ export default class OnlineTournament extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('Tournament html fetched. Returning...');
             return html;
         }
         catch(error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading Tournament page</p>";
         }
     }
@@ -76,12 +74,10 @@ export default class OnlineTournament extends AbstractView {
     handleJoinedTournament() {
         const joinButton = document.getElementById("joinTournament");
         if (joinButton) {
-            console.log("inscrito");
         }
     }
 
     handleTournamentMessage(event) {
-        log.info("handleTournamentMessage:", event.detail);
         this.displayTournamentMessage(event.detail.message);
     }
 
@@ -98,7 +94,6 @@ export default class OnlineTournament extends AbstractView {
 
 
     handleTournamentError(event) {
-        log.info("tournament_error:", event.detail);
         const tournamentStatusMsg = document.getElementById("messageContainer");
         if (tournamentStatusMsg) {
           tournamentStatusMsg.innerText = event.detail;
@@ -170,7 +165,9 @@ export default class OnlineTournament extends AbstractView {
 
     bindJoinButtonHandler() {
         const joinButton = document.getElementById("joinTournament");
-        joinButton.addEventListener("click", this.handleClickJoinButton);
+        if (joinButton) {
+            joinButton.addEventListener("click", this.handleClickJoinButton);
+        }
     }
 
     bindHubManagerEventHandlers() {

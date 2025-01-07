@@ -1,21 +1,12 @@
-//Set environment
-const hostname = window.location.hostname;
-if (hostname === "www.transcendence.com") {
-  log.setLevel(log.levels.ERROR);
-} else {
-  log.setLevel(log.levels.DEBUG);
-}
+
 
 const gameData = document.getElementById("game-data");
 const username = gameData.dataset.username;
 const tournamentId = gameData.dataset.tournamentId;
 const gameMode = gameData.dataset.gameMode;
 
-log.info("tournament_id:", tournamentId);
-log.info("game_mode:", gameMode);
 
 if (gameMode !== "tournament") {
-  log.error("Invalid game mode");
 }
 
 //Websocket connection
@@ -25,7 +16,6 @@ const socket = new WebSocket(socketUrl);
 
 //Websocket
 socket.onopen = (event) => {
-  log.info("WebSocket connection opened", event);
 };
 
 socket.onmessage = (event) => {
@@ -33,11 +23,9 @@ socket.onmessage = (event) => {
 };
 
 socket.onclose = (event) => {
-  log.info("WebSocket connection closed", event.code);
 };
 
 socket.onerror = (event) => {
-  log.error("WebSocket connection error", event);
 };
 
 //Event listerners - Join tournament button
@@ -59,7 +47,6 @@ playButtons.forEach((button) => {
 //Functions
 function handleSocketMessage(event) {
   const data = JSON.parse(event.data);
-  log.info("handleSocketMessage:", data);
 
   switch (data.type) {
     case "not_auth":
@@ -89,27 +76,22 @@ function handleSocketMessage(event) {
       break;
 
     default:
-      log.error("Invalid message type:", data.type);
   }
 }
 
 function handleCurrentState(data) {
-  log.info("handleCurrentState:", data);
   updateTournamentUI(data.state);
 }
 
 function handleTournamentMessage(data) {
-  log.info("handleTournamentMessage:", data);
   displayTournamentMessage(data.message);
 }
 
 function handleTournamentAdvance(data) {
-  log.info("tournament_advance:", data);
   updateTournamentUI(data.state);
 }
 
 function handleErrorMessage(data) {
-  log.info("error:", data);
   displayErrorMessage(data.message);
 }
 
@@ -121,7 +103,6 @@ function handleClickJoinButton() {
 
 function sendMessage(message) {
   const jsonMessage = JSON.stringify(message);
-  log.debug("Sending message:", jsonMessage);
   socket.send(jsonMessage);
 }
 
@@ -139,9 +120,6 @@ function updateTournamentUI(state) {
     const player1Elem = document.getElementById(`${match.round}-p1`);
     const player2Elem = document.getElementById(`${match.round}-p2`);
     const buttonElem = document.getElementById(`${match.round}-btn`);
-    log.info("player1Elem:", player1Elem);
-    log.info("player2Elem:", player2Elem);
-    log.info("buttonElem:", buttonElem);
 
     if (player1Elem)
       player1Elem.innerText = match.player1 !== "TBD" ? match.player1 : "TBD";

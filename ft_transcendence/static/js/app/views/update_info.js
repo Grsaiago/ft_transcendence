@@ -17,20 +17,16 @@ export default class Update_info extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log(html);
             return html;
         }
         catch(error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
     }
 
     bindUIEventHandlers() {
-        console.log('Loading update info event handlers...');
     }
 
     removeUIEventHandlers() {
-        console.log('Removing update info event handlers...');
     }
 }

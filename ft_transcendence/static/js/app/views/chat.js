@@ -25,17 +25,14 @@ export default class Chat extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('Chat html fetched. Returning...');
             return html;
         }
         catch (error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
     }
 
     bindUIEventHandlers() {
-        console.log('Loading chat event handlers...');
 
         const chatList = document.querySelectorAll('[chat_id]');
         if (chatList.length > 0) {
@@ -60,7 +57,6 @@ export default class Chat extends AbstractView {
     }
 
     removeUIEventHandlers() {
-        console.log('Removing chat event handlers...');
 
         var chatList = document.querySelectorAll('[chat_id]');
         for (var i = 0; i < chatList.length; i++) {
@@ -85,7 +81,6 @@ export default class Chat extends AbstractView {
     handleChatChange(event) {
         this.unhighlightPreviousChat();
         this.currentChatId = event.currentTarget.getAttribute('chat_id');
-        console.log('Chat changed. CurrentChatId: ' + this.currentChatId);
         this.highlightSlectedChat(event.currentTarget);
         this.atualizaChat();
     }
@@ -108,11 +103,9 @@ export default class Chat extends AbstractView {
     }
 
     sendMessage() {
-        console.log('Send message clicked!');
 
         const messageInputDom = document.getElementById('chat-message-input');
         if (!messageInputDom) {
-            console.error('Message input field not found.');
             return;
         }
 
@@ -129,7 +122,6 @@ export default class Chat extends AbstractView {
             }));
             messageInputDom.value = '';
         } else {
-            console.log('WebSocket is not open.');
         }
     }
 
@@ -153,20 +145,17 @@ export default class Chat extends AbstractView {
             this.loadChatHistory(this.chatManager.chatHistory.get(this.currentChatId));
         }
         else {
-            console.log('Histórico não encontrado. Criando novo histórico...');
             this.chatManager.chatHistory.set(this.currentChatId, new Array());
         }
     }
 
     loadChatHistory() {
-        console.log('Loading chat history...');
         this.chatManager.chatHistory.get(this.currentChatId).forEach(message => {
             this.displayMessage(message);
         });
     }
 
     limpaChat() {
-        console.log('Limpando chat...');
         const messagesContainer = document.getElementById('chat-messages');
         messagesContainer.innerHTML = '';
     }

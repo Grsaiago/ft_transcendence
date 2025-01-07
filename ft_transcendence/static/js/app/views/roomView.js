@@ -111,27 +111,35 @@ export default class Room extends AbstractView {
     //PongRoom Events Handlers
 
     handleGameHasStarted() {
-        console.log("GameStarted received")
         const startButton = document.getElementById("startGame");
-        startButton.style.display = "none";
+        if (startButton) {
+            startButton.style.display = "none";
+        }
         const messageContainer = document.getElementById("messageContainer");
-        messageContainer.textContent = "Game has started!";
-        log.info("Game has started!");
+        if (messageContainer) {
+            messageContainer.textContent = "Game has started!";
+        }
     }
 
     handleWinner(event) {
         console.log("Winner received")
         const messageContainer = document.getElementById("messageContainer");
-        messageContainer.textContent = `${event.detail} wins!`;
+        if (messageContainer) {
+            messageContainer.textContent = `${event.detail} wins!`;
+        }
         const startButton = document.getElementById("startGame");
-        startButton.textContent = "Play Again!";
-        startButton.style.display = "block";
+        if (startButton) {
+            startButton.textContent = "Play Again!";
+            startButton.style.display = "block";
+        }
     }
 
     handleTournamentMatchWinner(event) {
         console.log("Tournament Match Winner received")
         const messageContainer = document.getElementById("messageContainer");
-        messageContainer.textContent = `${event.detail} wins!`;
+        if (messageContainer) {
+            messageContainer.textContent = `${event.detail} wins!`;
+        }
     }
 
     handleRedirectTournament(event) {
@@ -143,9 +151,13 @@ export default class Room extends AbstractView {
     handleAlertMsg(event) {
         log.info("Alert Msg received")
         const spectadorContainer = document.getElementById("alertContainer");
-        spectadorContainer.textContent = `${event.detail}`;
+        if (spectadorContainer) {
+            spectadorContainer.textContent = `${event.detail}`;
+        }
         const startButton = document.getElementById("startGame");
-        startButton.style.display = "none";
+        if (startButton){
+            startButton.style.display = "none";
+        }
     }
 
     //CanvasFocus Event Handlers
@@ -175,13 +187,17 @@ export default class Room extends AbstractView {
 
     bindStartButtonHandler() {
         const startButton = document.getElementById("startGame");
-        startButton.addEventListener("click", this.handleClickStartButton);
+        if (startButton) {
+            startButton.addEventListener("click", this.handleClickStartButton);
+        }
     }
 
     bindCanvasFocusEvents() {
         const canvas = document.getElementById("pongCanvas");
-        canvas.addEventListener("focus", this.handleFocus);
-        canvas.addEventListener("blur", this.handleBlur);
+        if (canvas) {
+            canvas.addEventListener("focus", this.handleFocus);
+            canvas.addEventListener("blur", this.handleBlur);
+        }
     }
 
     //Unbinders
@@ -192,7 +208,9 @@ export default class Room extends AbstractView {
 
     unbindStartButtonHandler() {
         const startButton = document.getElementById("startGame");
-        startButton.removeEventListener("click", this.handleClickStartButton);
+        if (startButton) {
+            startButton.removeEventListener("click", this.handleClickStartButton);
+        }
     }
 
     unbindPongRoomEventHandlers() {

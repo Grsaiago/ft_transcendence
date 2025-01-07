@@ -27,12 +27,6 @@ import LocalTournamentRoomView from "./views/localTournamentRoomView.js";
 import matchHistoryView from "./views/matchHistoryView.js";
 import tournamentHistoryView from "./views/tournamentHistoryView.js";
 
-const hostname = window.location.hostname;
-if (hostname === "www.transcendence.com") {
-    log.setLevel(log.levels.ERROR);
-} else {
-    log.setLevel(log.levels.DEBUG);
-}
 
 var view = null;
 
@@ -123,12 +117,10 @@ function submitForm(form) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Página carregada, chamando routers()");
     
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
             e.preventDefault();
-            console.log("data-link: " + e.target.href);
             navigateTo(e.target.href);
         }
 
@@ -138,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const form = e.target;
 
         if (form.tagName === "FORM" && form.matches("[api-link]")) {
-            console.log(e.target);
             e.preventDefault();
             submitForm(form);
         }

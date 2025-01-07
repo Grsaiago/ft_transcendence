@@ -18,20 +18,16 @@ export default class Play extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('Play html fetched. Returning...');
             return html;
         }
         catch(error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
     }
 
     bindUIEventHandlers() {
-        console.log('Loading play event handlers...');
     }
 
     removeUIEventHandlers() {
-        console.log('Removing play event handlers...');
     }
 }

@@ -19,15 +19,12 @@ export default class UpdateInfoFormsHandler extends AbstractHandler {
             })
             .then(response => {
                 if (response.ok) {
-                    console.log("Success:", formData);
                     return response;
                 } else {
-                    console.error("Failed to submit form:", response.statusText);
                     return response;
                 }
             })
             .catch(error => {
-                console.error("Error:", error);
                 throw error;
             }
         );

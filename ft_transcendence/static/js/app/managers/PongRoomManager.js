@@ -45,11 +45,9 @@ export default class PongRoomManager {
         };
 
         this.socket.onclose = (event) => {
-            log.info("WebSocket connection closed (PongRoomManager)", event.code);
         };
 
         this.socket.onerror = (event) => {
-            log.error("WebSocket connection error", event);
         };
     }
 
@@ -61,12 +59,10 @@ export default class PongRoomManager {
             height: this.gameData.height,
         };
         this.sendMessage(message);
-        log.info("WebSocket connection established with:", event);
     }
 
     handleSocketMessage(event) {
         const data = JSON.parse(event.data);
-        log.info("Message from server:", data);
 
         switch (data.type) {
             case "not_auth":
@@ -103,13 +99,11 @@ export default class PongRoomManager {
                 break
         
             default:
-                log.error("Unknown message type:", data.type);
         }
     }
 
     sendMessage(message) {
         const jsonMessage = JSON.stringify(message);
-        log.debug("Sending message:", jsonMessage);
         this.socket.send(jsonMessage);
     }
 }

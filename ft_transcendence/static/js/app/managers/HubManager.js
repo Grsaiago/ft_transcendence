@@ -19,7 +19,6 @@ export default class HubManager {
 
     loadSocketEventHandlers() {
         this.socket.onopen = (event) => {
-            log.info("WebSocket connection opened", event);
         };
 
         this.socket.onmessage = (event) => {
@@ -27,11 +26,9 @@ export default class HubManager {
         };
 
         this.socket.onclose = (event) => {
-            log.info("WebSocket connection closed (HubManager)", event.code);
         };
 
         this.socket.onerror = (event) => {
-            log.error("WebSocket connection error", event);
         };
     }
 
@@ -43,13 +40,11 @@ export default class HubManager {
 
     sendMessage(message) {
         const jsonMessage = JSON.stringify(message);
-        log.debug("Sending message:", jsonMessage);
         this.socket.send(jsonMessage);
     }
 
     handleSocketMessage(event) {
         const data = JSON.parse(event.data);
-        log.info("handleSocketMessage:", data);
 
         switch (data.type) {
             case "not_auth":
@@ -75,7 +70,6 @@ export default class HubManager {
             break;
       
           default:
-            log.error("Invalid message type:", data.type);
         }
     }
 }

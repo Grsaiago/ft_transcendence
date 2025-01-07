@@ -21,11 +21,9 @@ export default class EnterLocalTournament extends AbstractView {
                 }
             });
             const html = await response.text();
-            console.log('enter/tournament html fetched. Returning...');
             return html;
         }
         catch(error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading enter/tournament page</p>";
         }
     }
@@ -50,7 +48,6 @@ export default class EnterLocalTournament extends AbstractView {
     }
 
     bindUIEventHandlers() {
-        console.log('Loading enter event handlers...');
         document.getElementById('enter-8').addEventListener('click', this.handleCreate8TournBtn);
         document.getElementById('enter-continue').addEventListener('click', this.redirectTo);
     }
@@ -88,12 +85,10 @@ export default class EnterLocalTournament extends AbstractView {
     redirectTo = () => {
         const maxPlayers = this.localTournamentManager.num_of_players;
         const url = `/localTournament/${maxPlayers}/`;
-        console.log(`Redirecting to: ${url}`);
         navigateTo(url);
     }
 
     removeUIEventHandlers() {
-        console.log('Removing enter event handlers...');
         const buttons = document.querySelectorAll(".btn-custom");
         buttons.forEach((button) => {
             const newButton = button.cloneNode(true);

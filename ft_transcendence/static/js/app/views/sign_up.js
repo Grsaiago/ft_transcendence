@@ -17,7 +17,6 @@ export default class Sign_up extends AbstractView {
             return html;
         }
         catch(error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading register page</p>";
         }
     }

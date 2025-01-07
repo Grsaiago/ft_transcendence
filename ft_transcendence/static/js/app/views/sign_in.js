@@ -17,16 +17,13 @@ export default class Sign_in extends AbstractView {
             return html;
         }
         catch(error) {
-            console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
     }
 
     bindUIEventHandlers() {
-        console.log('Loading login event handlers...');
     }
 
     removeUIEventHandlers() {
-        console.log('Removing login event handlers...');
     }
 }

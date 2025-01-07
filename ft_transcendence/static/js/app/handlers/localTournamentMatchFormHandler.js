@@ -22,16 +22,13 @@ export default class localTournamentMatchFormsHandler extends AbstractHandler {
             });
 
             if (!response.ok) {
-                console.error("Failed to submit form:", response.statusText);
                 throw new Error(response.statusText);
             }
 
-            console.log("Success:", data);
             const jsonData = await response.json();
             return jsonData;
 
         } catch (error) {
-            console.error("Error:", error);
             throw error; // Rethrow the error for the caller to handle
         }
     }

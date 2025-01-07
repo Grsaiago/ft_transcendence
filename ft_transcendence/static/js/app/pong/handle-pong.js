@@ -1,13 +1,5 @@
 import { PongGame } from "./PongGame.js";
 
-//Set environment
-const hostname = window.location.hostname;
-if (hostname === "www.transcendence.com") {
-  log.setLevel(log.levels.ERROR);
-} else {
-  log.setLevel(log.levels.DEBUG);
-}
-
 //Get canvas and context
 const canvas = document.getElementById("pongCanvas");
 const context = canvas.getContext("2d");
@@ -20,8 +12,6 @@ const gameData = document.getElementById("game-data");
 const roomId = gameData.dataset.roomId;
 const gameMode = gameData.dataset.gameMode;
 
-log.info("room_id:", roomId);
-log.info("game_mode:", gameMode);
 
 //Websocket connection
 let socketUrl;
@@ -45,11 +35,9 @@ socket.onmessage = (event) => {
 };
 
 socket.onclose = (event) => {
-  log.info("WebSocket connection closed", event.code);
 };
 
 socket.onerror = (event) => {
-  log.error("WebSocket connection error", event);
 };
 
 //Event listeners - Start game button
@@ -77,12 +65,10 @@ function handleSocketOpen(event) {
     height: canvas.height,
   };
   sendMessage(message);
-  log.info("WebSocket connection established with:", event);
 }
 
 function handleSocketMessage(event) {
   const data = JSON.parse(event.data);
-  log.info("Message from server:", data);
 
   switch (data.type) {
     case "not_auth":
@@ -111,7 +97,6 @@ function handleSocketMessage(event) {
       break
 
     default:
-      log.error("Unknown message type:", data.type);
   }
 }
 
@@ -139,7 +124,6 @@ function handleGameHasStarted() {
 
   const messageContainer = document.getElementById("messageContainer");
   messageContainer.textContent = "Game has started!";
-  log.info("Game has started!");
 }
 
 function handleWinner(winner) {
@@ -155,6 +139,5 @@ function handleRedirectTournament(redirect) {
 
 function sendMessage(message) {
   const jsonMessage = JSON.stringify(message);
-  log.debug("Sending message:", jsonMessage);
   socket.send(jsonMessage);
 }
