@@ -120,8 +120,8 @@
         <div class="p-3 px-lg-4">
             <div class=" history-info-box d-flex flex-column gap-1">
                 <p class="text-profile m-0 text-nowrap">Online on: {{ last_login }}</p>
-                <p class="text-profile m-0 text-nowrap">Games played: 3</p>
-                <p class="text-profile m-0 text-nowrap">Total wins: 2</p>
+                <p class="text-profile m-0 text-nowrap">Matches (won/played): {{ user_game_stats.total_wins }} / {{ user_game_stats.total_matches }}</p>
+                <p class="text-profile m-0 text-nowrap">Tournaments (won/played): {{ user_game_stats.total_tournament_wins }} / {{ user_game_stats.total_tournaments }}</p>
             </div>
         </div>
     </div>
@@ -130,7 +130,12 @@
         <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Game history</p>
         <div class="py-3 px-2">
             <div class="history-box d-flex flex-column gap-1 align-items-center justify-content-center overflow-y-auto">
-                <p class="text-profile text-center px-2 m-0">You haven't played any games yet.</p>
+                <a class="play-mode-btn rounded-4 col-11 col-sm-9 d-flex align-items-center justify-content-center text-decoration-none" href="/matchhistory/{{user_id}}/" data-link>
+                    Match
+                </a>
+                <a class="play-mode-btn rounded-4 col-11 col-sm-9 d-flex align-items-center justify-content-center text-decoration-none" href="/tournamenthistory/{{user_id}}/" data-link>
+                    Tournament
+                </a>
             </div>
         </div>
     </div>

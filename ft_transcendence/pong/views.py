@@ -1,4 +1,5 @@
 from http.client import HTTPResponse
+from urllib.parse import unquote
 from django.http import JsonResponse
 import logging
 
@@ -12,6 +13,7 @@ from django.views.generic import DetailView, TemplateView
 
 from .forms import PongRoomForm, TournamentForm
 from .models import GameMode, Match, PongRoom, Tournament, TournamentParticipant
+from user_management.models import TrUser
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +156,24 @@ class PongTournamentView(LoginRequiredMixin, DetailView):
         tournament = self.get_object()
         return redirect("pong:pongtournament", tournament_id=tournament.id)
 
+class PongEnterLocalTournamentView(LoginRequiredMixin, TemplateView):
+    template_name = "pong/enterLocalTournament.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/enterLocalTournament.html")
+        return render(request, self.template_name)
+
+class PongLocalTournamentView(LoginRequiredMixin, TemplateView):
+    template_name = "pong/localTournament8p.html"
+
+    def get(self, request, *args, **kwargs):
+        template_path = "pong/localTournament8p.html"
+        # else ADDERRORPAGE pagina de erro
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, template_path)
+        return render(request, self.template_name)
+
 
 def format_datetime(dt):
     """
@@ -236,3 +256,75 @@ class UserHistoryView(LoginRequiredMixin, View):
             "tournaments": tournament_history,
         }
         return JsonResponse(data)
+
+
+class UserMatchHistoryView(LoginRequiredMixin, TemplateView):
+    template_name = "pong/match_history.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = kwargs.get("user_id")  # Fetch user_id from the route
+
+        try:
+            requested_user = TrUser.objects.get(id=user_id)  # Retrieve the user by ID
+        except TrUser.DoesNotExist:
+            context["error"] = f"User with ID {user_id} does not exist."
+            context["match_history"] = []
+            return context
+
+        # Fetch match history for the specified user
+        matches = Match.objects.filter(player1=requested_user) | Match.objects.filter(player2=requested_user)
+        context["match_history"] = [
+            {
+                "date": format_datetime(match.created_at),
+                "opponent": (
+                    match.player2.username if match.player1 == requested_user else match.player1.username
+                ),
+                "result": "Won" if match.winner == requested_user else "Lost",
+            }
+            for match in matches
+        ]
+        context["requested_user"] = requested_user
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/match_history.html", context)
+        return self.render_to_response(context)
+
+
+class UserTournamentHistoryView(LoginRequiredMixin, TemplateView):
+    template_name = "pong/tournament_history.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = kwargs.get("user_id")  # Fetch user_id from the route
+
+        try:
+            requested_user = TrUser.objects.get(id=user_id)  # Retrieve the requested_user by ID
+        except TrUser.DoesNotExist:
+            context["error"] = f"User with ID {user_id} does not exist."
+            context["tournament_history"] = []
+            return context
+
+        # Fetch tournament history for the specified requested_user
+        tournaments = TournamentParticipant.objects.filter(player=requested_user)
+        context["tournament_history"] = [
+            {
+                "date": format_datetime(tournament.tournament.created_at),
+                "tournament": tournament.tournament.name,
+                "result": "Won" if not tournament.is_eliminated else "Lost",
+            }
+            for tournament in tournaments
+        ]
+        context["requested_user"] = requested_user
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return render(request, "pong/tournament_history.html", context)
+        return self.render_to_response(context)

@@ -62,31 +62,6 @@ create_elastic_policy() {
   echo "Elastic Policy created!"
 }
 
-# criar o dataview pra não ter que ficar abrindo e dando discovery
-create_kibana_data_view() {
-	echo "Requesting data_view creation on Kibana..."
-
-	until curl --fail -X POST 'http://kibana:5601/api/data_views/data_view' \
-		-H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
-		--user "elastic:$ELASTIC_PASSWORD" \
-		-d '{ "data_view": { "title": "django-logs", "name": "django-logs", "timeFieldName": "@timestamp" } }'; do
-		echo "Data view creation on Kibana failed. Retrying in 5 seconds..."
-		sleep 5
-	done
-	echo "Kibana Data view created!"
-}
-# create_kibana_data_view() {
-# 	echo "Requesting data_view creation on Kibana..."
-#
-# 	until curl --fail -X POST 'http://kibana:5601/api/data_views/data_view' \
-# 						 -H 'kbn-xsrf: true' -H 'Content-Type: application/json' \
-# 						 --user "elastic:$ELASTIC_PASSWORD" \
-# 						 -d '{ "data_view": { "title": "django-logs", "name": "django-logs" , "timeFieldName": "@timestamp" } }';  do
-# 		echo "data_view creation on Kibana failed. Retrying in 5 Seconds..."
-# 		sleep 5
-# 	done
-# 	echo "Kibana Dataview created!"
-# }
 
 # Wait for Django to be up
 wait_for_django
@@ -101,5 +76,3 @@ check_default_pfp_in_media
 wait_for_elastic_index
 
 create_elastic_policy
-
-create_kibana_data_view

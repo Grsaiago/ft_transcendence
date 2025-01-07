@@ -12,6 +12,7 @@ from django.conf import settings
 
 from .forms import BlockUserForm, FriendRequestForm, TranscendenceUserCreationForm, SignInAuthenticationForm, CustomPasswordChangeForm, TranscendenceUserUpdateForm
 from .models import BlockedUsers, FriendRequest, Friendship, TrUser
+from pong.models import Match, TournamentParticipant
 
 class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
     template_name = "user_management/profile.html"
@@ -25,12 +26,33 @@ class UserProfileView(LoginRequiredMixin, generic_views.TemplateView):
         
         profile_picture = user.profile_picture.url if user.profile_picture else '/media/user/profile_pictures/foto-perfil-default.png'
 
+        user_game_stats = self.get_user_statistics(request.user.id)
+
         context = {
             "last_login": last_login,
             "profile_picture": profile_picture,
+            "user_game_stats": user_game_stats,
         }
 
         return render(request, self.template_name, context)
+
+    def get_user_statistics(self, user):
+        total_matches = (
+            Match.objects.filter(player1=user).count()
+            + Match.objects.filter(player2=user).count()
+        )
+        total_wins = Match.objects.filter(winner=user).count()
+        total_tournaments = TournamentParticipant.objects.filter(player=user).count()
+        total_tournament_wins = TournamentParticipant.objects.filter(
+            player=user, is_eliminated=False
+        ).count()
+
+        return {
+            "total_matches": total_matches,
+            "total_wins": total_wins,
+            "total_tournaments": total_tournaments,
+            "total_tournament_wins": total_tournament_wins,
+        }
 
 
 class UserChatView(LoginRequiredMixin, generic_views.TemplateView):
@@ -189,6 +211,24 @@ class UserFriendsView(auth_mixins.LoginRequiredMixin, generic_views.View):
 
 class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
     template_name = "user_management/user_detail.html"
+    
+    def get_user_statistics(self, user):
+        total_matches = (
+            Match.objects.filter(player1=user).count()
+            + Match.objects.filter(player2=user).count()
+        )
+        total_wins = Match.objects.filter(winner=user).count()
+        total_tournaments = TournamentParticipant.objects.filter(player=user).count()
+        total_tournament_wins = TournamentParticipant.objects.filter(
+            player=user, is_eliminated=False
+        ).count()
+
+        return {
+            "total_matches": total_matches,
+            "total_wins": total_wins,
+            "total_tournaments": total_tournaments,
+            "total_tournament_wins": total_tournament_wins,
+        }
 
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get("user_id")
@@ -228,6 +268,8 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
                 friendship_status = (
                     "sent" if friend_request.sender_id == request.user.id else "received"
                 )
+                
+        user_game_stats = self.get_user_statistics(user['id'])
 
         profile_picture = settings.MEDIA_URL + user['profile_picture'] if user['profile_picture'] else settings.MEDIA_URL + 'user/profile_pictures/foto-perfil-default.png'
 
@@ -240,10 +282,12 @@ class UserDetailView(auth_mixins.LoginRequiredMixin, generic_views.View):
             "is_friend": is_friend,
             "friend_request": friendship_status,
             "profile_picture": profile_picture,
+            "user_game_stats": user_game_stats,
         }
 
         return render(request, self.template_name, context)
-    
+
+
 class UserUpdateInfoView(auth_mixins.LoginRequiredMixin, generic_views.View):
     template_name = "user_management/update_info.html"
 

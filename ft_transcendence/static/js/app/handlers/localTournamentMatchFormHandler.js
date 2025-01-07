@@ -1,7 +1,8 @@
 import AbstractHandler from "./abstractHandler.js";
 import { navigateTo } from "../index.js";
+import LocalTournamentManager from "../managers/localTournamentManager.js";
 
-export default class localGameFormsHandler extends AbstractHandler {
+export default class localTournamentMatchFormsHandler extends AbstractHandler {
     constructor() {
         super();
         this.updateUI = this.updateUI.bind(this);
@@ -36,11 +37,16 @@ export default class localGameFormsHandler extends AbstractHandler {
     }
 
     async updateUI(view, context) {
-        console.log(`Load /room/${context}`);
-        navigateTo(`/room/${context}/`);
+        const localTournamentManager = new LocalTournamentManager();
+        localTournamentManager.registerMatch(context)
+        navigateTo(`/localTournament/room/${context.room_id}/`);
     }
 
-    getContext(_form, response) {
-        return response.room_id;
+    getContext(form, response) {
+        const context = {
+            room_id : response.room_id,
+            match_id : form.getAttribute('match-id')
+        };
+        return context;
     }
 }

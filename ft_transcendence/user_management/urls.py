@@ -12,7 +12,7 @@ from .views import (
     UserChatView,
     UserFriendsView,
     UserDetailView,
-    UserUpdateInfoView
+    UserUpdateInfoView,
 )
 
 app_name = "user_management"
@@ -29,4 +29,6 @@ urlpatterns = [
     path("friends/", UserFriendsView.as_view(), name="friends"),
     path("user/<int:user_id>/", UserDetailView.as_view(), name="user_details"),
     path("", UserProfileView.as_view(), name="homepage"),
+    
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

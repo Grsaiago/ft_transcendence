@@ -6,7 +6,6 @@ import EnterOnline from "./views/enter_online.js";
 import EnterTournament from "./views/enter_tournament.js";
 import Chat from "./views/chat.js";
 import Friends from "./views/friends.js";
-import WebSocketManager from "./managers/WebSocketManager.js";
 import Change_password from "./views/change_password.js";
 import Update_info from "./views/update_info.js";
 import friendshipFormsHandler from "./handlers/friendshipFormsHandler.js";
@@ -18,10 +17,15 @@ import CreateTournamentHandler from "./handlers/createTournamentHandler.js";
 import CreateRoomHandler from "./handlers/createRoomHandler.js";
 import Room from "./views/roomView.js";
 import OnlineTournament from "./views/onlineTournamentView.js";
-import Tournament from "./views/tournament.js";
 import SignInFormHandler from "./handlers/signInFormHandler.js";
 import SignUpFormHandler from "./handlers/signUpFormHandler.js";
 import LogoutFormHandler from "./handlers/logoutFormHandler.js";
+import EnterLocalTournament from  "./views/enterLocalTournamentView.js"
+import LocalTournament from "./views/localTournamentView.js";
+import localTournamentMatchFormsHandler from "./handlers/localTournamentMatchFormHandler.js";
+import LocalTournamentRoomView from "./views/localTournamentRoomView.js";
+import matchHistoryView from "./views/matchHistoryView.js";
+import tournamentHistoryView from "./views/tournamentHistoryView.js";
 
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
@@ -50,12 +54,18 @@ const viewsRouter = async (url) => {
         { path: "/play/", view: Play },
         { path: "/enter/online/", view: EnterOnline },
         { path: "/enter/tournament/", view: EnterTournament },
+        { path: "/enter/localtournament/", view: EnterLocalTournament },
         { path: "/chat/", view: Chat },
         { path: "/friends/", view: Friends },
         { path: "/change_password/", view: Change_password },
         { path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
+        { path: "/localTournament/room/:id/", view: LocalTournamentRoomView, regex: /^\/localTournament\/room\/\d+\/$/ },
+        { path: "/localTournament/:num_players/", view: LocalTournament, regex: /^\/localTournament\/\d+\/$/ },
         { path: "/tournament/:id/", view: OnlineTournament, regex: /^\/tournament\/\d+\/$/ },
+        { path: "/matchhistory/:id/", view: matchHistoryView, regex: /^\/matchhistory\/\d+\/$/ },
+        { path: "/tournamenthistory/:id/", view: tournamentHistoryView, regex: /^\/tournamenthistory\/\d+\/$/ },
+
     ];
 
     let match = routes.find((route) =>  route.regex
@@ -84,6 +94,7 @@ const handlersRouter = async (form) => {
         { formType: "friendshipForm", handler: friendshipFormsHandler },
         { formType: "blockForm", handler: userBlockFormsHandler },
         { formType: "localGameForm", handler: localGameFormsHandler },
+        { formType: "localTournamentMatchForm", handler: localTournamentMatchFormsHandler },
         { formType: "updateInfoForm", handler: UpdateInfoFormsHandler},
         { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
         { formType: "createTournamentForm", handler: CreateTournamentHandler},
