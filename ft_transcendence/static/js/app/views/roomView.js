@@ -1,6 +1,7 @@
 import AbstractView from "./abstractView.js";
 import PongRoomManager from "../managers/PongRoomManager.js";
 import ChatManager from "../managers/ChatManager.js";
+import { navigateTo } from "../index.js";
 
 export default class Room extends AbstractView {
     constructor() {
@@ -128,9 +129,24 @@ export default class Room extends AbstractView {
         startButton.style.display = "block";
     }
 
+    handleTournamentMatchWinner(event) {
+        console.log("Tournament Match Winner received")
+        const messageContainer = document.getElementById("messageContainer");
+        messageContainer.textContent = `${event.detail} wins!`;
+    }
+
     handleRedirectTournament(event) {
-        log.info("redirect url:", event.detail)
-        window.location.href = event.detail; //navigateTo
+        //wait 2 seconds before redirecting
+        setTimeout(() => {  navigateTo(event.detail) }, 2000);
+
+    }
+
+    handleAlertMsg(event) {
+        log.info("Alert Msg received")
+        const spectadorContainer = document.getElementById("alertContainer");
+        spectadorContainer.textContent = `${event.detail}`;
+        const startButton = document.getElementById("startGame");
+        startButton.style.display = "none";
     }
 
     //CanvasFocus Event Handlers
@@ -148,6 +164,9 @@ export default class Room extends AbstractView {
         document.addEventListener('GameStarted', this.handleGameHasStarted);
         document.addEventListener('Winner', this.handleWinner);
         document.addEventListener('RedirectTournament', this.handleRedirectTournament);
+        document.addEventListener('AlertMsg', this.handleAlertMsg);
+        document.addEventListener('TournamentMatchWinner', this.handleTournamentMatchWinner);
+
     }
 
     bindMovementHandlers() {
@@ -181,5 +200,6 @@ export default class Room extends AbstractView {
         document.removeEventListener('GameStarted', this.handleGameHasStarted);
         document.removeEventListener('Winner', this.handleWinner);
         document.removeEventListener('RedirectTournament', this.handleRedirectTournament);
+        document.removeEventListener('AlertMsg', this.handleAlertMsg);
+        document.removeEventListener('TournamentMatchWinner', this.handleTournamentMatchWinner);
     }
-}

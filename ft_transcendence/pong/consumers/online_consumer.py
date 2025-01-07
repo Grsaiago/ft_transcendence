@@ -30,8 +30,8 @@ class OnlinePongConsumer(BasePongConsumer):
         """
         await super().connect()
         self.player_paddle: Optional[str] = None
-        self.is_spectator: bool = False
         self.is_ready: bool = False
+        self.had_a_match: bool = False
 
         # Initialize variables that will be used after join_room
         self.ready_players: int = 0
@@ -126,13 +126,32 @@ class OnlinePongConsumer(BasePongConsumer):
                 )
                 self.match_id = cache.get(f"{self.room_group_name}_match_id", None)
 
+                # Check if the room is active
+                room = await self.get_room_by_id(self.room_id)
+                if not room.is_active:
+                    await self.send_alert_message({"message": "Room is inactive."})
+                    logger.info(f"User {self.scope['user']} attempted to join an inactive room {self.room_id}.")
+                    if self.room_group_name:
+                        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+                    await self.close()
+                    return
+                
+                # check if the room already has 2 players
+                if len(self.players_data) >= 2 and self.scope["user"].id not in self.players_data:
+                    await self.send_alert_message({"message": "Room is full."})
+                    logger.info(f"User {self.scope['user']} attempted to join a full room {self.room_id}.")
+                    if self.room_group_name:
+                        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+                    await self.close()
+                    return
+
                 if self.scope["user"].id in self.players_data:
                     # User is reconnecting
                     self.connected_players[self.scope["user"].id] = True
                     index = self.players_data.index(self.scope["user"].id)
                     self.player_paddle = Paddle.LEFT if index == 0 else Paddle.RIGHT
-                    self.is_spectator = self.ready_players > index
-                elif len(self.players_data) < 2:
+                
+                else:
                     # New player
                     self.player_paddle = (
                         Paddle.LEFT if not self.players_data else Paddle.RIGHT
@@ -140,8 +159,6 @@ class OnlinePongConsumer(BasePongConsumer):
                     self.players_data.append(self.scope["user"].id)
                     self.connected_players[self.scope["user"].id] = True
                     cache.set(f"{self.room_group_name}_players", self.players_data)
-                else:
-                    self.is_spectator = True
 
                 cache.set(
                     f"{self.room_group_name}_connected_players", self.connected_players
@@ -159,7 +176,7 @@ class OnlinePongConsumer(BasePongConsumer):
         In online game mode, the game only starts when both players are ready, that is, they press play
         """
         try:
-            if not self.is_spectator and not self.is_ready:
+            if not self.is_ready:
                 async with self.ready_lock:
                     self.ready_players = cache.get(
                         f"{self.room_group_name}_ready_players", 0
@@ -176,6 +193,13 @@ class OnlinePongConsumer(BasePongConsumer):
                     if self.ready_players == 2:
                         self.match_id = cache.get(
                             f"{self.room_group_name}_match_id", None
+                        )
+                        self.had_a_match = cache.get(
+                            f"{self.room_group_name}_had_a_match", False
+                        )
+                        self.had_a_match = True
+                        self.had_a_match = cache.set(
+                            f"{self.room_group_name}_had_a_match", self.had_a_match
                         )
                         if not self.match_id:
                             await self.worker_start_game()
@@ -195,9 +219,6 @@ class OnlinePongConsumer(BasePongConsumer):
             state (bool): True if the key is pressed, False if it is released.
         """
         try:
-            if self.is_spectator:
-                return
-
             paddle = self.player_paddle
             if key in ["w", "arrowup"]:
                 direction = Direction.UP
@@ -217,36 +238,63 @@ class OnlinePongConsumer(BasePongConsumer):
         Performs any necessary cleanup when the game ends.
         """
         try:
+            self.had_a_match = cache.get(
+                f"{self.room_group_name}_had_a_match", False
+            )
+            self.connected_players = cache.get(
+                f"{self.room_group_name}_connected_players", {}
+            )
+
             if self.scope["user"].id in self.connected_players:
+                if self.had_a_match:
+                    # defines the other player as the winner
+                    other_player = Paddle.RIGHT if self.player_paddle == Paddle.LEFT else Paddle.LEFT
+                    # Send the winner message to the group
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_winner",
+                            "game_state": {"winner": other_player},
+                        },
+                    )
+
+                    #notify the other player that he won
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_alert_message",
+                            "message": "The other player disconnected!",
+                        },
+                    )
+
+                    # Send a message to the worker to finish the game
+                    await self.channel_layer.send(
+                        "pong_update_channel",
+                        {
+                            "type": "finish_game",
+                            "room_id": str(self.room_id),
+                        },
+                    )
+
+                    # Set the room as inactive 
+                    await self.set_room_inactive()
+                
                 self.connected_players[self.scope["user"].id] = False
                 cache.set(
                     f"{self.room_group_name}_connected_players", self.connected_players
                 )
-
-            # Check if all players are disconnected
-            all_disconnected = all(
-                not connected for connected in self.connected_players.values()
-            )
+                
+            #check if all players are disconnected
+            all_disconnected = all(not connected for connected in self.connected_players.values())
 
             if all_disconnected:
-                # Send a message to the worker to finish the game
-                await self.channel_layer.send(
-                    "pong_update_channel",
-                    {
-                        "type": "finish_game",
-                        "room_id": str(self.room_id),
-                    },
-                )
                 # Clear the cache of game-related variables
                 cache.delete(f"{self.room_group_name}_players")
                 cache.delete(f"{self.room_group_name}_game_data")
                 cache.delete(f"{self.room_group_name}_ready_players")
                 cache.delete(f"{self.room_group_name}_match_id")
                 cache.delete(f"{self.room_group_name}_connected_players")
-
-                # Set the room as inactive
-                await self.set_room_inactive()
-
+                cache.delete(f"{self.room_group_name}_had_a_match")
                 logger.info(
                     f"Game finished and cleaned up for room {self.room_group_name}"
                 )
@@ -256,6 +304,7 @@ class OnlinePongConsumer(BasePongConsumer):
                 await self.channel_layer.group_discard(
                     self.room_group_name, self.channel_name
                 )
+                logger.info(f"User {self.scope['user']} disconnected from room {self.room_group_name}")
         except Exception as e:
             await self.send_error("Failed to finish game.")
             logger.exception(f"Failed to finish game: {e}")
@@ -268,9 +317,6 @@ class OnlinePongConsumer(BasePongConsumer):
             event (GameStateEvent): The event data containing the game state.
         """
         try:
-            if self.is_spectator:
-                return
-
             async with self.ready_lock:
                 match_id = cache.get(f"{self.room_group_name}_match_id", None)
                 if match_id:

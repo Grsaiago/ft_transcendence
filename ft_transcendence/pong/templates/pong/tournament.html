@@ -56,9 +56,34 @@
             </div>
         </div>
 
-        <div class="col-matches col col-12 col-md-7 p-0 rounded-4">
-            <div class="title rounded-top-4 d-flex flex-row align-items-center justify-content-center">
-                <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Matches</p>
+    <div class="col-matches col col-12 col-md-7 p-0 rounded-4">
+        <div class="title rounded-top-4 d-flex flex-row align-items-center justify-content-center">
+            <p class="title rounded-top-4 text-center m-0 p-2 text-nowrap">Matches</p>
+        </div>
+        <div class="matches p-2 d-flex flex-column gap-1 gap-md-2">
+            {% if tournament.max_players == 8 %}
+            <div id="quarter-finals">
+                <p class="enter-title m-0">Quarterfinals</p>
+                <div class="row d-flex justify-content-center gap-2">
+                    {% for i in quarter_slots %}
+                    <div class="create-room-box col col-5 rounded-4 px-2 d-flex justify-content-center">
+                        <div class="d-flex flex-column py-1 rounded-3" id="Quarter{{ i }}">
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Quarter{{ i }}-p1">
+                                TBD
+                            </div>
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Quarter{{ i }}-p2">
+                                TBD
+                            </div>
+                            <p class="text-tournament status-game text-center m-0 d-none" id="status-Quarter{{ i }}">
+                                waiting for game...
+                            </p>
+                            <a class="btn-custom m-0 text-decoration-none rounded-2" id="Quarter{{ i }}-btn" data-link>
+                                <p class="btn-custom-name-enter m-0 p-1 text-decoration-none text-center" style="font-size: 9px; pointer-events: none;">Play</p>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
             <div class="matches p-2 d-flex flex-column gap-1 gap-md-2">
                 {% if tournament.max_players == 8 %}
@@ -78,6 +103,15 @@
                                     <p class="btn-custom-name-enter m-0">Play</p>
                                 </button>
                             </div>
+                            <div class="text-tournament text-center m-0 text-nowrap" id="Semi{{ i }}-p2">
+                                TBD
+                            </div>
+                            <p class="text-tournament status-game text-center m-0 d-none" id="status-Semi{{ i }}">
+                                waiting for game...
+                            </p>
+                            <a class="btn-custom m-0 text-decoration-none rounded-2" id="Semi{{ i }}-btn" data-link>
+                                <p class="btn-custom-name-enter m-0 p-1 text-decoration-none text-center" style="font-size: 9px; pointer-events: none;">Play</p>
+                            </a>
                         </div>
                         {% endfor %}
                     </div>
@@ -118,9 +152,19 @@
                                     <p class="btn-custom-name-enter m-0">Play</p>
                                 </button>
                             </div>
+                            <p class="text-tournament status-game text-center m-0 d-none" id="status-Final">
+                                waiting for game...
+                            </p>
+                            <a class="btn-custom m-0 text-decoration-none rounded-2" id="Final-btn" data-link>
+                                <p class="btn-custom-name-enter m-0 p-1 text-decoration-none text-center" style="font-size: 9px; pointer-events: none;">Play</p>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div class="d-flex justify-content-center">
+    <div id="messageContainer" class="text-play m-0 mt-2"></div>
+</div>

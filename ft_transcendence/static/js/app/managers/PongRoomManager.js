@@ -90,10 +90,18 @@ export default class PongRoomManager {
                 document.dispatchEvent(new CustomEvent('Winner', { detail: data.winner }));
                 break;
 
+            case "tournament_match_winner":
+                    document.dispatchEvent(new CustomEvent('TournamentMatchWinner', {detail: data.winner}));
+                    break;
+        
             case "redirect_tournament":
                 document.dispatchEvent(new CustomEvent('RedirectTournament', { detail: data.redirect }));
                 break
 
+            case "alert_message":
+                document.dispatchEvent(new CustomEvent('AlertMsg', {detail: data.message}));
+                break
+        
             default:
                 log.error("Unknown message type:", data.type);
         }

@@ -7,6 +7,10 @@ from pong.models import Match, PongRoom, Tournament, TournamentParticipant
 from user_management.models import TrUser
 
 from .online_consumer import OnlinePongConsumer
+from .base_consumer import (
+    Paddle,
+    GameStateEvent,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +57,7 @@ class TournamentPongConsumer(OnlinePongConsumer):
         In tournament mode, the game only starts when both players are ready, and the match ID is fetched from the database.
         """
         try:
-            if not self.is_spectator and not self.is_ready:
+            if not self.is_ready:
                 async with self.ready_lock:
                     self.ready_players = cache.get(
                         f"{self.room_group_name}_ready_players", 0
@@ -69,7 +73,18 @@ class TournamentPongConsumer(OnlinePongConsumer):
 
                     if self.ready_players == 2:
                         room = await self.get_room_by_id(self.room_id)
+                        self.match_id = cache.get(
+                            f"{self.room_group_name}_match_id", None
+                        )
                         match = await self.get_first_match_by_room(room)
+
+                        self.had_a_match = cache.get(
+                            f"{self.room_group_name}_had_a_match", False
+                        )
+                        self.had_a_match = True
+                        self.had_a_match = cache.set(
+                            f"{self.room_group_name}_had_a_match", self.had_a_match
+                        )
 
                         if not match:
                             raise Exception("No match found for the given room.")
@@ -106,7 +121,7 @@ class TournamentPongConsumer(OnlinePongConsumer):
             room = await self.get_room_by_id(self.room_id)
             tournament_id = room.tournament.id
             if tournament_id:
-                tournament_url = f"/tournament/{tournament_id}"
+                tournament_url = f"/tournament/{tournament_id}/"
                 await self.send_redirect(tournament_url)
             logger.info(f"Redirecting player to tournament hub at {tournament_url}")
         except PongRoom.DoesNotExist:
@@ -120,9 +135,80 @@ class TournamentPongConsumer(OnlinePongConsumer):
 
     async def finish_game(self) -> None:
         """
-        Cleans up after the game finishes in tournament mode and redirects the player to the hub.
+        Performs any necessary cleanup when the game ends.
         """
-        await super().finish_game()
+        try:
+            self.had_a_match = cache.get(
+                f"{self.room_group_name}_had_a_match", False
+            )
+            self.connected_players = cache.get(
+                f"{self.room_group_name}_connected_players", {}
+            )
+            # printar todas as variaveis de cache
+
+            if self.scope["user"].id in self.connected_players:
+                if self.had_a_match:
+                    # defines the other player as the winner
+                    other_player = Paddle.RIGHT if self.player_paddle == Paddle.LEFT else Paddle.LEFT
+                    # Send the winner message to the group
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_winner",
+                            "game_state": {"winner": other_player},
+                        },
+                    )
+
+                    #notify the other player that he won
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_alert_message",
+                            "message": "The other player disconnected!",
+                        },
+                    )
+
+                    # Send a message to the worker to finish the game
+                    await self.channel_layer.send(
+                        "pong_update_channel",
+                        {
+                            "type": "finish_game",
+                            "room_id": str(self.room_id),
+                        },
+                    )
+
+                    # Set the room as inactive 
+                    await self.set_room_inactive()
+                
+                self.connected_players[self.scope["user"].id] = False
+                cache.set(
+                    f"{self.room_group_name}_connected_players", self.connected_players
+                )
+                
+            #check if all players are disconnected
+            all_disconnected = all(not connected for connected in self.connected_players.values())
+
+            if all_disconnected:
+                # Clear the cache of game-related variables
+                cache.delete(f"{self.room_group_name}_players")
+                cache.delete(f"{self.room_group_name}_game_data")
+                cache.delete(f"{self.room_group_name}_ready_players")
+                cache.delete(f"{self.room_group_name}_match_id")
+                cache.delete(f"{self.room_group_name}_connected_players")
+                cache.delete(f"{self.room_group_name}_had_a_match")
+                logger.info(
+                    f"Game finished and cleaned up for room {self.room_group_name}"
+                )
+
+            if self.room_group_name:
+                # Remove the user from the group
+                await self.channel_layer.group_discard(
+                    self.room_group_name, self.channel_name
+                )
+                logger.info(f"User {self.scope['user']} disconnected from room {self.room_group_name}")
+        except Exception as e:
+            await self.send_error("Failed to finish game.")
+            logger.exception(f"Failed to finish game: {e}")
 
     async def get_bracket_mapping(self, tournament: Tournament):
 
@@ -179,6 +265,7 @@ class TournamentPongConsumer(OnlinePongConsumer):
 
         alive_count = await self.get_alive_count(tournament)
         if alive_count == 1:
+            tournament.winner = winner
             await self.finalize_tournament(tournament)
         else:
             bracket_mapping = await self.get_bracket_mapping(tournament)
@@ -204,3 +291,21 @@ class TournamentPongConsumer(OnlinePongConsumer):
         await self.send(
             text_data=json.dumps({"type": "redirect_tournament", "redirect": url})
         )
+
+    async def send_winner(self, event: GameStateEvent) -> None:
+        """
+        Receives the game state from the worker and sends the winner to the client.
+
+        Args:
+            event (GameStateEvent): The event data containing the game state.
+        """
+        await self.define_winner(event)
+        if self.winner:
+            logger.info(f"Winner: {self.winner}")
+            try:
+                await self.send(
+                    text_data=json.dumps({"type": "tournament_match_winner", "winner": self.winner})
+                )
+            except Exception as e:
+                await self.send_error("Failed to send winner to client.")
+                logger.exception(f"Failed to send winner to client: {e}")

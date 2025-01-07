@@ -23,6 +23,9 @@ class Tournament(models.Model):
     is_active = models.BooleanField(default=True)
     max_players = models.IntegerField(choices=[(4, "4 Players"), (8, "8 Players")])
     created_at = models.DateTimeField(auto_now_add=True)
+    winner = models.ForeignKey(
+        get_user_model(), on_delete=models.SET_NULL, null=True, blank=True, related_name="tournament_winner"
+    )
 
     def __str__(self):
         return f"Tournament: {self.name}. Max_players: {self.max_players}"
