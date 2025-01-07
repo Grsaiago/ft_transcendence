@@ -66,8 +66,8 @@ services:
       - logs-scrape-network
       - serve-network
     # TODO: Take off the ports directive
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     expose:
       - "8000" # so nginx can ping it
     env_file:
@@ -101,16 +101,15 @@ services:
     image: grafana/grafana:latest
     restart: always
     volumes:
-      - ./docker/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - grafana-data:/var/lib/grafana:rw
       - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
     networks:
       - metrics-display-network
       - serve-network
+    # ports:
+    #   - "3000:3000"
     expose:
       - "3000" # redundancy for documentation
-    ports:
-      - "3000:3000"
     env_file:
       - .env
     depends_on:
