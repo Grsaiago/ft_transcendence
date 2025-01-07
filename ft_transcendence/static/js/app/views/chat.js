@@ -28,7 +28,7 @@ export default class Chat extends AbstractView {
             console.log('Chat html fetched. Returning...');
             return html;
         }
-        catch(error) {
+        catch (error) {
             console.error('Failed to fetch page: ', error);
             return "<p>Error loading login page</p>";
         }
@@ -38,7 +38,9 @@ export default class Chat extends AbstractView {
         console.log('Loading chat event handlers...');
 
         const chatList = document.querySelectorAll('[chat_id]');
-        this.selectFirstChat(chatList[0]);
+        if (chatList.length > 0) {
+            this.selectFirstChat(chatList[0]);
+        }
         for (var i = 0; i < chatList.length; i++) {
             chatList[i].addEventListener('click', this.handleChatChange);
         }
@@ -51,7 +53,7 @@ export default class Chat extends AbstractView {
 
         document.addEventListener('chatMessageReceived', this.handleMessageUI);
     }
-    
+
     selectFirstChat(chatDiv) {
         this.currentChatId = chatDiv.getAttribute('chat_id');
         this.highlightSlectedChat(chatDiv);
@@ -64,7 +66,7 @@ export default class Chat extends AbstractView {
         for (var i = 0; i < chatList.length; i++) {
             chatList[i].removeEventListener('click', this.handleChatChange);
         }
-        
+
         var sendButton = document.getElementById('send-msg-button');
         sendButton.removeEventListener('click', this.sendMessage);
 
@@ -155,14 +157,14 @@ export default class Chat extends AbstractView {
             this.chatManager.chatHistory.set(this.currentChatId, new Array());
         }
     }
-    
+
     loadChatHistory() {
         console.log('Loading chat history...');
         this.chatManager.chatHistory.get(this.currentChatId).forEach(message => {
             this.displayMessage(message);
         });
     }
-    
+
     limpaChat() {
         console.log('Limpando chat...');
         const messagesContainer = document.getElementById('chat-messages');

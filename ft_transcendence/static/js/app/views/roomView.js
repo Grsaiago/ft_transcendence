@@ -29,7 +29,7 @@ export default class Room extends AbstractView {
             console.log('Room html fetched. Returning...');
             return html;
         }
-        catch(error) {
+        catch (error) {
             console.error('Failed to fetch page: ', error);
             return "<p>Error loading Room page</p>";
         }
@@ -58,8 +58,7 @@ export default class Room extends AbstractView {
 
     //Creating game canvas and connecting to socket
 
-    initGame()
-    {
+    initGame() {
         this.loadGameData();
 
         this.pongRoomManager.createGame();
@@ -73,7 +72,7 @@ export default class Room extends AbstractView {
         //Get canvas and context
         const canvas = document.getElementById("pongCanvas");
         const context = canvas.getContext("2d");
-    
+
         //Get game info
         const gameData = document.getElementById("game-data");
         const roomId = gameData.dataset.roomId;
@@ -87,12 +86,12 @@ export default class Room extends AbstractView {
     handleKeyEvent(event, keyType) {
         const validKeys = ["ArrowUp", "ArrowDown", "w", "s", "W", "S"];
         if (validKeys.includes(event.key) && this.isCanvasFocused) {
-          event.preventDefault();
-          const message = {
-            type: keyType,
-            key: event.key.toLocaleLowerCase(),
-          };
-          this.pongRoomManager.sendMessage(message);
+            event.preventDefault();
+            const message = {
+                type: keyType,
+                key: event.key.toLocaleLowerCase(),
+            };
+            this.pongRoomManager.sendMessage(message);
         }
     }
 
@@ -102,7 +101,7 @@ export default class Room extends AbstractView {
 
     handleClickStartButton() {
         const message = {
-          type: "start_game",
+            type: "start_game",
         };
         document.getElementById("pongCanvas").focus();
         this.isCanvasFocused = true;
@@ -137,7 +136,7 @@ export default class Room extends AbstractView {
 
     handleRedirectTournament(event) {
         //wait 2 seconds before redirecting
-        setTimeout(() => {  navigateTo(event.detail) }, 2000);
+        setTimeout(() => { navigateTo(event.detail) }, 2000);
 
     }
 
@@ -203,3 +202,4 @@ export default class Room extends AbstractView {
         document.removeEventListener('AlertMsg', this.handleAlertMsg);
         document.removeEventListener('TournamentMatchWinner', this.handleTournamentMatchWinner);
     }
+}
