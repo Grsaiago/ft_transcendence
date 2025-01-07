@@ -126,9 +126,6 @@ export default class OnlineTournament extends AbstractView {
           const player1Elem = document.getElementById(`${match.round}-p1`);
           const player2Elem = document.getElementById(`${match.round}-p2`);
           const playLinkElem = document.getElementById(`${match.round}-btn`);
-          log.info("player1Elem:", player1Elem);
-          log.info("player2Elem:", player2Elem);
-          log.info("playLinkElem:", playLinkElem);
 
           if (player1Elem)
             player1Elem.innerText = match.player1 !== "TBD" ? match.player1 : "TBD";

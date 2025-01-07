@@ -7,7 +7,10 @@ from pong.models import Match, PongRoom, Tournament, TournamentParticipant
 from user_management.models import TrUser
 
 from .online_consumer import OnlinePongConsumer
-from .base_consumer import Paddle
+from .base_consumer import (
+    Paddle,
+    GameStateEvent,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -288,3 +291,21 @@ class TournamentPongConsumer(OnlinePongConsumer):
         await self.send(
             text_data=json.dumps({"type": "redirect_tournament", "redirect": url})
         )
+
+    async def send_winner(self, event: GameStateEvent) -> None:
+        """
+        Receives the game state from the worker and sends the winner to the client.
+
+        Args:
+            event (GameStateEvent): The event data containing the game state.
+        """
+        await self.define_winner(event)
+        if self.winner:
+            logger.info(f"Winner: {self.winner}")
+            try:
+                await self.send(
+                    text_data=json.dumps({"type": "tournament_match_winner", "winner": self.winner})
+                )
+            except Exception as e:
+                await self.send_error("Failed to send winner to client.")
+                logger.exception(f"Failed to send winner to client: {e}")

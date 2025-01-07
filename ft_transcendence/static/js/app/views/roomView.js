@@ -126,10 +126,16 @@ export default class Room extends AbstractView {
         startButton.style.display = "block";
     }
 
+    handleTournamentMatchWinner(event) {
+        console.log("Tournament Match Winner received")
+        const messageContainer = document.getElementById("messageContainer");
+        messageContainer.textContent = `${event.detail} wins!`;
+    }
+
     handleRedirectTournament(event) {
-        log.info("redirect url:", event.detail)
-        console.log (event.detail)
-        navigateTo(event.detail)
+        //wait 2 seconds before redirecting
+        setTimeout(() => {  navigateTo(event.detail) }, 2000);
+
     }
 
     handleAlertMsg(event) {
@@ -156,6 +162,7 @@ export default class Room extends AbstractView {
         document.addEventListener('Winner', this.handleWinner);
         document.addEventListener('RedirectTournament', this.handleRedirectTournament);
         document.addEventListener('AlertMsg', this.handleAlertMsg);
+        document.addEventListener('TournamentMatchWinner', this.handleTournamentMatchWinner);
 
     }
 
@@ -191,5 +198,6 @@ export default class Room extends AbstractView {
         document.removeEventListener('Winner', this.handleWinner);
         document.removeEventListener('RedirectTournament', this.handleRedirectTournament);
         document.removeEventListener('AlertMsg', this.handleAlertMsg);
+        document.removeEventListener('TournamentMatchWinner', this.handleTournamentMatchWinner);
     }
 }
