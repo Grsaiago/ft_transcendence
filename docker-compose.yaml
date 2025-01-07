@@ -89,9 +89,7 @@ services:
       - metrics-scrape-network
       - metrics-display-network
     expose:
-      - "9090" # redundancy for documentation
-    ports:
-      - "9090:9090"
+      - "9090"
     depends_on:
       - db
       - redis
@@ -106,10 +104,8 @@ services:
     networks:
       - metrics-display-network
       - serve-network
-    # ports:
-    #   - "3000:3000"
     expose:
-      - "3000" # redundancy for documentation
+      - "3000"
     env_file:
       - .env
     depends_on:
@@ -132,8 +128,6 @@ services:
       - logs-display-network
     expose:
       - "9200" # redundancy for documentation
-    ports:
-      - "9200:9200"
     depends_on:
       - django
 
@@ -178,10 +172,9 @@ services:
     container_name: kibana
     networks:
       - logs-display-network
+      - serve-network
     expose:
-      - "5601" # redundancy for documentation
-    ports:
-      - "5601:5601"
+      - "5601"
     env_file:
       - .env
     depends_on:
