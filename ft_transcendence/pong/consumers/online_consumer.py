@@ -241,6 +241,9 @@ class OnlinePongConsumer(BasePongConsumer):
             self.had_a_match = cache.get(
                 f"{self.room_group_name}_had_a_match", False
             )
+            self.connected_players = cache.get(
+                f"{self.room_group_name}_connected_players", {}
+            )
 
             if self.scope["user"].id in self.connected_players:
                 if self.had_a_match:

@@ -7,6 +7,7 @@ from pong.models import Match, PongRoom, Tournament, TournamentParticipant
 from user_management.models import TrUser
 
 from .online_consumer import OnlinePongConsumer
+from .base_consumer import Paddle
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +118,7 @@ class TournamentPongConsumer(OnlinePongConsumer):
             room = await self.get_room_by_id(self.room_id)
             tournament_id = room.tournament.id
             if tournament_id:
-                tournament_url = f"/tournament/{tournament_id}"
+                tournament_url = f"/tournament/{tournament_id}/"
                 await self.send_redirect(tournament_url)
             logger.info(f"Redirecting player to tournament hub at {tournament_url}")
         except PongRoom.DoesNotExist:
@@ -131,9 +132,80 @@ class TournamentPongConsumer(OnlinePongConsumer):
 
     async def finish_game(self) -> None:
         """
-        Cleans up after the game finishes in tournament mode and redirects the player to the hub.
+        Performs any necessary cleanup when the game ends.
         """
-        await super().finish_game()
+        try:
+            self.had_a_match = cache.get(
+                f"{self.room_group_name}_had_a_match", False
+            )
+            self.connected_players = cache.get(
+                f"{self.room_group_name}_connected_players", {}
+            )
+            # printar todas as variaveis de cache
+
+            if self.scope["user"].id in self.connected_players:
+                if self.had_a_match:
+                    # defines the other player as the winner
+                    other_player = Paddle.RIGHT if self.player_paddle == Paddle.LEFT else Paddle.LEFT
+                    # Send the winner message to the group
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_winner",
+                            "game_state": {"winner": other_player},
+                        },
+                    )
+
+                    #notify the other player that he won
+                    await self.channel_layer.group_send(
+                        self.room_group_name,
+                        {
+                            "type": "send_alert_message",
+                            "message": "The other player disconnected!",
+                        },
+                    )
+
+                    # Send a message to the worker to finish the game
+                    await self.channel_layer.send(
+                        "pong_update_channel",
+                        {
+                            "type": "finish_game",
+                            "room_id": str(self.room_id),
+                        },
+                    )
+
+                    # Set the room as inactive 
+                    await self.set_room_inactive()
+                
+                self.connected_players[self.scope["user"].id] = False
+                cache.set(
+                    f"{self.room_group_name}_connected_players", self.connected_players
+                )
+                
+            #check if all players are disconnected
+            all_disconnected = all(not connected for connected in self.connected_players.values())
+
+            if all_disconnected:
+                # Clear the cache of game-related variables
+                cache.delete(f"{self.room_group_name}_players")
+                cache.delete(f"{self.room_group_name}_game_data")
+                cache.delete(f"{self.room_group_name}_ready_players")
+                cache.delete(f"{self.room_group_name}_match_id")
+                cache.delete(f"{self.room_group_name}_connected_players")
+                cache.delete(f"{self.room_group_name}_had_a_match")
+                logger.info(
+                    f"Game finished and cleaned up for room {self.room_group_name}"
+                )
+
+            if self.room_group_name:
+                # Remove the user from the group
+                await self.channel_layer.group_discard(
+                    self.room_group_name, self.channel_name
+                )
+                logger.info(f"User {self.scope['user']} disconnected from room {self.room_group_name}")
+        except Exception as e:
+            await self.send_error("Failed to finish game.")
+            logger.exception(f"Failed to finish game: {e}")
 
     async def get_bracket_mapping(self, tournament: Tournament):
 

@@ -1,5 +1,6 @@
 import AbstractView from "./abstractView.js";
 import PongRoomManager from "../managers/PongRoomManager.js";
+import { navigateTo } from "../index.js";
 
 export default class Room extends AbstractView {
     constructor() {
@@ -127,7 +128,8 @@ export default class Room extends AbstractView {
 
     handleRedirectTournament(event) {
         log.info("redirect url:", event.detail)
-        window.location.href = event.detail; //navigateTo
+        console.log (event.detail)
+        navigateTo(event.detail)
     }
 
     handleAlertMsg(event) {
