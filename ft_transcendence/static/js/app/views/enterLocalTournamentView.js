@@ -10,7 +10,6 @@ export default class EnterLocalTournament extends AbstractView {
 
         this.redirectTo = this.redirectTo.bind(this);
         this.handleCreateTournBtn = this.handleCreateTournBtn.bind(this);
-        this.handleCreate4TournBtn = this.handleCreate4TournBtn.bind(this);
         this.handleCreate8TournBtn = this.handleCreate8TournBtn.bind(this);
     }
 
@@ -52,12 +51,9 @@ export default class EnterLocalTournament extends AbstractView {
 
     bindUIEventHandlers() {
         console.log('Loading enter event handlers...');
-        document.getElementById('enter-4').addEventListener('click', this.handleCreate4TournBtn);
         document.getElementById('enter-8').addEventListener('click', this.handleCreate8TournBtn);
         document.getElementById('enter-continue').addEventListener('click', this.redirectTo);
     }
-
-    handleCreate4TournBtn = (event) => this.handleCreateTournBtn(event, 4);
 
     handleCreate8TournBtn = (event) => this.handleCreateTournBtn(event, 8);
 

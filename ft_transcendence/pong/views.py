@@ -168,11 +168,7 @@ class PongLocalTournamentView(LoginRequiredMixin, TemplateView):
     template_name = "../../user_management/templates/user_management/base_app.html"
 
     def get(self, request, *args, **kwargs):
-        number_of_players = kwargs.get("num_players")
-        if number_of_players == 4:
-            template_path = "pong/localTournament4p.html"
-        elif number_of_players == 8:
-            template_path = "pong/localTournament8p.html"
+        template_path = "pong/localTournament8p.html"
         # else ADDERRORPAGE pagina de erro
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return render(request, template_path)
