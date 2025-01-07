@@ -101,10 +101,12 @@ services:
     image: grafana/grafana:latest
     restart: always
     volumes:
+      - ./docker/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
       - grafana-data:/var/lib/grafana:rw
       - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
     networks:
       - metrics-display-network
+      - serve-network
     expose:
       - "3000" # redundancy for documentation
     ports:
@@ -217,9 +219,9 @@ volumes:
   media-files: {}
 
 networks:
-  metrics-scrape-network: {}
-  metrics-display-network: {}
-  data-layer-network: {}
-  logs-display-network: {}
-  logs-scrape-network: {}
-  serve-network: {}
+  metrics-scrape-network: {} # everything related to scraping logs
+  metrics-display-network: {} # everything related to displaying scraped logs
+  data-layer-network: {} # all layers of data, be it persisted or cached
+  logs-display-network: {} # everything related to displaying scraped logs
+  logs-scrape-network: {} # everything related to scraping logs
+  serve-network: {} # everything that is served by nginx
