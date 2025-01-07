@@ -18,6 +18,8 @@ import Room from "./views/roomView.js";
 import OnlineTournament from "./views/onlineTournamentView.js";
 import EnterLocalTournament from  "./views/enterLocalTournamentView.js"
 import LocalTournament from "./views/localTournamentView.js";
+import localTournamentMatchFormsHandler from "./handlers/localTournamentMatchFormHandler.js";
+import LocalTournamentRoomView from "./views/localTournamentRoomView.js";
 
 const hostname = window.location.hostname;
 if (hostname === "www.transcendence.com") {
@@ -54,6 +56,7 @@ const viewsRouter = async (url) => {
         { path: "/change_password/", view: Change_password },
         {path: "/update_info/", view: Update_info },
         { path: "/room/:id/", view: Room, regex: /^\/room\/\d+\/$/ },
+        { path: "/localTournament/room/:id/", view: LocalTournamentRoomView, regex: /^\/localTournament\/room\/\d+\/$/ },
         { path: "/localTournament/:num_players/", view: LocalTournament, regex: /^\/localTournament\/\d+\/$/ },
         { path: "/tournament/:id/", view: OnlineTournament, regex: /^\/tournament\/\d+\/$/ },
     ];
@@ -83,6 +86,7 @@ const handlersRouter = async (form) => {
         { formType: "friendshipForm", handler: friendshipFormsHandler },
         { formType: "blockForm", handler: userBlockFormsHandler },
         { formType: "localGameForm", handler: localGameFormsHandler },
+        { formType: "localTournamentMatchForm", handler: localTournamentMatchFormsHandler },
         { formType: "updateInfoForm", handler: UpdateInfoFormsHandler},
         { formType: "changePasswordForm", handler: ChangePasswordFormsHandler},
         { formType: "createTournamentForm", handler: CreateTournamentHandler},

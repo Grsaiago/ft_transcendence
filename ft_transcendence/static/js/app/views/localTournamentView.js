@@ -11,14 +11,8 @@ export default class LocalTournament extends AbstractView {
 
         this.handleStartFormSubmit = this.handleStartFormSubmit.bind(this);
         this.updateMatchesUI = this.updateMatchesUI.bind(this);
-        this.playBtnHandler = this.playBtnHandler.bind(this);
+        this.updateUI = this.updateUI.bind(this);
         this.startGameBtnHandler = this.startGameBtnHandler.bind(this);
-        this.playButon3Handler = this.playButon3Handler.bind(this);
-        this.playButon2Handler = this.playButon2Handler.bind(this);
-        this.playButon4Handler = this.playButon4Handler.bind(this);
-        this.playButon5Handler = this.playButon5Handler.bind(this);
-        this.playButon6Handler = this.playButon6Handler.bind(this);
-        this.playButon7Handler = this.playButon7Handler.bind(this);
     }
 
     async getHtml(url) {
@@ -40,6 +34,8 @@ export default class LocalTournament extends AbstractView {
 
     loadComponents() {
         document.getElementById("tourn-name").innerText = 'Name: ' + this.localTournamentManager.name;
+        if (this.localTournamentManager.status == "Started" || this.localTournamentManager.status == "Finished")
+            this.updateUI();
     }
 
     unloadComponents() {
@@ -57,91 +53,62 @@ export default class LocalTournament extends AbstractView {
         console.log('Removing enter event handlers...');
     }
 
+    updateUI() {
+        if (this.localTournamentManager.status == "Started" || this.localTournamentManager.status == "Finished") {
+            this.writePlayersNames();
+            this.lockForm();
+            this.deactivateStartButton();
+            this.writeWinner();
+        }
+        this.updateMatchesUI();
+    }
+
+    writeWinner() {
+        if (this.localTournamentManager.status != "Finished") {
+            return;
+        }
+
+        document.getElementById('tourn-winner').innerText = "Winner: " + this.localTournamentManager.winner;
+    }
+
+    lockForm() {
+        const form = document.getElementById("tournamentForm");
+        if (!form) {
+            console.error("Tournament form not found.");
+            return;
+        }
+    
+        const inputs = form.querySelectorAll("input");
+        inputs.forEach(input => {
+            input.disabled = true; // Lock the input field
+        });
+    }
+
+    writePlayersNames() {
+        const form = document.getElementById("tournamentForm");
+        if (!form) {
+            console.error("Tournament form not found.");
+            return;
+        }
+    
+        const inputs = form.querySelectorAll("input");
+        this.localTournamentManager.participants.forEach((name, index) => {
+            if (inputs[index]) {
+                inputs[index].value = name; // Write the player's name into the input field
+            }
+        });
+    }
+
     bindLocalTournamentManagerEvents() {
-        document.addEventListener('match_status_updated', this.updateMatchesUI);
-        document.addEventListener('tournamentChampion', this.handleChampion);
     }
 
     bindButtonEventHandlers() {
-        document.getElementById("btn-Match1").addEventListener("click", this.playBtnHandler);
-        document.getElementById("btn-Match3").addEventListener("click", this.playButon3Handler);
-        document.getElementById("btn-Match2").addEventListener("click", this.playButon2Handler);
-        document.getElementById("btn-Match4").addEventListener("click", this.playButon4Handler);
-        document.getElementById("btn-Match5").addEventListener("click", this.playButon5Handler);
-        document.getElementById("btn-Match6").addEventListener("click", this.playButon6Handler);
-        document.getElementById("btn-Match7").addEventListener("click", this.playButon7Handler);
         document.getElementById("startGame").addEventListener("click", this.startGameBtnHandler);
-    }
-
-    playBtnHandler() {
-        console.log("Buton play test handler");
-        const match = this.localTournamentManager.matches.find(m => m.matchId === 'Match1');
-        console.log(match['Match1-p1']);
-
-        this.switchDiv('game');
-
-        // this.localTournamentManager.updateMatchesOnWinner('Match1', match['Match1-p1']);
     }
 
     startGameBtnHandler() {
         const startGameBtn = document.getElementById("startGame");
         startGameBtn.classList.add("d-none");
-    }
-
-    switchDiv(div) {
-        const gameDiv = document.getElementById('div-game');
-        const statusDiv = document.getElementById('div-status');
-
-        if (div == 'game') {
-            statusDiv.classList.add("d-none");
-            gameDiv.classList.remove("d-none");
-        }
-        if (div == 'status') {
-            gameDiv.classList.add("d-none");
-            statusDiv.classList.remove("d-none");
-        }
-    }
-
-    playButon3Handler() {
-        console.log("Buton 3 test handler");
-        const match = this.localTournamentManager.matches.find(m => m.matchId === 'Match3');
-        console.log(match['Match3-p1']);
-        this.localTournamentManager.updateMatchesOnWinner('Match3', match['Match3-p1']);
-    }
-
-    playButon2Handler() {
-        console.log("Buton 2 test handler");
-        const match = this.localTournamentManager.matches.find(m => m.matchId === 'Match2');
-        console.log(match['Match2-p1']);
-        this.localTournamentManager.updateMatchesOnWinner('Match2', match['Match2-p1']);
-    }
-
-    playButon4Handler() {
-        console.log("Buton 4 test handler");
-        const match = this.localTournamentManager.matches.find(m => m.matchId === 'Match4');
-        console.log(match['Match4-p1']);
-        this.localTournamentManager.updateMatchesOnWinner('Match4', match['Match4-p1']);
-    }
-
-    playButon5Handler() {
-        console.log("Buton 5 test handler");
-        const match = this.localTournamentManager.matches.find(m => m.matchId === 'Match5');
-        console.log(match['Match5-p1']);
-        this.localTournamentManager.updateMatchesOnWinner('Match5', match['Match5-p1']);
-    }
-
-    playButon6Handler() {
-        console.log("Buton 6 test handler");
-        const match = this.localTournamentManager.matches.find(m => m.matchId === 'Match6');
-        console.log(match['Match6-p1']);
-        this.localTournamentManager.updateMatchesOnWinner('Match6', match['Match6-p1']);
-    }
-
-    playButon7Handler() {
-        console.log("Buton 7 test handler");
-        const match = this.localTournamentManager.matches.find(m => m.matchId === 'Match7');
-        console.log(match['Match7-p1']);
-        this.localTournamentManager.updateMatchesOnWinner('Match7', match['Match7-p1']);
     }
 
     handleStartFormSubmit(event) {
@@ -167,38 +134,10 @@ export default class LocalTournament extends AbstractView {
     }
 
     startTournament(playersNames) {
-        this.initGame();
         this.localTournamentManager.startTournament(playersNames);
 
         this.deactivateStartButton();
-        this.updateMatchesUI();
-    }
-
-    initGame()
-    {
-        this.pongRoomManager = new PongRoomManager();
-
-        this.loadGameData();
-
-        this.pongRoomManager.createGame();
-
-        console.log('PongRoomManager Created.')
-
-        // this.pongRoomManager.connectSocket();
-
-        // this.pongRoomManager.loadSocketEventHandlers();
-    }
-
-    loadGameData() {
-        //Get canvas and context
-        const canvas = document.getElementById("pongCanvas");
-        const context = canvas.getContext("2d");
-    
-        //Get game info
-        this.roomId = 42;
-        this.gameMode = "LOCAL";
-
-        this.pongRoomManager.setGameData(context, canvas.width, canvas.height, this.roomId, this.gameMode);
+        this.updateUI();
     }
 
     updateMatchesUI() {
@@ -218,24 +157,11 @@ export default class LocalTournament extends AbstractView {
             if (player1Div) player1Div.textContent = match[`${match.matchId}-p1`] || "TBD";
             if (player2Div) player2Div.textContent = match[`${match.matchId}-p2`] || "TBD";
 
-            // Update match button
-            // if (matchBtn) {
-            //     if (match.status === "ready") {
-            //         matchBtn.textContent = "Start";
-            //         matchBtn.disabled = false;
-            //     } else if (match.status === "finished" && match.winner) {
-            //         matchBtn.textContent = `Finished! Winner: ${match.winner}`;
-            //         matchBtn.disabled = true;
-            //     }
-            // }
-
-
-
             if (match.status === "ready") {
                 statusText.classList.add("d-none");
                 matchBtn.classList.remove("d-none");
                 matchBtn.disabled = false;
-            } else if (match.status === "finished" && match.winner) {
+            } else if (match.status === "Finished" && match.winner) {
                 statusText.textContent = `Winner: ${match.winner}`;
                 statusText.classList.remove("d-none");
                 matchBtn.classList.add("d-none");
@@ -247,10 +173,6 @@ export default class LocalTournament extends AbstractView {
                 matchBtn.disabled = true;
             }
         });
-    }
-
-    handleChampion(event) {
-        console.log("The tournament ended! The winner is: ", event.detail);
     }
 
     deactivateStartButton() {

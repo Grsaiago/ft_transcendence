@@ -15,6 +15,14 @@ export default class LocalTournamentManager {
         this.createMatches();
     }
 
+    resetTournament() {
+        this.name = null;
+        this.num_of_players = null;
+        this.status = "Unstarted";
+        this.participants = [];
+        this.matches = [];
+    }
+
     createMatches() {
         const totalPlayers = this.participants.length;
     
@@ -35,6 +43,7 @@ export default class LocalTournamentManager {
                 [`Match${this.matches.length + 1}-p1`]: this.participants[i],
                 [`Match${this.matches.length + 1}-p2`]: this.participants[i + 1],
                 status: "ready",
+                roomId: null,
                 winner: null,
             });
             this.matches.push(currentRoundMatches[currentRoundMatches.length - 1]);
@@ -49,6 +58,7 @@ export default class LocalTournamentManager {
                     [`Match${this.matches.length + 1}-p1`]: null, // Placeholder for winner of currentRoundMatches[i]
                     [`Match${this.matches.length + 1}-p2`]: null, // Placeholder for winner of currentRoundMatches[i + 1]
                     status: "pending",
+                    roomId: null,
                     winner: null,
                     dependsOn: [currentRoundMatches[i].matchId, currentRoundMatches[i + 1].matchId], // Tracks dependencies
                 });
@@ -69,7 +79,7 @@ export default class LocalTournamentManager {
     
         // Update the winner and status
         match.winner = winner;
-        match.status = "finished";
+        match.status = "Finished";
         console.log(`Winner for ${matchId} set to ${winner}.`);
     
         // Update dependent matches
@@ -90,31 +100,33 @@ export default class LocalTournamentManager {
             }
         });
 
-        document.dispatchEvent(new CustomEvent("match_status_updated"));
-
         if (this.isFinalMatch(matchId)) {
-            this.status='finished';
-            this.winner='winner';
-            this.dispatchChampionEvent(winner);
+            this.status = 'Finished';
+            this.winner = winner;
         }
+    }
+
+    registerMatch(context) {
+        const { room_id, match_id } = context;
+
+        // Find the match with the given match_id
+        const match = this.matches.find(m => m.matchId === match_id);
+
+        if (!match) {
+            console.error(`Match with ID ${match_id} not found.`);
+            return;
+        }
+
+        // Update the match with the room_id and mark it as ready
+        match.roomId = room_id;
+
+        console.log(`Match ${match_id} registered with room ID: ${room_id}`);
     }
 
     isFinalMatch(matchId) {
         // The final match is the last one in the matches array
         const finalMatch = this.matches[this.matches.length - 1];
         return finalMatch && finalMatch.matchId === matchId;
-    }
-
-    dispatchChampionEvent(champion) {
-        // Create a custom event with the champion's details
-        const championEvent = new CustomEvent("tournamentChampion", {
-            detail: champion,
-        });
-    
-        // Dispatch the event
-        document.dispatchEvent(championEvent);
-    
-        console.log(`Champion event dispatched for: ${champion}`);
     }
 
     shuffleParticipants(participants) {

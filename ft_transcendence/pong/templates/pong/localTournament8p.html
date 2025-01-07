@@ -14,7 +14,7 @@
                 <p class="text-tournament m-0 text-nowrap">Max Players:
                     <span id="maxPlayersValue">8</span>
                 </p>
-                <p class="text-tournament m-0 text-nowrap">Winner: </p>
+                <p class="text-tournament m-0 text-nowrap" id="tourn-winner">Winner: </p>
             </div>
         </div>
         <div class="col-tournament p-0 rounded-4">
@@ -66,9 +66,19 @@
                             <p class="text-tournament status-game text-center m-0" id="status-Match{{ i }}">
                                 waiting for game...
                             </p>
-                            <button id="btn-Match{{ i }}" class="btn btn-custom py-1 px-2 d-none" disabled="">
-                                <p class="btn-custom-name-enter m-0">start</p>
-                            </button>
+                            <form class="d-flex flex-column flex-lg-row justify-content-center align-items-center gap-2 px-1 py-2"
+                            id="gameModeForm"
+                            method="post"
+                            formType="localTournamentMatchForm"
+                            action="{% url 'pong:selectmode' %}"
+                            match-id="Match{{ i }}"
+                            api-link>
+                            {% csrf_token %}
+                                <input type="hidden" name="game_mode" value="local">
+                                <button id="btn-Match{{ i }}" class="btn btn-custom py-1 px-2 d-none" disabled="" type="submit" api-link>
+                                    <p class="btn-custom-name-enter m-0">start</p>
+                                </button>
+                            </form>
                         </div>
                     </div>
                     {% endfor %}
@@ -89,9 +99,19 @@
                             <p class="text-tournament status-game text-center m-0" id="status-Match{{ i }}">
                                 waiting for game...
                             </p>
-                            <button id="btn-Match{{ i }}" class="btn btn-custom py-1 px-2 d-none" disabled="">
-                                <p class="btn-custom-name-enter m-0">start</p>
-                            </button>
+                            <form class="d-flex flex-column flex-lg-row justify-content-center align-items-center gap-2 px-1 py-2"
+                            id="gameModeForm"
+                            method="post"
+                            formType="localTournamentMatchForm"
+                            action="{% url 'pong:selectmode' %}"
+                            match-id="Match{{ i }}"
+                            api-link>
+                            {% csrf_token %}
+                                <input type="hidden" name="game_mode" value="local">
+                                <button id="btn-Match{{ i }}" class="btn btn-custom py-1 px-2 d-none" disabled="" type="submit" api-link>
+                                    <p class="btn-custom-name-enter m-0">start</p>
+                                </button>
+                            </form>
                         </div>
                     </div>
                     {% endfor %}
@@ -111,9 +131,19 @@
                             <p class="text-tournament status-game text-center m-0" id="status-Match7">
                                 waiting for game...
                             </p>
-                            <button id="btn-Match7" class="btn btn-custom py-1 px-2 d-none" disabled="">
-                                <p class="btn-custom-name-enter m-0">start</p>
-                            </button>
+                            <form class="d-flex flex-column flex-lg-row justify-content-center align-items-center gap-2 px-1 py-2"
+                            id="gameModeForm"
+                            method="post"
+                            formType="localTournamentMatchForm"
+                            action="{% url 'pong:selectmode' %}"
+                            match-id="Match7"
+                            api-link>
+                            {% csrf_token %}
+                                <input type="hidden" name="game_mode" value="local">
+                                <button id="btn-Match7" class="btn btn-custom py-1 px-2 d-none" disabled="" type="submit" api-link>
+                                    <p class="btn-custom-name-enter m-0">start</p>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

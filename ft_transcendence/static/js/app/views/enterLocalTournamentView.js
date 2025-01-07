@@ -7,6 +7,11 @@ export default class EnterLocalTournament extends AbstractView {
         super();
         this.setTitle("Create Local Tournament");
         this.localTournamentManager = new LocalTournamentManager();
+
+        this.redirectTo = this.redirectTo.bind(this);
+        this.handleCreateTournBtn = this.handleCreateTournBtn.bind(this);
+        this.handleCreate4TournBtn = this.handleCreate4TournBtn.bind(this);
+        this.handleCreate8TournBtn = this.handleCreate8TournBtn.bind(this);
     }
 
     async getHtml() {
@@ -26,34 +31,69 @@ export default class EnterLocalTournament extends AbstractView {
         }
     }
 
+    loadComponents() {
+        if (this.localTournamentManager.status !== "Started") {
+            this.hideContinueDiv();
+        }
+        else {
+            this.loadCurrentTournamentName();
+        }
+    }
+
+    loadCurrentTournamentName() {
+        const nameInput = document.getElementById('continue-tournament-name');
+        nameInput.value = this.localTournamentManager.name;
+        nameInput.disabled = true;
+    }
+
+    hideContinueDiv() {
+        document.getElementById('continue').classList.add('d-none');
+    }
+
     bindUIEventHandlers() {
         console.log('Loading enter event handlers...');
+        document.getElementById('enter-4').addEventListener('click', this.handleCreate4TournBtn);
+        document.getElementById('enter-8').addEventListener('click', this.handleCreate8TournBtn);
+        document.getElementById('enter-continue').addEventListener('click', this.redirectTo);
+    }
+
+    handleCreate4TournBtn = (event) => this.handleCreateTournBtn(event, 4);
+
+    handleCreate8TournBtn = (event) => this.handleCreateTournBtn(event, 8);
+
+    handleCreateTournBtn (event, maxPlayers) {
+        event.preventDefault(); // Prevent default button behavior
+
         const tournamentInput = document.getElementById("tournament-name");
-        const buttons = document.querySelectorAll(".btn-custom");
+        const tournamentName = tournamentInput.value;
 
-        const redirectTo = (maxPlayers) => {
-            const url = `/localTournament/${maxPlayers}/`;
-            console.log(`Redirecting to: ${url}`);
-            navigateTo(url);
-        };
+        if (!tournamentName.trim()) {
+            alert("Please enter a tournament name!");
+            return;
+        }
 
-        buttons.forEach((button) => {
-            button.addEventListener("click", (event) => {
-                event.preventDefault(); // Prevent default button behavior
-                const maxPlayers = button.getAttribute("value");
-                const tournamentName = tournamentInput.value;
+        if (this.localTournamentManager.status === "Started") {
+            const confirmOverwrite = confirm(
+                "A tournament is already in progress. Creating a new local tournament will overwrite the current one. Do you want to continue?"
+            );
+            if (!confirmOverwrite) {
+                return;
+            }
+        }
+        
+        this.localTournamentManager.resetTournament();
 
-                this.localTournamentManager.name = tournamentName;
-                this.localTournamentManager.num_of_players = maxPlayers;
+        this.localTournamentManager.name = tournamentName;
+        this.localTournamentManager.num_of_players = maxPlayers;
 
-                if (!tournamentName.trim()) {
-                    alert("Please enter a tournament name!");
-                    return;
-                }
+        this.redirectTo();
+    }
 
-                redirectTo(maxPlayers);
-            });
-        });
+    redirectTo = () => {
+        const maxPlayers = this.localTournamentManager.num_of_players;
+        const url = `/localTournament/${maxPlayers}/`;
+        console.log(`Redirecting to: ${url}`);
+        navigateTo(url);
     }
 
     removeUIEventHandlers() {
