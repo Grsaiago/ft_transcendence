@@ -9,6 +9,7 @@ export default class Room extends AbstractView {
         this.setTitle("Room");
         this.pongRoomManager = new PongRoomManager();
         this.isCanvasFocused = true;
+
         this.handleFocus = this.handleFocus.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
         this.handleKeyEvent = this.handleKeyEvent.bind(this);
@@ -29,8 +30,7 @@ export default class Room extends AbstractView {
             console.log('Room html fetched. Returning...');
             return html;
         }
-        catch (error) {
-            console.error('Failed to fetch page: ', error);
+        catch(error) {
             return "<p>Error loading Room page</p>";
         }
     }
@@ -58,7 +58,8 @@ export default class Room extends AbstractView {
 
     //Creating game canvas and connecting to socket
 
-    initGame() {
+    initGame()
+    {
         this.loadGameData();
 
         this.pongRoomManager.createGame();
@@ -86,12 +87,12 @@ export default class Room extends AbstractView {
     handleKeyEvent(event, keyType) {
         const validKeys = ["ArrowUp", "ArrowDown", "w", "s", "W", "S"];
         if (validKeys.includes(event.key) && this.isCanvasFocused) {
-            event.preventDefault();
-            const message = {
-                type: keyType,
-                key: event.key.toLocaleLowerCase(),
-            };
-            this.pongRoomManager.sendMessage(message);
+          event.preventDefault();
+          const message = {
+            type: keyType,
+            key: event.key.toLocaleLowerCase(),
+          };
+          this.pongRoomManager.sendMessage(message);
         }
     }
 
@@ -101,7 +102,7 @@ export default class Room extends AbstractView {
 
     handleClickStartButton() {
         const message = {
-            type: "start_game",
+          type: "start_game",
         };
         document.getElementById("pongCanvas").focus();
         this.isCanvasFocused = true;
@@ -122,8 +123,6 @@ export default class Room extends AbstractView {
     }
 
     handleWinner(event) {
-        console.log("Winner received")
-        const messageContainer = document.getElementById("messageContainer");
         if (messageContainer) {
             messageContainer.textContent = `${event.detail} wins!`;
         }
@@ -135,7 +134,6 @@ export default class Room extends AbstractView {
     }
 
     handleTournamentMatchWinner(event) {
-        console.log("Tournament Match Winner received")
         const messageContainer = document.getElementById("messageContainer");
         if (messageContainer) {
             messageContainer.textContent = `${event.detail} wins!`;
@@ -144,12 +142,11 @@ export default class Room extends AbstractView {
 
     handleRedirectTournament(event) {
         //wait 2 seconds before redirecting
-        setTimeout(() => { navigateTo(event.detail) }, 2000);
+        setTimeout(() => {  navigateTo(event.detail) }, 2000);
 
     }
 
     handleAlertMsg(event) {
-        log.info("Alert Msg received")
         const spectadorContainer = document.getElementById("alertContainer");
         if (spectadorContainer) {
             spectadorContainer.textContent = `${event.detail}`;
