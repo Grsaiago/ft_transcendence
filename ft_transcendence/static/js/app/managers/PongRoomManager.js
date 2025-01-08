@@ -1,7 +1,7 @@
 import { PongGame } from "/static/pong/js/PongGame.js";
 
 export default class PongRoomManager {
-    constructor() {
+    constructor () {
 
         this.handleSocketOpen = this.handleSocketOpen.bind(this);
         this.handleSocketMessage = this.handleSocketMessage.bind(this);
@@ -17,7 +17,8 @@ export default class PongRoomManager {
         }
     }
 
-    connectSocket() {
+    connectSocket()
+    {
         let socketUrl;
 
         const protocol = window.location.protocol === "https:" ? "wss" : "ws";
@@ -30,7 +31,8 @@ export default class PongRoomManager {
         this.socket = new WebSocket(socketUrl);
     }
 
-    createGame() {
+    createGame()
+    {
         //Initialize game
         this.pongGame = new PongGame(this.gameData.context, this.gameData.width, this.gameData.height);
     }
@@ -83,22 +85,23 @@ export default class PongRoomManager {
                 break;
 
             case "winner":
-                document.dispatchEvent(new CustomEvent('Winner', { detail: data.winner }));
+                document.dispatchEvent(new CustomEvent('Winner', {detail: data.winner}));
                 break;
 
             case "tournament_match_winner":
                     document.dispatchEvent(new CustomEvent('TournamentMatchWinner', {detail: data.winner}));
                     break;
-        
+
             case "redirect_tournament":
-                document.dispatchEvent(new CustomEvent('RedirectTournament', { detail: data.redirect }));
+                document.dispatchEvent(new CustomEvent('RedirectTournament', {detail: data.redirect}));
                 break
 
             case "alert_message":
                 document.dispatchEvent(new CustomEvent('AlertMsg', {detail: data.message}));
                 break
-        
+
             default:
+
         }
     }
 

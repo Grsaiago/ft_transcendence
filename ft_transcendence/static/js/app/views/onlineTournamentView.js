@@ -68,13 +68,10 @@ export default class OnlineTournament extends AbstractView {
     handleClickJoinButton() {
         this.hubManager.joinTournament();
     }
-    
+
     //HubManager Events Handlers
-    
+
     handleJoinedTournament() {
-        const joinButton = document.getElementById("joinTournament");
-        if (joinButton) {
-        }
     }
 
     handleTournamentMessage(event) {
@@ -135,10 +132,10 @@ export default class OnlineTournament extends AbstractView {
               match.player1 !== "TBD" &&
               match.player2 !== "TBD"
             ) {
-                playLinkElem.style.display = "block";
-                playLinkElem.setAttribute('href', `/room/${match.room_id}/`);
+              playLinkElem.style.display = "block";
+              playLinkElem.setAttribute('href', `/room/${match.room_id}/`);
             } else {
-                playLinkElem.style.display = "none";
+              playLinkElem.style.display = "none";
             }
           }
         });
@@ -148,8 +145,9 @@ export default class OnlineTournament extends AbstractView {
 
     bindJoinButtonHandler() {
         const joinButton = document.getElementById("joinTournament");
-        if (joinButton) {
+        if (joinButton){
             joinButton.addEventListener("click", this.handleClickJoinButton);
+
         }
     }
 
